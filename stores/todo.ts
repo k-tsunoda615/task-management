@@ -5,6 +5,7 @@ interface Todo {
   title: string;
   status: string;
   task_id?: string;
+  taskId?: string; // 互換性のために残す
   memo?: string;
   order?: number;
   is_private?: boolean;
@@ -30,31 +31,69 @@ export const useTodoStore = defineStore("todo", {
       this.isLoaded = false;
 
       const client = useSupabaseClient();
-      const { data: todos, error: todosError } = await client
-        .from("todos")
-        .select("*")
-        .order("updated_at", { ascending: false });
+      console.log("Todoを取得中...");
 
-      if (todosError) {
-        console.error("Todoの取得エラー:", todosError);
-        throw todosError;
+      try {
+        const { data: todos, error: todosError } = await client
+          .from("todos")
+          .select("*")
+          .order("updated_at", { ascending: false });
+
+        if (todosError) {
+          console.error("Todoの取得エラー:", todosError);
+          throw todosError;
+        }
+
+        const { data: tasks, error: tasksError } = await client
+          .from("tasks")
+          .select("*");
+
+        if (tasksError) {
+          console.error("Taskの取得エラー:", tasksError);
+          throw tasksError;
+        }
+
+        console.log("取得したTodos:", todos);
+        console.log("取得したTasks:", tasks);
+
+        // ステータスの標準化（大文字小文字や空白の違いを吸収）
+        const normalizedTodos = todos?.map((todo) => {
+          // ステータスが未設定の場合は「未対応」にする
+          if (!todo.status) {
+            todo.status = "未対応";
+          }
+
+          // ステータスの標準化
+          if (
+            todo.status.includes("未") ||
+            todo.status.toLowerCase().includes("todo")
+          ) {
+            todo.status = "未対応";
+          } else if (
+            todo.status.includes("対応中") ||
+            todo.status.includes("進行") ||
+            todo.status.toLowerCase().includes("progress") ||
+            todo.status.toLowerCase().includes("doing")
+          ) {
+            todo.status = "対応中";
+          } else if (
+            todo.status.includes("完了") ||
+            todo.status.toLowerCase().includes("done") ||
+            todo.status.toLowerCase().includes("complete")
+          ) {
+            todo.status = "完了";
+          }
+
+          return todo;
+        });
+
+        this.todos = normalizedTodos || [];
+        this.tasks = tasks || [];
+        this.isLoaded = true;
+      } catch (error) {
+        console.error("Todoの取得中にエラーが発生しました:", error);
+        throw error;
       }
-
-      const { data: tasks, error: tasksError } = await client
-        .from("tasks")
-        .select("*");
-
-      if (tasksError) {
-        console.error("Taskの取得エラー:", tasksError);
-        throw tasksError;
-      }
-
-      console.log("取得したTodos:", todos);
-      console.log("取得したTasks:", tasks);
-
-      this.todos = todos || [];
-      this.tasks = tasks || [];
-      this.isLoaded = true;
     },
 
     async createTodo(todo: Partial<Todo>) {
@@ -64,8 +103,8 @@ export const useTodoStore = defineStore("todo", {
       const todoData = {
         title: todo.title,
         memo: todo.memo,
-        status: todo.status,
-        task_id: todo.taskId || todo.task_id,
+        status: todo.status || "未対応",
+        task_id: todo.taskId || todo.task_id || null,
         is_private: todo.is_private || false,
         user_id: user.value?.id,
       };
