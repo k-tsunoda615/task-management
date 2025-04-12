@@ -4,15 +4,18 @@ interface Todo {
   id: string;
   title: string;
   status: string;
-  taskId: string;
+  task_id?: string;
   memo?: string;
-  order: number;
+  order?: number;
+  is_private?: boolean;
+  user_id?: string;
+  updated_at?: string;
 }
 
 interface Task {
   id: string;
   title: string;
-  projectId: string;
+  projectId?: string;
 }
 
 export const useTodoStore = defineStore("todo", {
@@ -24,21 +27,30 @@ export const useTodoStore = defineStore("todo", {
 
   actions: {
     async fetchTodos() {
-      if (this.isLoaded) return;
+      this.isLoaded = false;
 
       const client = useSupabaseClient();
       const { data: todos, error: todosError } = await client
         .from("todos")
         .select("*")
-        .order("order", { ascending: true });
+        .order("updated_at", { ascending: false });
 
-      if (todosError) throw todosError;
+      if (todosError) {
+        console.error("Todoの取得エラー:", todosError);
+        throw todosError;
+      }
 
       const { data: tasks, error: tasksError } = await client
         .from("tasks")
         .select("*");
 
-      if (tasksError) throw tasksError;
+      if (tasksError) {
+        console.error("Taskの取得エラー:", tasksError);
+        throw tasksError;
+      }
+
+      console.log("取得したTodos:", todos);
+      console.log("取得したTasks:", tasks);
 
       this.todos = todos || [];
       this.tasks = tasks || [];
@@ -47,30 +59,53 @@ export const useTodoStore = defineStore("todo", {
 
     async createTodo(todo: Partial<Todo>) {
       const client = useSupabaseClient();
+      const user = useSupabaseUser();
+
+      const todoData = {
+        title: todo.title,
+        memo: todo.memo,
+        status: todo.status,
+        task_id: todo.taskId || todo.task_id,
+        is_private: todo.is_private || false,
+        user_id: user.value?.id,
+      };
+
+      console.log("作成するTodo:", todoData);
+
       const { data, error } = await client
         .from("todos")
-        .insert({
-          ...todo,
-          order: this.todos.length,
-        })
+        .insert(todoData)
         .select()
         .single();
 
-      if (error) throw error;
-      this.todos.push(data);
+      if (error) {
+        console.error("Todo作成エラー:", error);
+        throw error;
+      }
+
+      console.log("作成されたTodo:", data);
+      this.todos.unshift(data);
     },
 
     async updateTodo(todo: Todo) {
       const client = useSupabaseClient();
+
+      const todoData = { ...todo };
+      if (todoData.taskId && !todoData.task_id) {
+        todoData.task_id = todoData.taskId;
+        delete todoData.taskId;
+      }
+
       const { error } = await client
         .from("todos")
-        .update(todo)
+        .update(todoData)
         .eq("id", todo.id);
 
       if (error) throw error;
+
       const index = this.todos.findIndex((t) => t.id === todo.id);
       if (index !== -1) {
-        this.todos[index] = todo;
+        this.todos[index] = { ...this.todos[index], ...todoData };
       }
     },
 

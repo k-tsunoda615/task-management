@@ -8,27 +8,39 @@
     </div>
 
     <div class="grid grid-cols-1 gap-4 md:grid-cols-3">
-      <!-- 未着手 -->
+      <!-- 未対応 -->
       <div class="rounded-lg bg-gray-100 p-4">
-        <h2 class="mb-3 font-semibold text-gray-700">未着手</h2>
+        <h2 class="mb-3 font-semibold text-gray-700">未対応</h2>
         <div class="space-y-2">
           <TodoCard
-            v-for="todo in todosByStatus.todo"
+            v-for="todo in todosByStatus['未対応']"
             :key="todo.id"
             :todo="todo"
           />
+          <div
+            v-if="todosByStatus['未対応'].length === 0"
+            class="text-gray-500 text-sm p-2"
+          >
+            タスクがありません
+          </div>
         </div>
       </div>
 
-      <!-- 進行中 -->
+      <!-- 対応中 -->
       <div class="rounded-lg bg-blue-50 p-4">
-        <h2 class="mb-3 font-semibold text-blue-700">進行中</h2>
+        <h2 class="mb-3 font-semibold text-blue-700">対応中</h2>
         <div class="space-y-2">
           <TodoCard
-            v-for="todo in todosByStatus.inProgress"
+            v-for="todo in todosByStatus['対応中']"
             :key="todo.id"
             :todo="todo"
           />
+          <div
+            v-if="todosByStatus['対応中'].length === 0"
+            class="text-gray-500 text-sm p-2"
+          >
+            タスクがありません
+          </div>
         </div>
       </div>
 
@@ -37,10 +49,16 @@
         <h2 class="mb-3 font-semibold text-green-700">完了</h2>
         <div class="space-y-2">
           <TodoCard
-            v-for="todo in todosByStatus.done"
+            v-for="todo in todosByStatus['完了']"
             :key="todo.id"
             :todo="todo"
           />
+          <div
+            v-if="todosByStatus['完了'].length === 0"
+            class="text-gray-500 text-sm p-2"
+          >
+            タスクがありません
+          </div>
         </div>
       </div>
     </div>
@@ -62,11 +80,14 @@
             <USelect
               v-model="newTodo.status"
               :options="[
-                { label: '未着手', value: 'todo' },
-                { label: '進行中', value: 'inProgress' },
-                { label: '完了', value: 'done' },
+                { label: '未対応', value: '未対応' },
+                { label: '対応中', value: '対応中' },
+                { label: '完了', value: '完了' },
               ]"
             />
+          </UFormGroup>
+          <UFormGroup label="プライベート">
+            <UCheckbox v-model="newTodo.is_private" label="個人タスク" />
           </UFormGroup>
         </form>
         <template #footer>
@@ -94,16 +115,18 @@ const isCreating = ref(false);
 const newTodo = ref({
   title: "",
   memo: "",
-  status: "todo",
-  taskId: "default", // デフォルトのタスクID
+  status: "未対応",
+  task_id: "", // データベースのカラム名に合わせる
+  is_private: false,
 });
 
 // ステータス別にTodoを分類
 const todosByStatus = computed(() => {
+  console.log("現在のTodos:", todoStore.todos);
   return {
-    todo: todoStore.todos.filter((t) => t.status === "todo"),
-    inProgress: todoStore.todos.filter((t) => t.status === "inProgress"),
-    done: todoStore.todos.filter((t) => t.status === "done"),
+    未対応: todoStore.todos.filter((t) => t.status === "未対応"),
+    対応中: todoStore.todos.filter((t) => t.status === "対応中"),
+    完了: todoStore.todos.filter((t) => t.status === "完了"),
   };
 });
 
@@ -117,15 +140,17 @@ const createTodo = async () => {
       title: newTodo.value.title,
       memo: newTodo.value.memo,
       status: newTodo.value.status,
-      taskId: newTodo.value.taskId,
+      task_id: newTodo.value.task_id,
+      is_private: newTodo.value.is_private,
     });
 
     showNewTaskModal.value = false;
     newTodo.value = {
       title: "",
       memo: "",
-      status: "todo",
-      taskId: "default",
+      status: "未対応",
+      task_id: "",
+      is_private: false,
     };
   } catch (error) {
     console.error("Todo作成エラー:", error);
