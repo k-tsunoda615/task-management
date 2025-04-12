@@ -40,8 +40,8 @@ export const useTodoStore = defineStore("todo", {
 
       if (tasksError) throw tasksError;
 
-      this.todos = todos;
-      this.tasks = tasks;
+      this.todos = todos || [];
+      this.tasks = tasks || [];
       this.isLoaded = true;
     },
 

@@ -1,175 +1,145 @@
 <template>
-  <div class="h-full">
+  <div>
     <div class="mb-4 flex items-center justify-between">
-      <h1 class="text-2xl font-bold">
-        {{ selectedProject?.title || 'すべてのタスク' }}
-      </h1>
-      <UButton
-        icon="i-heroicons-plus"
-        @click="showNewTodoModal = true"
-      >
-        新規Todo
+      <h1 class="text-2xl font-bold">カンバンボード</h1>
+      <UButton @click="showNewTaskModal = true" icon="i-heroicons-plus">
+        新しいタスク
       </UButton>
     </div>
 
-    <div class="flex gap-4 h-[calc(100vh-8rem)] overflow-x-auto">
-      <div
-        v-for="status in statuses"
-        :key="status"
-        class="w-80 flex-shrink-0"
-      >
-        <div class="bg-gray-100 rounded-lg p-4 h-full">
-          <h3 class="font-medium mb-4">{{ status }}</h3>
-          <draggable
-            v-model="todosByStatus[status]"
-            group="todos"
-            :animation="200"
-            class="space-y-2"
-            @change="handleDragChange"
-          >
-            <TodoCard
-              v-for="todo in todosByStatus[status]"
-              :key="todo.id"
-              :todo="todo"
-              @click="editTodo(todo)"
-            />
-          </draggable>
+    <div class="grid grid-cols-1 gap-4 md:grid-cols-3">
+      <!-- 未着手 -->
+      <div class="rounded-lg bg-gray-100 p-4">
+        <h2 class="mb-3 font-semibold text-gray-700">未着手</h2>
+        <div class="space-y-2">
+          <TodoCard
+            v-for="todo in todosByStatus.todo"
+            :key="todo.id"
+            :todo="todo"
+          />
+        </div>
+      </div>
+
+      <!-- 進行中 -->
+      <div class="rounded-lg bg-blue-50 p-4">
+        <h2 class="mb-3 font-semibold text-blue-700">進行中</h2>
+        <div class="space-y-2">
+          <TodoCard
+            v-for="todo in todosByStatus.inProgress"
+            :key="todo.id"
+            :todo="todo"
+          />
+        </div>
+      </div>
+
+      <!-- 完了 -->
+      <div class="rounded-lg bg-green-50 p-4">
+        <h2 class="mb-3 font-semibold text-green-700">完了</h2>
+        <div class="space-y-2">
+          <TodoCard
+            v-for="todo in todosByStatus.done"
+            :key="todo.id"
+            :todo="todo"
+          />
         </div>
       </div>
     </div>
 
-    <!-- Todo作成/編集モーダル -->
-    <UModal v-model="showNewTodoModal">
+    <!-- 新規タスクモーダル -->
+    <UModal v-model="showNewTaskModal">
       <UCard>
         <template #header>
-          <h3 class="text-base font-semibold">
-            {{ editingTodo ? 'Todoを編集' : '新規Todo' }}
-          </h3>
+          <h3 class="text-lg font-semibold">新しいタスク</h3>
         </template>
-        <form @submit.prevent="handleSubmit" class="space-y-4">
+        <form @submit.prevent="createTodo">
           <UFormGroup label="タイトル">
-            <UInput v-model="todoForm.title" required />
+            <UInput v-model="newTodo.title" required />
           </UFormGroup>
-
+          <UFormGroup label="メモ">
+            <UTextarea v-model="newTodo.memo" />
+          </UFormGroup>
           <UFormGroup label="ステータス">
             <USelect
-              v-model="todoForm.status"
-              :options="statuses"
-              required
+              v-model="newTodo.status"
+              :options="[
+                { label: '未着手', value: 'todo' },
+                { label: '進行中', value: 'inProgress' },
+                { label: '完了', value: 'done' },
+              ]"
             />
           </UFormGroup>
-
-          <UFormGroup label="タスク">
-            <USelect
-              v-model="todoForm.taskId"
-              :options="tasks"
-              option-attribute="title"
-              required
-            />
-          </UFormGroup>
-
-          <UFormGroup label="メモ">
-            <UTextarea v-model="todoForm.memo" />
-          </UFormGroup>
-
+        </form>
+        <template #footer>
           <div class="flex justify-end gap-2">
-            <UButton
-              variant="ghost"
-              @click="showNewTodoModal = false"
-            >
+            <UButton variant="ghost" @click="showNewTaskModal = false">
               キャンセル
             </UButton>
-            <UButton
-              type="submit"
-              :loading="saving"
-            >
-              {{ editingTodo ? '更新' : '作成' }}
+            <UButton color="primary" @click="createTodo" :loading="isCreating">
+              作成
             </UButton>
           </div>
-        </form>
+        </template>
       </UCard>
     </UModal>
   </div>
 </template>
 
 <script setup lang="ts">
-import { useProjectStore } from '~/stores/project'
-import { useTodoStore } from '~/stores/todo'
-import draggable from 'vuedraggable'
+import { useTodoStore } from "~/stores/todo";
 
-const projectStore = useProjectStore()
-const todoStore = useTodoStore()
+const todoStore = useTodoStore();
+const showNewTaskModal = ref(false);
+const isCreating = ref(false);
 
-const { selectedProject } = storeToRefs(projectStore)
-const { todos, tasks } = storeToRefs(todoStore)
+const newTodo = ref({
+  title: "",
+  memo: "",
+  status: "todo",
+  taskId: "default", // デフォルトのタスクID
+});
 
-const statuses = ['未対応', '対応中', '処理済み', '完了']
-const showNewTodoModal = ref(false)
-const saving = ref(false)
-const editingTodo = ref<Todo | null>(null)
-
-const todoForm = ref({
-  title: '',
-  status: '未対応',
-  taskId: '',
-  memo: ''
-})
-
+// ステータス別にTodoを分類
 const todosByStatus = computed(() => {
-  return statuses.reduce((acc, status) => {
-    acc[status] = todos.value.filter(todo => todo.status === status)
-    return acc
-  }, {} as Record<string, Todo[]>)
-})
+  return {
+    todo: todoStore.todos.filter((t) => t.status === "todo"),
+    inProgress: todoStore.todos.filter((t) => t.status === "inProgress"),
+    done: todoStore.todos.filter((t) => t.status === "done"),
+  };
+});
 
-const handleDragChange = async (evt: any) => {
-  if (!evt.added && !evt.moved) return
+// 新規Todo作成
+const createTodo = async () => {
+  if (!newTodo.value.title) return;
 
-  const todo = evt.added?.element || evt.moved?.element
-  if (!todo) return
-
-  const newStatus = evt.added?.newIndex !== undefined
-    ? statuses[evt.added.newIndex]
-    : todo.status
-
-  await todoStore.updateTodo({
-    ...todo,
-    status: newStatus
-  })
-}
-
-const editTodo = (todo: Todo) => {
-  editingTodo.value = todo
-  todoForm.value = { ...todo }
-  showNewTodoModal.value = true
-}
-
-const handleSubmit = async () => {
-  saving.value = true
+  isCreating.value = true;
   try {
-    if (editingTodo.value) {
-      await todoStore.updateTodo({
-        ...editingTodo.value,
-        ...todoForm.value
-      })
-    } else {
-      await todoStore.createTodo(todoForm.value)
-    }
-    showNewTodoModal.value = false
-    todoForm.value = {
-      title: '',
-      status: '未対応',
-      taskId: '',
-      memo: ''
-    }
+    await todoStore.createTodo({
+      title: newTodo.value.title,
+      memo: newTodo.value.memo,
+      status: newTodo.value.status,
+      taskId: newTodo.value.taskId,
+    });
+
+    showNewTaskModal.value = false;
+    newTodo.value = {
+      title: "",
+      memo: "",
+      status: "todo",
+      taskId: "default",
+    };
   } catch (error) {
-    useToast().add({
-      title: 'エラー',
-      description: '保存に失敗しました',
-      color: 'red'
-    })
+    console.error("Todo作成エラー:", error);
   } finally {
-    saving.value = false
+    isCreating.value = false;
   }
-}
+};
+
+// コンポーネントマウント時にTodoを取得
+onMounted(async () => {
+  try {
+    await todoStore.fetchTodos();
+  } catch (error) {
+    console.error("Todoの取得に失敗しました:", error);
+  }
+});
 </script>
