@@ -28,9 +28,18 @@
 <script setup lang="ts">
 const user = useSupabaseUser();
 const loading = ref(true);
+const isAuthenticated = ref(false);
 
 onMounted(() => {
   // クライアントサイドでのみ実行
-  loading.value = false;
+  const checkAuth = async () => {
+    const client = useSupabaseClient();
+    const { data } = await client.auth.getSession();
+    isAuthenticated.value = !!data.session;
+    loading.value = false;
+    console.log("認証状態:", isAuthenticated.value, data.session);
+  };
+
+  checkAuth();
 });
 </script>
