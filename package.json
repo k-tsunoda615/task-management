@@ -1,0 +1,40 @@
+{
+  "name": "task-management-app",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "nuxt build",
+    "dev": "nuxt dev",
+    "generate": "nuxt generate",
+    "preview": "nuxt preview",
+    "lint": "eslint .",
+    "postinstall": "nuxt prepare"
+  },
+  "dependencies": {
+    "@nuxt/ui": "^2.14.2",
+    "@nuxtjs/supabase": "^1.1.7",
+    "@pinia/nuxt": "^0.5.1",
+    "@vueuse/core": "^10.9.0",
+    "@vueuse/nuxt": "^10.9.0",
+    "nuxt": "^3.10.3",
+    "pinia": "^2.1.7",
+    "tailwindcss-animate": "^1.0.7",
+    "vue": "^3.4.21",
+    "vue-router": "^4.3.0",
+    "vuedraggable": "^4.1.0"
+  },
+  "devDependencies": {
+    "@nuxtjs/eslint-config-typescript": "^12.1.0",
+    "@nuxtjs/tailwindcss": "^6.11.4",
+    "@typescript-eslint/parser": "^7.3.1",
+    "eslint": "^8.57.0",
+    "eslint-config-prettier": "^9.1.0",
+    "eslint-plugin-prettier": "^5.1.3",
+    "prettier": "^3.2.5",
+    "typescript": "^5.4.2"
+  },
+  "packageManager": "yarn@1.22.19",
+  "installConfig": {
+    "pnp": false
+  }
+}
