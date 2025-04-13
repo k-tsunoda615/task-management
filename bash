@@ -1,0 +1,1 @@
+yarn add -D eslint-plugin-nuxt @nuxtjs/eslint-config-typescript 

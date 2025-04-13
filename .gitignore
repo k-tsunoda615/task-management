@@ -42,3 +42,10 @@ dist-ssr
 
 # bolt
 .bolt
+
+# Nuxt 3特有の無視ファイル
+.nuxt
+.output
+.nitro
+.cache
+dist
