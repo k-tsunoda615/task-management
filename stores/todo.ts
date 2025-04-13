@@ -135,12 +135,17 @@ export const useTodoStore = defineStore("todo", {
         delete todoData.taskId;
       }
 
+      console.log("更新するTodo:", todoData);
+
       const { error } = await client
         .from("todos")
         .update(todoData)
         .eq("id", todo.id);
 
-      if (error) throw error;
+      if (error) {
+        console.error("Todo更新エラー:", error);
+        throw error;
+      }
 
       const index = this.todos.findIndex((t) => t.id === todo.id);
       if (index !== -1) {

@@ -10,7 +10,14 @@
           <UBadge color="gray" size="xs">個人タスク</UBadge>
         </div>
       </div>
-      <div class="flex">
+      <div class="flex space-x-1">
+        <UButton
+          color="gray"
+          variant="ghost"
+          icon="i-heroicons-pencil-square"
+          size="xs"
+          @click="editTodo"
+        />
         <UButton
           color="red"
           variant="ghost"
@@ -33,7 +40,13 @@ const props = defineProps({
   },
 });
 
+const emit = defineEmits(["edit"]);
+
 const todoStore = useTodoStore();
+
+const editTodo = () => {
+  emit("edit", props.todo);
+};
 
 const deleteTodo = async () => {
   if (confirm("このタスクを削除しますか？")) {

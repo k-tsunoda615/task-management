@@ -49,6 +49,7 @@
             v-for="todo in todosByStatus.todo"
             :key="todo.id"
             :todo="todo"
+            @edit="openEditModal"
           />
           <div
             v-if="todosByStatus.todo.length === 0"
@@ -67,6 +68,7 @@
             v-for="todo in todosByStatus.inProgress"
             :key="todo.id"
             :todo="todo"
+            @edit="openEditModal"
           />
           <div
             v-if="todosByStatus.inProgress.length === 0"
@@ -85,6 +87,7 @@
             v-for="todo in todosByStatus.done"
             :key="todo.id"
             :todo="todo"
+            @edit="openEditModal"
           />
           <div
             v-if="todosByStatus.done.length === 0"
@@ -135,6 +138,46 @@
         </template>
       </UCard>
     </UModal>
+
+    <!-- 編集タスクモーダル -->
+    <UModal v-model="showEditModal">
+      <UCard>
+        <template #header>
+          <h3 class="text-lg font-semibold">タスクを編集</h3>
+        </template>
+        <form @submit.prevent="updateTodo">
+          <UFormGroup label="タイトル">
+            <UInput v-model="editingTodo.title" required />
+          </UFormGroup>
+          <UFormGroup label="メモ">
+            <UTextarea v-model="editingTodo.memo" />
+          </UFormGroup>
+          <UFormGroup label="ステータス">
+            <USelect
+              v-model="editingTodo.status"
+              :options="[
+                { label: '未対応', value: '未対応' },
+                { label: '対応中', value: '対応中' },
+                { label: '完了', value: '完了' },
+              ]"
+            />
+          </UFormGroup>
+          <UFormGroup label="プライベート">
+            <UCheckbox v-model="editingTodo.is_private" label="個人タスク" />
+          </UFormGroup>
+        </form>
+        <template #footer>
+          <div class="flex justify-end gap-2">
+            <UButton variant="ghost" @click="showEditModal = false">
+              キャンセル
+            </UButton>
+            <UButton color="primary" @click="updateTodo" :loading="isUpdating">
+              更新
+            </UButton>
+          </div>
+        </template>
+      </UCard>
+    </UModal>
   </div>
 </template>
 
@@ -143,13 +186,24 @@ import { useTodoStore } from "~/stores/todo";
 
 const todoStore = useTodoStore();
 const showNewTaskModal = ref(false);
+const showEditModal = ref(false);
 const isCreating = ref(false);
+const isUpdating = ref(false);
 
 const newTodo = ref({
   title: "",
   memo: "",
   status: "未対応",
-  task_id: "", // データベースのカラム名に合わせる
+  task_id: "",
+  is_private: false,
+});
+
+const editingTodo = ref({
+  id: "",
+  title: "",
+  memo: "",
+  status: "未対応",
+  task_id: "",
   is_private: false,
 });
 
@@ -209,6 +263,12 @@ const todosByStatus = computed(() => {
   return result;
 });
 
+// 編集モーダルを開く
+const openEditModal = (todo) => {
+  editingTodo.value = { ...todo };
+  showEditModal.value = true;
+};
+
 // 新規Todo作成
 const createTodo = async () => {
   if (!newTodo.value.title) return;
@@ -235,6 +295,33 @@ const createTodo = async () => {
     console.error("Todo作成エラー:", error);
   } finally {
     isCreating.value = false;
+  }
+};
+
+// Todo更新
+const updateTodo = async () => {
+  if (!editingTodo.value.title) return;
+
+  isUpdating.value = true;
+  try {
+    await todoStore.updateTodo(editingTodo.value);
+    showEditModal.value = false;
+    // 成功メッセージを表示
+    useToast().add({
+      title: "更新完了",
+      description: "タスクを更新しました",
+      color: "green",
+    });
+  } catch (error) {
+    console.error("Todo更新エラー:", error);
+    // エラーメッセージを表示
+    useToast().add({
+      title: "エラー",
+      description: "更新に失敗しました",
+      color: "red",
+    });
+  } finally {
+    isUpdating.value = false;
   }
 };
 
