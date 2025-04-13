@@ -7,39 +7,6 @@
       </UButton>
     </div>
 
-    <!-- デバッグ用：全てのTodoを表示 -->
-    <div class="mb-6 p-4 bg-gray-50 rounded-lg">
-      <h2 class="text-lg font-semibold mb-3">全てのタスク (デバッグ用)</h2>
-      <div v-if="todoStore.todos.length === 0" class="text-gray-500">
-        タスクがありません
-      </div>
-      <div v-else class="space-y-2">
-        <div
-          v-for="todo in todoStore.todos"
-          :key="todo.id"
-          class="bg-white p-3 rounded shadow"
-        >
-          <div class="flex justify-between">
-            <div>
-              <span class="font-medium">{{ todo.title }}</span>
-              <span class="ml-2 text-sm text-gray-600"
-                >(ステータス: "{{ todo.status }}")</span
-              >
-            </div>
-            <UBadge v-if="todo.is_private" color="gray" size="sm"
-              >個人タスク</UBadge
-            >
-          </div>
-          <p v-if="todo.memo" class="mt-1 text-sm text-gray-600">
-            {{ todo.memo }}
-          </p>
-          <div class="mt-1 text-xs text-gray-500">
-            ID: {{ todo.id }} | 更新: {{ formatDate(todo.updated_at) }}
-          </div>
-        </div>
-      </div>
-    </div>
-
     <div class="grid grid-cols-1 gap-4 md:grid-cols-3">
       <!-- 未対応 -->
       <div class="rounded-lg bg-gray-100 p-4">
@@ -94,6 +61,39 @@
             class="text-gray-500 text-sm p-2"
           >
             タスクがありません
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- デバッグ用：全てのTodoを表示 -->
+    <div class="mb-6 p-4 bg-gray-50 rounded-lg">
+      <h2 class="text-lg font-semibold mb-3">全てのタスク (デバッグ用)</h2>
+      <div v-if="todoStore.todos.length === 0" class="text-gray-500">
+        タスクがありません
+      </div>
+      <div v-else class="space-y-2">
+        <div
+          v-for="todo in todoStore.todos"
+          :key="todo.id"
+          class="bg-white p-3 rounded shadow"
+        >
+          <div class="flex justify-between">
+            <div>
+              <span class="font-medium">{{ todo.title }}</span>
+              <span class="ml-2 text-sm text-gray-600"
+                >(ステータス: "{{ todo.status }}")</span
+              >
+            </div>
+            <UBadge v-if="todo.is_private" color="gray" size="sm"
+              >個人タスク</UBadge
+            >
+          </div>
+          <p v-if="todo.memo" class="mt-1 text-sm text-gray-600">
+            {{ todo.memo }}
+          </p>
+          <div class="mt-1 text-xs text-gray-500">
+            ID: {{ todo.id }} | 更新: {{ formatDate(todo.updated_at) }}
           </div>
         </div>
       </div>
