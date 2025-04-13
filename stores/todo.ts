@@ -1,6 +1,6 @@
 import { defineStore } from "pinia";
 
-interface Todo {
+type Todo = {
   id: string;
   title: string;
   status: string;
@@ -11,13 +11,13 @@ interface Todo {
   is_private?: boolean;
   user_id?: string;
   updated_at?: string;
-}
+};
 
-interface Task {
+type Task = {
   id: string;
   title: string;
   projectId?: string;
-}
+};
 
 export const useTodoStore = defineStore("todo", {
   state: () => ({
