@@ -11,57 +11,75 @@
       <!-- 未対応 -->
       <div class="rounded-lg bg-gray-100 p-4">
         <h2 class="mb-3 font-semibold text-gray-700">未対応</h2>
-        <div class="space-y-2">
-          <TodoCard
-            v-for="todo in todosByStatus.todo"
-            :key="todo.id"
-            :todo="todo"
-            @edit="openEditModal"
-          />
-          <div
-            v-if="todosByStatus.todo.length === 0"
-            class="text-gray-500 text-sm p-2"
-          >
-            タスクがありません
-          </div>
+        <Draggable
+          v-model="todosByStatus.todo"
+          :group="{ name: 'todos' }"
+          item-key="id"
+          class="space-y-2"
+          data-status="todo"
+          :animation="200"
+          ghost-class="opacity-50"
+          @change="handleDragChange"
+        >
+          <template #item="{ element }">
+            <TodoCard :todo="element" @edit="openEditModal" />
+          </template>
+        </Draggable>
+        <div
+          v-if="todosByStatus.todo.length === 0"
+          class="text-gray-500 text-sm p-2"
+        >
+          タスクがありません
         </div>
       </div>
 
       <!-- 対応中 -->
       <div class="rounded-lg bg-blue-50 p-4">
         <h2 class="mb-3 font-semibold text-blue-700">対応中</h2>
-        <div class="space-y-2">
-          <TodoCard
-            v-for="todo in todosByStatus.inProgress"
-            :key="todo.id"
-            :todo="todo"
-            @edit="openEditModal"
-          />
-          <div
-            v-if="todosByStatus.inProgress.length === 0"
-            class="text-gray-500 text-sm p-2"
-          >
-            タスクがありません
-          </div>
+        <Draggable
+          v-model="todosByStatus.inProgress"
+          :group="{ name: 'todos' }"
+          item-key="id"
+          class="space-y-2"
+          data-status="inProgress"
+          :animation="200"
+          ghost-class="opacity-50"
+          @change="handleDragChange"
+        >
+          <template #item="{ element }">
+            <TodoCard :todo="element" @edit="openEditModal" />
+          </template>
+        </Draggable>
+        <div
+          v-if="todosByStatus.inProgress.length === 0"
+          class="text-gray-500 text-sm p-2"
+        >
+          タスクがありません
         </div>
       </div>
 
       <!-- 完了 -->
       <div class="rounded-lg bg-green-50 p-4">
         <h2 class="mb-3 font-semibold text-green-700">完了</h2>
-        <div class="space-y-2">
-          <TodoCard
-            v-for="todo in todosByStatus.done"
-            :key="todo.id"
-            :todo="todo"
-            @edit="openEditModal"
-          />
-          <div
-            v-if="todosByStatus.done.length === 0"
-            class="text-gray-500 text-sm p-2"
-          >
-            タスクがありません
-          </div>
+        <Draggable
+          v-model="todosByStatus.done"
+          :group="{ name: 'todos' }"
+          item-key="id"
+          class="space-y-2"
+          data-status="done"
+          :animation="200"
+          ghost-class="opacity-50"
+          @change="handleDragChange"
+        >
+          <template #item="{ element }">
+            <TodoCard :todo="element" @edit="openEditModal" />
+          </template>
+        </Draggable>
+        <div
+          v-if="todosByStatus.done.length === 0"
+          class="text-gray-500 text-sm p-2"
+        >
+          タスクがありません
         </div>
       </div>
     </div>
@@ -183,6 +201,7 @@
 
 <script setup lang="ts">
 import { useTodoStore } from "~/stores/todo";
+import draggable from "vuedraggable";
 
 const todoStore = useTodoStore();
 const showNewTaskModal = ref(false);
@@ -206,6 +225,9 @@ const editingTodo = ref({
   task_id: "",
   is_private: false,
 });
+
+// Draggableコンポーネントの登録
+const Draggable = draggable;
 
 // 日付フォーマット関数
 const formatDate = (dateString) => {
@@ -322,6 +344,46 @@ const updateTodo = async () => {
     });
   } finally {
     isUpdating.value = false;
+  }
+};
+
+// ドラッグ&ドロップ時の処理
+const handleDragChange = async (evt) => {
+  // 移動されたTodoのステータスを更新
+  if (evt.added || evt.moved) {
+    const todo = evt.added ? evt.added.element : evt.moved.element;
+    const targetList = evt.to.getAttribute("data-status");
+
+    // ステータスマッピング
+    const statusMapping = {
+      todo: "未対応",
+      inProgress: "対応中",
+      done: "完了",
+    };
+
+    const newStatus = statusMapping[targetList] || "未対応";
+
+    try {
+      await todoStore.updateTodo({
+        ...todo,
+        status: newStatus,
+      });
+      // 成功メッセージは最初の更新時のみ表示
+      if (evt.added) {
+        useToast().add({
+          title: "更新完了",
+          description: "タスクを移動しました",
+          color: "green",
+        });
+      }
+    } catch (error) {
+      console.error("Todo更新エラー:", error);
+      useToast().add({
+        title: "エラー",
+        description: "タスクの移動に失敗しました",
+        color: "red",
+      });
+    }
   }
 };
 

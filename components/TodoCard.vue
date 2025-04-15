@@ -1,5 +1,5 @@
 <template>
-  <div class="rounded bg-white p-3 shadow">
+  <div class="rounded bg-white p-3 shadow cursor-move">
     <div class="flex items-start justify-between">
       <div>
         <h3 class="font-medium">{{ todo.title }}</h3>

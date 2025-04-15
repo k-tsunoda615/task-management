@@ -135,6 +135,9 @@ export const useTodoStore = defineStore("todo", {
         delete todoData.taskId;
       }
 
+      // 更新日時を設定
+      todoData.updated_at = new Date().toISOString();
+
       console.log("更新するTodo:", todoData);
 
       const { error } = await client
