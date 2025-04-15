@@ -138,12 +138,19 @@ export const useTodoStore = defineStore("todo", {
       // 更新日時を設定
       todoData.updated_at = new Date().toISOString();
 
-      console.log("更新するTodo:", todoData);
+      console.log("更新するTodo:", {
+        id: todoData.id,
+        status: todoData.status,
+        updated_at: todoData.updated_at,
+      });
 
-      const { error } = await client
+      const { error, data } = await client
         .from("todos")
         .update(todoData)
-        .eq("id", todo.id);
+        .eq("id", todo.id)
+        .select();
+
+      console.log("更新結果:", { error, data });
 
       if (error) {
         console.error("Todo更新エラー:", error);

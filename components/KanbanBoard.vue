@@ -256,33 +256,65 @@ const reverseStatusMap = {
   done: "完了",
 };
 
-// ステータス別にTodoを分類
-const todosByStatus = computed(() => {
+// ステータス別のTodoを管理するreactiveな状態
+const todosByStatus = reactive({
+  todo: [] as Todo[],
+  inProgress: [] as Todo[],
+  done: [] as Todo[],
+});
+
+// Todoの状態が変更されたときに再分類する
+const updateTodosByStatus = () => {
   console.log("現在のTodos:", todoStore.todos);
 
-  // ステータスごとのTodoを格納するオブジェクト（英語キー）
-  const result = {
-    todo: [],
-    inProgress: [],
-    done: [],
-  };
+  // 一旦クリア
+  todosByStatus.todo = [];
+  todosByStatus.inProgress = [];
+  todosByStatus.done = [];
 
-  // 各Todoをステータスに応じて振り分け
+  // 再分類
   todoStore.todos.forEach((todo) => {
     if (todo.status === "未対応") {
-      result.todo.push(todo);
+      todosByStatus.todo.push(todo);
     } else if (todo.status === "対応中") {
-      result.inProgress.push(todo);
+      todosByStatus.inProgress.push(todo);
     } else if (todo.status === "完了") {
-      result.done.push(todo);
+      todosByStatus.done.push(todo);
     } else {
       // デフォルトは未対応に入れる
       console.log(`不明なステータス "${todo.status}" のTodoがあります:`, todo);
-      result.todo.push(todo);
+      todosByStatus.todo.push(todo);
     }
   });
+};
 
-  return result;
+// todoStoreのtodosが変更されたときに再分類を実行
+watch(
+  () => todoStore.todos,
+  () => {
+    updateTodosByStatus();
+  },
+  { deep: true }
+);
+
+// 初期分類
+onMounted(() => {
+  // 初期データの取得
+  const fetchInitialData = async () => {
+    try {
+      await todoStore.fetchTodos();
+    } catch (error) {
+      console.error("Todoの取得に失敗しました:", error);
+      useToast().add({
+        title: "エラー",
+        description: "タスクの取得に失敗しました",
+        color: "red",
+      });
+    }
+  };
+
+  fetchInitialData();
+  updateTodosByStatus();
 });
 
 // 編集モーダルを開く
@@ -366,8 +398,11 @@ const handleDragChange = async (evt) => {
     try {
       await todoStore.updateTodo({
         ...todo,
+        id: todo.id,
         status: newStatus,
       });
+      // 状態を即時反映
+      updateTodosByStatus();
       // 成功メッセージは最初の更新時のみ表示
       if (evt.added) {
         useToast().add({
@@ -383,16 +418,9 @@ const handleDragChange = async (evt) => {
         description: "タスクの移動に失敗しました",
         color: "red",
       });
+      // エラー時は状態を再同期
+      updateTodosByStatus();
     }
   }
 };
-
-// コンポーネントマウント時にTodoを取得
-onMounted(async () => {
-  try {
-    await todoStore.fetchTodos();
-  } catch (error) {
-    console.error("Todoの取得に失敗しました:", error);
-  }
-});
 </script>
