@@ -11,7 +11,7 @@
       <!-- 未対応 -->
       <div class="rounded-lg bg-gray-100 p-4">
         <h2 class="mb-3 font-semibold text-gray-700">未対応</h2>
-        <Draggable
+        <draggable
           v-model="todosByStatus.todo"
           :group="{ name: 'todos' }"
           item-key="id"
@@ -24,7 +24,7 @@
           <template #item="{ element }">
             <TodoCard :todo="element" @edit="openEditModal" />
           </template>
-        </Draggable>
+        </draggable>
         <div
           v-if="todosByStatus.todo.length === 0"
           class="text-gray-500 text-sm p-2"
@@ -36,7 +36,7 @@
       <!-- 対応中 -->
       <div class="rounded-lg bg-blue-50 p-4">
         <h2 class="mb-3 font-semibold text-blue-700">対応中</h2>
-        <Draggable
+        <draggable
           v-model="todosByStatus.inProgress"
           :group="{ name: 'todos' }"
           item-key="id"
@@ -49,7 +49,7 @@
           <template #item="{ element }">
             <TodoCard :todo="element" @edit="openEditModal" />
           </template>
-        </Draggable>
+        </draggable>
         <div
           v-if="todosByStatus.inProgress.length === 0"
           class="text-gray-500 text-sm p-2"
@@ -61,7 +61,7 @@
       <!-- 完了 -->
       <div class="rounded-lg bg-green-50 p-4">
         <h2 class="mb-3 font-semibold text-green-700">完了</h2>
-        <Draggable
+        <draggable
           v-model="todosByStatus.done"
           :group="{ name: 'todos' }"
           item-key="id"
@@ -74,7 +74,7 @@
           <template #item="{ element }">
             <TodoCard :todo="element" @edit="openEditModal" />
           </template>
-        </Draggable>
+        </draggable>
         <div
           v-if="todosByStatus.done.length === 0"
           class="text-gray-500 text-sm p-2"
@@ -225,9 +225,6 @@ const editingTodo = ref({
   task_id: "",
   is_private: false,
 });
-
-// Draggableコンポーネントの登録
-const Draggable = draggable;
 
 // 日付フォーマット関数
 const formatDate = (dateString) => {
@@ -381,46 +378,90 @@ const updateTodo = async () => {
 
 // ドラッグ&ドロップ時の処理
 const handleDragChange = async (evt) => {
-  // 移動されたTodoのステータスを更新
-  if (evt.added || evt.moved) {
-    const todo = evt.added ? evt.added.element : evt.moved.element;
-    const targetList = evt.to.getAttribute("data-status");
+  console.log("ドラッグイベント:", evt); // デバッグ用
 
-    // ステータスマッピング
-    const statusMapping = {
-      todo: "未対応",
-      inProgress: "対応中",
-      done: "完了",
-    };
+  // ドラッグ&ドロップの種類を特定
+  const dragType = evt.added ? "added" : evt.moved ? "moved" : null;
+  if (!dragType) return;
 
-    const newStatus = statusMapping[targetList] || "未対応";
+  const todo = evt[dragType].element;
 
-    try {
-      await todoStore.updateTodo({
-        ...todo,
-        id: todo.id,
-        status: newStatus,
-      });
-      // 状態を即時反映
-      updateTodosByStatus();
-      // 成功メッセージは最初の更新時のみ表示
-      if (evt.added) {
-        useToast().add({
-          title: "更新完了",
-          description: "タスクを移動しました",
-          color: "green",
-        });
-      }
-    } catch (error) {
-      console.error("Todo更新エラー:", error);
-      useToast().add({
-        title: "エラー",
-        description: "タスクの移動に失敗しました",
-        color: "red",
-      });
-      // エラー時は状態を再同期
-      updateTodosByStatus();
+  // 移動先のリストを特定
+  let newStatus = "todo"; // デフォルト値
+
+  if (evt.added) {
+    // 追加された場合は、追加先のインデックスから判断
+    if (todosByStatus.inProgress.find((t) => t.id === todo.id)) {
+      newStatus = "inProgress";
+    } else if (todosByStatus.done.find((t) => t.id === todo.id)) {
+      newStatus = "done";
     }
+  } else if (evt.moved) {
+    // 移動の場合は、移動先のリストから判断
+    if (todosByStatus.inProgress.find((t) => t.id === todo.id)) {
+      newStatus = "inProgress";
+    } else if (todosByStatus.done.find((t) => t.id === todo.id)) {
+      newStatus = "done";
+    }
+  }
+
+  if (!todo || !newStatus) {
+    console.error("必要な情報が見つかりません", { todo, newStatus, evt });
+    return;
+  }
+
+  // ステータスマッピング
+  const statusMapping = {
+    todo: "未対応",
+    inProgress: "対応中",
+    done: "完了",
+  };
+
+  const mappedStatus = statusMapping[newStatus];
+  if (!mappedStatus) {
+    console.error("不正なステータス:", newStatus);
+    return;
+  }
+
+  console.log("ステータス更新前:", {
+    currentStatus: todo.status,
+    newStatus: mappedStatus,
+    todo,
+  });
+
+  try {
+    await todoStore.updateTodo({
+      id: todo.id,
+      title: todo.title,
+      memo: todo.memo,
+      task_id: todo.task_id,
+      is_private: todo.is_private,
+      status: mappedStatus,
+    });
+
+    console.log("ステータス更新後:", {
+      status: todoStore.todos.find((t) => t.id === todo.id)?.status,
+    });
+
+    // 状態を即時反映
+    updateTodosByStatus();
+
+    if (evt.added) {
+      useToast().add({
+        title: "更新完了",
+        description: "タスクを移動しました",
+        color: "green",
+      });
+    }
+  } catch (error) {
+    console.error("Todo更新エラー:", error);
+    useToast().add({
+      title: "エラー",
+      description: "タスクの移動に失敗しました",
+      color: "red",
+    });
+    // エラー時は状態を再同期
+    updateTodosByStatus();
   }
 };
 </script>

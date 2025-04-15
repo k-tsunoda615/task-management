@@ -31,7 +31,7 @@ export const useTodoStore = defineStore("todo", {
       this.isLoaded = false;
 
       const client = useSupabaseClient();
-      console.log("Todoを取得中...");
+      console.log("Todoの取得を開始...");
 
       try {
         const { data: todos, error: todosError } = await client
@@ -53,7 +53,7 @@ export const useTodoStore = defineStore("todo", {
           throw tasksError;
         }
 
-        console.log("取得したTodos:", todos);
+        console.log("取得したTodos（生データ）:", todos);
         console.log("取得したTasks:", tasks);
 
         // ステータスの標準化（大文字小文字や空白の違いを吸収）
@@ -129,14 +129,17 @@ export const useTodoStore = defineStore("todo", {
     async updateTodo(todo: Todo) {
       const client = useSupabaseClient();
 
-      const todoData = { ...todo };
-      if (todoData.taskId && !todoData.task_id) {
-        todoData.task_id = todoData.taskId;
-        delete todoData.taskId;
-      }
-
-      // 更新日時を設定
-      todoData.updated_at = new Date().toISOString();
+      // 更新に必要な最小限のデータだけを抽出
+      const todoData = {
+        id: todo.id,
+        status: todo.status,
+        updated_at: new Date().toISOString(),
+        // 他の必要なフィールドがあれば追加
+        title: todo.title,
+        memo: todo.memo,
+        task_id: todo.task_id,
+        is_private: todo.is_private,
+      };
 
       console.log("更新するTodo:", {
         id: todoData.id,
@@ -157,9 +160,12 @@ export const useTodoStore = defineStore("todo", {
         throw error;
       }
 
-      const index = this.todos.findIndex((t) => t.id === todo.id);
-      if (index !== -1) {
-        this.todos[index] = { ...this.todos[index], ...todoData };
+      // データベースから返された最新のデータで状態を更新
+      if (data && data[0]) {
+        const index = this.todos.findIndex((t) => t.id === todo.id);
+        if (index !== -1) {
+          this.todos[index] = data[0];
+        }
       }
     },
 
