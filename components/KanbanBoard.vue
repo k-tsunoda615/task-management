@@ -168,7 +168,17 @@
             <UInput v-model="editingTodo.title" required />
           </UFormGroup>
           <UFormGroup label="メモ">
-            <UTextarea v-model="editingTodo.memo" />
+            <div class="space-y-2">
+              <UTextarea v-model="editingTodo.memo" />
+              <UButton
+                size="sm"
+                variant="ghost"
+                @click="showPreviewModal = true"
+                icon="i-heroicons-eye"
+              >
+                プレビュー
+              </UButton>
+            </div>
           </UFormGroup>
           <UFormGroup label="ステータス">
             <USelect
@@ -194,6 +204,30 @@
             </UButton>
           </div>
         </template>
+
+        <!-- プレビューモーダル -->
+        <UModal
+          v-if="showPreviewModal"
+          v-model="showPreviewModal"
+          :ui="{
+            wrapper: 'z-[60]', // 編集モーダルより上に表示
+            overlay: { base: 'bg-gray-950/75' },
+          }"
+        >
+          <UCard>
+            <template #header>
+              <h3 class="text-lg font-semibold">プレビュー</h3>
+            </template>
+            <div class="prose prose-sm max-w-none" v-html="parsedPreviewMemo" />
+            <template #footer>
+              <div class="flex justify-end">
+                <UButton variant="ghost" @click="showPreviewModal = false">
+                  閉じる
+                </UButton>
+              </div>
+            </template>
+          </UCard>
+        </UModal>
       </UCard>
     </UModal>
   </div>
@@ -202,10 +236,12 @@
 <script setup lang="ts">
 import { useTodoStore } from "~/stores/todo";
 import draggable from "vuedraggable";
+import { marked } from "marked";
 
 const todoStore = useTodoStore();
 const showNewTaskModal = ref(false);
 const showEditModal = ref(false);
+const showPreviewModal = ref(false);
 const isCreating = ref(false);
 const isUpdating = ref(false);
 
@@ -224,6 +260,11 @@ const editingTodo = ref({
   status: "未対応",
   task_id: "",
   is_private: false,
+});
+
+// プレビュー用のマークダウンパース
+const parsedPreviewMemo = computed(() => {
+  return marked(editingTodo.value.memo || "");
 });
 
 // 日付フォーマット関数

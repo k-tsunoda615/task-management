@@ -6845,6 +6845,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"marked@npm:^15.0.8":
+  version: 15.0.8
+  resolution: "marked@npm:15.0.8"
+  bin:
+    marked: bin/marked.js
+  checksum: 10c0/79c4958047e1d7405eea3a21d56aa9adf1e579f603711472458b269db02764b1b6cb4acd8d7ecfe368126763af491ebf1283918676c47c397a45d24dac6f7ca4
+  languageName: node
+  linkType: hard
+
 "math-intrinsics@npm:^1.1.0":
   version: 1.1.0
   resolution: "math-intrinsics@npm:1.1.0"
@@ -9851,12 +9860,14 @@ __metadata:
     "@nuxtjs/supabase": "npm:^1.1.7"
     "@nuxtjs/tailwindcss": "npm:^6.11.4"
     "@pinia/nuxt": "npm:^0.5.1"
+    "@tailwindcss/typography": "npm:^0.5.16"
     "@typescript-eslint/parser": "npm:^7.3.1"
     "@vueuse/core": "npm:^10.9.0"
     "@vueuse/nuxt": "npm:^10.9.0"
     eslint: "npm:^8.57.0"
     eslint-config-prettier: "npm:^9.1.0"
     eslint-plugin-prettier: "npm:^5.1.3"
+    marked: "npm:^15.0.8"
     nuxt: "npm:^3.10.3"
     pinia: "npm:^2.1.7"
     prettier: "npm:^3.2.5"
