@@ -24,7 +24,18 @@ export const useTodoStore = defineStore("todo", {
     todos: [] as Todo[],
     tasks: [] as Task[],
     isLoaded: false,
+    showPrivateTasks: true, // 個人タスクの表示状態
   }),
+
+  getters: {
+    // 表示状態に応じてフィルタリングされたTodos
+    filteredTodos(): Todo[] {
+      if (this.showPrivateTasks) {
+        return this.todos;
+      }
+      return this.todos.filter((todo) => !todo.is_private);
+    },
+  },
 
   actions: {
     async fetchTodos() {
@@ -175,6 +186,11 @@ export const useTodoStore = defineStore("todo", {
 
       if (error) throw error;
       this.todos = this.todos.filter((t) => t.id !== id);
+    },
+
+    // 個人タスクの表示状態を切り替え
+    togglePrivateTasks() {
+      this.showPrivateTasks = !this.showPrivateTasks;
     },
   },
 });

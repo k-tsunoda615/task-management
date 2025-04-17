@@ -2,6 +2,20 @@
   <div class="w-64 bg-white p-4 shadow">
     <div class="mb-6">
       <h2 class="mb-2 text-lg font-semibold">タスク管理</h2>
+      <div class="mb-4">
+        <UButton
+          block
+          :color="todoStore.showPrivateTasks ? 'primary' : 'gray'"
+          :variant="todoStore.showPrivateTasks ? 'soft' : 'ghost'"
+          @click="todoStore.togglePrivateTasks"
+          :icon="
+            todoStore.showPrivateTasks
+              ? 'i-heroicons-eye'
+              : 'i-heroicons-eye-slash'
+          "
+        >
+        </UButton>
+      </div>
       <UButton
         variant="ghost"
         block
@@ -36,10 +50,12 @@
 
 <script setup lang="ts">
 import { useProjectStore } from "~/stores/project";
+import { useTodoStore } from "~/stores/todo";
 
 const client = useSupabaseClient();
 const router = useRouter();
 const projectStore = useProjectStore();
+const todoStore = useTodoStore();
 
 const logout = async () => {
   await client.auth.signOut();

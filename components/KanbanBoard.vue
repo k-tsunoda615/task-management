@@ -262,7 +262,7 @@ const todosByStatus = reactive({
 
 // Todoの状態が変更されたときに再分類する
 const updateTodosByStatus = () => {
-  console.log("現在のTodos:", todoStore.todos);
+  console.log("現在のTodos:", todoStore.filteredTodos);
 
   // 一旦クリア
   todosByStatus.todo = [];
@@ -270,7 +270,7 @@ const updateTodosByStatus = () => {
   todosByStatus.done = [];
 
   // 再分類
-  todoStore.todos.forEach((todo) => {
+  todoStore.filteredTodos.forEach((todo) => {
     if (todo.status === "未対応") {
       todosByStatus.todo.push(todo);
     } else if (todo.status === "対応中") {
@@ -287,7 +287,7 @@ const updateTodosByStatus = () => {
 
 // todoStoreのtodosが変更されたときに再分類を実行
 watch(
-  () => todoStore.todos,
+  () => [todoStore.filteredTodos, todoStore.showPrivateTasks],
   () => {
     updateTodosByStatus();
   },
