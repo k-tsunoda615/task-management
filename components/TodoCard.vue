@@ -1,5 +1,13 @@
 <template>
-  <div class="bg-white rounded-lg shadow p-4">
+  <div class="bg-white rounded-lg shadow p-4 relative">
+    <!-- プライベートインジケーター -->
+    <div
+      v-if="todo.is_private"
+      class="absolute bottom-0 right-2 text-green-500"
+      title="プライベート"
+    >
+      <UIcon name="i-heroicons-lock-closed" class="w-4 h-4" />
+    </div>
     <div class="flex justify-between items-start">
       <div class="flex-1">
         <h3 class="font-medium">{{ todo.title }}</h3>
@@ -9,10 +17,7 @@
           v-html="parsedMemo"
         />
       </div>
-      <div class="flex items-center">
-        <UBadge v-if="todo.is_private" color="gray" size="sm" class="mr-2">
-          個人タスク
-        </UBadge>
+      <div class="flex items-center ml-4">
         <UButton
           color="gray"
           variant="ghost"

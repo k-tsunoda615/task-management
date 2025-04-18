@@ -124,13 +124,13 @@
           <h3 class="text-lg font-semibold">新しいタスク</h3>
         </template>
         <form @submit.prevent="createTodo">
-          <UFormGroup label="タイトル">
+          <UFormGroup label="タイトル" class="mt-4">
             <UInput v-model="newTodo.title" required />
           </UFormGroup>
-          <UFormGroup label="メモ">
+          <UFormGroup label="メモ" class="mt-4">
             <UTextarea v-model="newTodo.memo" />
           </UFormGroup>
-          <UFormGroup label="ステータス">
+          <UFormGroup label="ステータス" class="mt-4">
             <USelect
               v-model="newTodo.status"
               :options="[
@@ -140,8 +140,8 @@
               ]"
             />
           </UFormGroup>
-          <UFormGroup label="プライベート">
-            <UCheckbox v-model="newTodo.is_private" label="個人タスク" />
+          <UFormGroup class="mt-4">
+            <UCheckbox v-model="newTodo.is_private" label="Private" />
           </UFormGroup>
         </form>
         <template #footer>
@@ -164,10 +164,10 @@
           <h3 class="text-lg font-semibold">タスクを編集</h3>
         </template>
         <form @submit.prevent="updateTodo">
-          <UFormGroup label="タイトル">
+          <UFormGroup label="タイトル" class="mt-4">
             <UInput v-model="editingTodo.title" required />
           </UFormGroup>
-          <UFormGroup label="メモ">
+          <UFormGroup label="メモ" class="mt-4">
             <div class="space-y-2">
               <UTextarea v-model="editingTodo.memo" />
               <UButton
@@ -180,7 +180,7 @@
               </UButton>
             </div>
           </UFormGroup>
-          <UFormGroup label="ステータス">
+          <UFormGroup label="ステータス" class="mt-4">
             <USelect
               v-model="editingTodo.status"
               :options="[
@@ -190,8 +190,8 @@
               ]"
             />
           </UFormGroup>
-          <UFormGroup label="プライベート">
-            <UCheckbox v-model="editingTodo.is_private" label="個人タスク" />
+          <UFormGroup class="mt-4">
+            <UCheckbox v-model="editingTodo.is_private" label="Private" />
           </UFormGroup>
         </form>
         <template #footer>
