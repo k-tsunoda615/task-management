@@ -45,17 +45,30 @@
         </li>
       </ul>
     </div>
+
+    <!-- ゴミ箱エリア -->
+    <div
+      class="mt-auto p-3 bg-red-50 rounded-lg border border-red-200 flex items-center"
+      @dragover.prevent
+      @drop="handleTrashDrop"
+    >
+      <UIcon name="i-heroicons-trash" class="text-red-500 mr-2" />
+      <span class="text-red-700">ドラッグで削除</span>
+    </div>
   </div>
 </template>
 
 <script setup lang="ts">
 import { useProjectStore } from "~/stores/project";
 import { useTodoStore } from "~/stores/todo";
+import { useEventBus } from "@vueuse/core";
 
 const client = useSupabaseClient();
 const router = useRouter();
 const projectStore = useProjectStore();
 const todoStore = useTodoStore();
+
+const trashEventBus = useEventBus("trash-drop");
 
 const logout = async () => {
   await client.auth.signOut();
@@ -65,4 +78,12 @@ const logout = async () => {
 onMounted(async () => {
   await projectStore.fetchProjects();
 });
+
+// ゴミ箱へのドロップを処理
+const handleTrashDrop = (event) => {
+  const todoId = event.dataTransfer.getData("todoId");
+  if (todoId) {
+    trashEventBus.emit(todoId);
+  }
+};
 </script>

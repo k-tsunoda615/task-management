@@ -258,6 +258,7 @@
 import { useTodoStore } from "~/stores/todo";
 import draggable from "vuedraggable";
 import { marked } from "marked";
+import { useEventBus } from "@vueuse/core";
 
 const todoStore = useTodoStore();
 const showNewTaskModal = ref(false);
@@ -265,6 +266,7 @@ const showEditModal = ref(false);
 const showPreviewModal = ref(false);
 const isCreating = ref(false);
 const isUpdating = ref(false);
+const trashEventBus = useEventBus("trash-drop");
 
 const newTodo = ref({
   title: "",
@@ -374,6 +376,13 @@ onMounted(() => {
 
   fetchInitialData();
   updateTodosByStatus();
+
+  // ゴミ箱へのドロップイベントを監視
+  trashEventBus.on((todoId) => {
+    if (confirm("このタスクを削除しますか？")) {
+      deleteTodo(todoId);
+    }
+  });
 });
 
 // 編集モーダルを開く
@@ -524,6 +533,25 @@ const handleDragChange = async (evt) => {
     });
     // エラー時は状態を再同期
     updateTodosByStatus();
+  }
+};
+
+// Todo削除関数
+const deleteTodo = async (todoId) => {
+  try {
+    await todoStore.deleteTodo(todoId);
+    useToast().add({
+      title: "削除完了",
+      description: "タスクを削除しました",
+      color: "green",
+    });
+  } catch (error) {
+    console.error("削除エラー:", error);
+    useToast().add({
+      title: "エラー",
+      description: "タスクの削除に失敗しました",
+      color: "red",
+    });
   }
 };
 </script>

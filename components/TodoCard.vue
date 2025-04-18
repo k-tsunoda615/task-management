@@ -1,5 +1,9 @@
 <template>
-  <div class="bg-white rounded-lg shadow p-4 relative">
+  <div
+    class="bg-white rounded-lg shadow p-4 relative cursor-move"
+    draggable="true"
+    @dragstart="handleDragStart"
+  >
     <!-- プライベートインジケーター -->
     <div
       v-if="todo.is_private"
@@ -24,13 +28,6 @@
           icon="i-heroicons-pencil-square"
           size="xs"
           @click="$emit('edit', todo)"
-        />
-        <UButton
-          color="red"
-          variant="ghost"
-          icon="i-heroicons-trash"
-          size="xs"
-          @click="deleteTodo"
         />
       </div>
     </div>
@@ -57,24 +54,10 @@ const editTodo = () => {
   emit("edit", props.todo);
 };
 
-const deleteTodo = async () => {
-  if (confirm("このタスクを削除しますか？")) {
-    try {
-      await todoStore.deleteTodo(props.todo.id);
-      toast.add({
-        title: "削除完了",
-        description: "タスクを削除しました",
-        color: "green",
-      });
-    } catch (error) {
-      console.error("削除エラー:", error);
-      toast.add({
-        title: "エラー",
-        description: "タスクの削除に失敗しました",
-        color: "red",
-      });
-    }
-  }
+// ドラッグ開始時にTodoのIDをデータ転送オブジェクトに設定
+const handleDragStart = (event) => {
+  event.dataTransfer.setData("todoId", props.todo.id);
+  event.dataTransfer.effectAllowed = "move";
 };
 
 // メモをマークダウンとしてパース
