@@ -48,12 +48,24 @@
 
     <!-- ゴミ箱エリア -->
     <div
-      class="mt-auto p-3 bg-red-50 rounded-lg border border-red-200 flex items-center"
+      class="mt-auto p-3 rounded-lg border border-dashed border-gray-300 flex items-center transition-all duration-200"
       @dragover.prevent
+      @dragenter="isDragOver = true"
+      @dragleave="isDragOver = false"
       @drop="handleTrashDrop"
+      :class="{ 'bg-red-50 border-red-200 border-solid': isDragOver }"
     >
-      <UIcon name="i-heroicons-trash" class="text-red-500 mr-2" />
-      <span class="text-red-700">ドラッグで削除</span>
+      <UIcon
+        name="i-heroicons-trash"
+        class="mr-2 transition-colors duration-200"
+        :class="isDragOver ? 'text-red-500' : 'text-gray-500'"
+      />
+      <span
+        class="transition-colors duration-200"
+        :class="isDragOver ? 'text-red-700' : 'text-gray-600'"
+      >
+        ドラッグで削除
+      </span>
     </div>
   </div>
 </template>
@@ -69,6 +81,7 @@ const projectStore = useProjectStore();
 const todoStore = useTodoStore();
 
 const trashEventBus = useEventBus("trash-drop");
+const isDragOver = ref(false);
 
 const logout = async () => {
   await client.auth.signOut();
@@ -83,6 +96,7 @@ onMounted(async () => {
 const handleTrashDrop = (event) => {
   const todoId = event.dataTransfer.getData("todoId");
   if (todoId) {
+    isDragOver.value = false;
     trashEventBus.emit(todoId);
   }
 };
