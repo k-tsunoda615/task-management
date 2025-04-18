@@ -158,7 +158,14 @@
     </UModal>
 
     <!-- 編集タスクモーダル -->
-    <UModal v-model="showEditModal">
+    <UModal
+      v-model="showEditModal"
+      :ui="{
+        container: 'items-start my-20',
+        width: 'max-w-4xl',
+        height: 'min-h-[300px]',
+      }"
+    >
       <UCard>
         <template #header>
           <h3 class="text-lg font-semibold">タスクを編集</h3>
@@ -169,7 +176,14 @@
           </UFormGroup>
           <UFormGroup label="メモ" class="mt-4">
             <div class="space-y-2">
-              <UTextarea v-model="editingTodo.memo" />
+              <UTextarea
+                v-model="editingTodo.memo"
+                :rows="15"
+                class="font-mono text-sm"
+                :ui="{
+                  base: 'min-h-[300px] resize-y',
+                }"
+              />
               <UButton
                 size="sm"
                 variant="ghost"
@@ -180,19 +194,21 @@
               </UButton>
             </div>
           </UFormGroup>
-          <UFormGroup label="ステータス" class="mt-4">
-            <USelect
-              v-model="editingTodo.status"
-              :options="[
-                { label: '未対応', value: '未対応' },
-                { label: '対応中', value: '対応中' },
-                { label: '完了', value: '完了' },
-              ]"
-            />
-          </UFormGroup>
-          <UFormGroup class="mt-4">
-            <UCheckbox v-model="editingTodo.is_private" label="Private" />
-          </UFormGroup>
+          <div class="flex gap-4 mt-4">
+            <UFormGroup label="ステータス" class="flex-1">
+              <USelect
+                v-model="editingTodo.status"
+                :options="[
+                  { label: '未対応', value: '未対応' },
+                  { label: '対応中', value: '対応中' },
+                  { label: '完了', value: '完了' },
+                ]"
+              />
+            </UFormGroup>
+            <UFormGroup class="flex-1">
+              <UCheckbox v-model="editingTodo.is_private" label="Private" />
+            </UFormGroup>
+          </div>
         </form>
         <template #footer>
           <div class="flex justify-end gap-2">
@@ -210,7 +226,9 @@
           v-if="showPreviewModal"
           v-model="showPreviewModal"
           :ui="{
-            wrapper: 'z-[60]', // 編集モーダルより上に表示
+            container: 'items-start my-20',
+            width: 'max-w-4xl',
+            wrapper: 'z-[60]',
             overlay: { base: 'bg-gray-950/75' },
           }"
         >
@@ -218,7 +236,10 @@
             <template #header>
               <h3 class="text-lg font-semibold">プレビュー</h3>
             </template>
-            <div class="prose prose-sm max-w-none" v-html="parsedPreviewMemo" />
+            <div
+              class="prose prose-sm max-w-none min-h-[300px] overflow-y-auto max-h-[60vh]"
+              v-html="parsedPreviewMemo"
+            />
             <template #footer>
               <div class="flex justify-end">
                 <UButton variant="ghost" @click="showPreviewModal = false">
