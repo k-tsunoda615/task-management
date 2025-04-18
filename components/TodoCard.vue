@@ -13,7 +13,7 @@
         <h3 class="font-medium">{{ todo.title }}</h3>
         <div
           v-if="todo.memo"
-          class="mt-1 text-sm text-gray-600 prose prose-sm max-w-none"
+          class="mt-1 text-sm prose prose-sm prose-gray"
           v-html="parsedMemo"
         />
       </div>
