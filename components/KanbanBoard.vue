@@ -93,7 +93,7 @@
     </div>
 
     <!-- デバッグ用：全てのTodoを表示 -->
-    <div class="mb-6 p-4 bg-gray-50 rounded-lg">
+    <!-- <div class="mb-6 p-4 bg-gray-50 rounded-lg">
       <h2 class="text-lg font-semibold mb-3">全てのタスク (デバッグ用)</h2>
       <div v-if="todoStore.todos.length === 0" class="text-gray-500">
         タスクがありません
@@ -123,7 +123,7 @@
           </div>
         </div>
       </div>
-    </div>
+    </div> -->
 
     <!-- 新規タスクモーダル -->
     <UModal v-model="showNewTaskModal">
