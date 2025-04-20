@@ -104,6 +104,10 @@
 </template>
 
 <script setup lang="ts">
+definePageMeta({
+  middleware: ["auth"],
+});
+
 const client = useSupabaseClient();
 const user = useSupabaseUser();
 const router = useRouter();
@@ -113,19 +117,11 @@ const password = ref("");
 const loading = ref(false);
 const isSignUp = ref(false);
 
-// クライアントサイドでのみ実行されるようにする
+// 認証状態の変更を監視
 onMounted(() => {
-  // 初期状態のチェック
-  if (user.value) {
-    console.log("既にログイン済み:", user.value);
-    router.push("/");
-  }
-
-  // ユーザー状態の変更を監視
   const unsubscribe = client.auth.onAuthStateChange((event, session) => {
-    console.log("認証状態変更:", event, session?.user);
     if (event === "SIGNED_IN" && session?.user) {
-      router.push("/");
+      router.push("/board");
     }
   });
 
@@ -171,6 +167,9 @@ async function handleSubmit() {
         } else {
           throw error;
         }
+      } else {
+        // ログイン成功時に明示的にリダイレクト
+        router.push("/board");
       }
     }
   } catch (error) {

@@ -189,15 +189,14 @@
 </template>
 
 <script setup lang="ts">
+definePageMeta({
+  middleware: ["auth"],
+});
+
 const user = useSupabaseUser();
 
 // 機能セクションまでスクロール
 const scrollToFeatures = () => {
   document.getElementById("features")?.scrollIntoView({ behavior: "smooth" });
 };
-
-// ログイン済みの場合はボードページにリダイレクト
-if (user.value) {
-  navigateTo("/board");
-}
 </script>

@@ -2,13 +2,25 @@
   <div class="bg-gray-50">
     <!-- クライアントサイドでのみ評価される loading 状態 -->
     <ClientOnly>
-      <div v-if="loading" class="flex min-h-screen items-center justify-center">
+      <div
+        v-if="loading"
+        class="fixed inset-0 bg-white bg-opacity-75 backdrop-blur-sm flex items-center justify-center z-50"
+      >
+        <div class="text-center">
+          <USpinner size="lg" class="mb-4" />
+          <p class="text-gray-600">読み込み中...</p>
+        </div>
+      </div>
+      <div
+        v-if="!initialized"
+        class="flex min-h-screen items-center justify-center"
+      >
         <USpinner size="lg" />
       </div>
-      <div v-else-if="!user">
+      <div v-else-if="initialized && !user">
         <slot />
       </div>
-      <div v-else class="flex min-h-screen">
+      <div v-else-if="initialized && user" class="flex min-h-screen">
         <TheSidebar />
         <main class="flex-1 overflow-x-auto p-6">
           <slot />
@@ -27,17 +39,16 @@
 
 <script setup lang="ts">
 const user = useSupabaseUser();
-const loading = ref(true);
-const isAuthenticated = ref(false);
+const loading = useState("auth-loading", () => true);
+const initialized = ref(false);
 
 onMounted(() => {
   // クライアントサイドでのみ実行
   const checkAuth = async () => {
     const client = useSupabaseClient();
     const { data } = await client.auth.getSession();
-    isAuthenticated.value = !!data.session;
     loading.value = false;
-    console.log("認証状態:", isAuthenticated.value, data.session);
+    initialized.value = true;
   };
 
   checkAuth();

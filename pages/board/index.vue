@@ -105,6 +105,10 @@
 </template>
 
 <script setup lang="ts">
+definePageMeta({
+  middleware: ["auth"],
+});
+
 const user = useSupabaseUser();
 const showHelpModal = ref(false);
 const client = useSupabaseClient();
@@ -114,9 +118,4 @@ const logout = async () => {
   await client.auth.signOut();
   router.push("/auth");
 };
-
-// ユーザーが未ログインの場合はリダイレクト
-if (!user.value) {
-  navigateTo("/auth");
-}
 </script>
