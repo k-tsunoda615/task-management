@@ -7,7 +7,7 @@ type Todo = {
   task_id?: string;
   taskId?: string; // 互換性のために残す
   memo?: string;
-  order?: number;
+  sort_order?: number;
   is_private?: boolean;
   user_id?: string;
   updated_at?: string;
@@ -48,6 +48,7 @@ export const useTodoStore = defineStore("todo", {
         const { data: todos, error: todosError } = await client
           .from("todos")
           .select("*")
+          .order("sort_order", { ascending: true })
           .order("updated_at", { ascending: false });
 
         if (todosError) {
@@ -118,6 +119,7 @@ export const useTodoStore = defineStore("todo", {
         task_id: todo.taskId || todo.task_id || null,
         is_private: todo.is_private || false,
         user_id: user.value?.id,
+        sort_order: todo.sort_order || 0,
       };
 
       console.log("作成するTodo:", todoData);
@@ -150,6 +152,7 @@ export const useTodoStore = defineStore("todo", {
         memo: todo.memo,
         task_id: todo.task_id,
         is_private: todo.is_private,
+        sort_order: todo.sort_order,
       };
 
       console.log("更新するTodo:", {
@@ -191,6 +194,27 @@ export const useTodoStore = defineStore("todo", {
     // 個人タスクの表示状態を切り替え
     togglePrivateTasks() {
       this.showPrivateTasks = !this.showPrivateTasks;
+    },
+
+    // 順序のみを更新する軽量メソッド
+    async updateTodoOrder(todo: { id: string; sort_order: number }) {
+      const client = useSupabaseClient();
+
+      const { error } = await client
+        .from("todos")
+        .update({ sort_order: todo.sort_order })
+        .eq("id", todo.id);
+
+      if (error) {
+        console.error("Todo順序更新エラー:", error);
+        throw error;
+      }
+
+      // ローカルの状態も更新
+      const index = this.todos.findIndex((t) => t.id === todo.id);
+      if (index !== -1) {
+        this.todos[index].sort_order = todo.sort_order;
+      }
     },
   },
 });

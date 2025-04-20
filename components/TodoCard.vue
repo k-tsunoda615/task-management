@@ -31,6 +31,10 @@
         />
       </div>
     </div>
+    <!-- sort_order表示 -->
+    <!-- <div class="mt-2 text-xs text-gray-400">
+      順序: {{ todo.sort_order !== undefined ? todo.sort_order : "なし" }}
+    </div> -->
   </div>
 </template>
 

@@ -20,6 +20,8 @@
           :animation="200"
           ghost-class="opacity-50"
           @change="handleDragChange"
+          @start="handleDragStart"
+          @end="handleDragEnd"
         >
           <template #item="{ element }">
             <TodoCard :todo="element" @edit="openEditModal" />
@@ -324,9 +326,17 @@ const todosByStatus = reactive({
   done: [] as Todo[],
 });
 
+// 更新中フラグ
+const isUpdatingRef = ref(false);
+// ドラッグ中フラグ
+const isDragging = ref(false);
+
 // Todoの状態が変更されたときに再分類する
 const updateTodosByStatus = () => {
   console.log("現在のTodos:", todoStore.filteredTodos);
+
+  // ドラッグ中は再分類をスキップ
+  if (isDragging.value) return;
 
   // 一旦クリア
   todosByStatus.todo = [];
@@ -347,12 +357,21 @@ const updateTodosByStatus = () => {
       todosByStatus.todo.push(todo);
     }
   });
+
+  // 各リストをsort_orderでソート
+  todosByStatus.todo.sort((a, b) => (a.sort_order || 0) - (b.sort_order || 0));
+  todosByStatus.inProgress.sort(
+    (a, b) => (a.sort_order || 0) - (b.sort_order || 0)
+  );
+  todosByStatus.done.sort((a, b) => (a.sort_order || 0) - (b.sort_order || 0));
 };
 
 // todoStoreのtodosが変更されたときに再分類を実行
 watch(
   () => [todoStore.filteredTodos, todoStore.showPrivateTasks],
   () => {
+    // 更新中は再分類をスキップ
+    if (isUpdatingRef.value) return;
     updateTodosByStatus();
   },
   { deep: true }
@@ -395,6 +414,14 @@ const openEditModal = (todo) => {
 const createTodo = async () => {
   if (!newTodo.value.title) return;
 
+  // 同じステータスのTodoの最小sort_orderを取得
+  let minSortOrder = 0;
+  const statusKey = statusMap[newTodo.value.status] || "todo";
+  if (todosByStatus[statusKey].length > 0) {
+    minSortOrder =
+      Math.min(...todosByStatus[statusKey].map((t) => t.sort_order || 0)) - 100;
+  }
+
   isCreating.value = true;
   try {
     await todoStore.createTodo({
@@ -403,6 +430,7 @@ const createTodo = async () => {
       status: newTodo.value.status,
       task_id: newTodo.value.task_id,
       is_private: newTodo.value.is_private,
+      sort_order: minSortOrder, // 最小値より小さい値を設定して先頭に表示
     });
 
     showNewTaskModal.value = false;
@@ -451,33 +479,43 @@ const updateTodo = async () => {
 const handleDragChange = async (evt) => {
   console.log("ドラッグイベント:", evt); // デバッグ用
 
+  // ドラッグ開始時のフラグ設定
+  isDragging.value = true;
+
   // ドラッグ&ドロップの種類を特定
   const dragType = evt.added ? "added" : evt.moved ? "moved" : null;
   if (!dragType) return;
 
   const todo = evt[dragType].element;
+  const newIndex = evt[dragType].newIndex;
 
   // 移動先のリストを特定
   let newStatus = "todo"; // デフォルト値
+  let targetList = todosByStatus.todo;
 
   if (evt.added) {
     // 追加された場合は、追加先のインデックスから判断
     if (todosByStatus.inProgress.find((t) => t.id === todo.id)) {
       newStatus = "inProgress";
+      targetList = todosByStatus.inProgress;
     } else if (todosByStatus.done.find((t) => t.id === todo.id)) {
       newStatus = "done";
+      targetList = todosByStatus.done;
     }
   } else if (evt.moved) {
     // 移動の場合は、移動先のリストから判断
     if (todosByStatus.inProgress.find((t) => t.id === todo.id)) {
       newStatus = "inProgress";
+      targetList = todosByStatus.inProgress;
     } else if (todosByStatus.done.find((t) => t.id === todo.id)) {
       newStatus = "done";
+      targetList = todosByStatus.done;
     }
   }
 
   if (!todo || !newStatus) {
     console.error("必要な情報が見つかりません", { todo, newStatus, evt });
+    isDragging.value = false;
     return;
   }
 
@@ -491,31 +529,85 @@ const handleDragChange = async (evt) => {
   const mappedStatus = statusMapping[newStatus];
   if (!mappedStatus) {
     console.error("不正なステータス:", newStatus);
+    isDragging.value = false;
     return;
   }
 
-  console.log("ステータス更新前:", {
-    currentStatus: todo.status,
-    newStatus: mappedStatus,
-    todo,
+  // 更新中フラグをセット
+  isUpdatingRef.value = true;
+
+  // 直接リストの順序を使用（すでにドラッグ後の順序になっている）
+  const updatedTodos = targetList.map((t, index) => {
+    return {
+      ...t,
+      sort_order: index * 100, // 大きな間隔で設定（0, 100, 200, ...）
+    };
   });
 
+  // 対象のTodoのステータスと順序を更新
+  if (todo.status !== mappedStatus) {
+    todo.status = mappedStatus;
+  }
+
+  // 現在のTodoの順序を設定
+  const currentSortOrder =
+    updatedTodos.find((t) => t.id === todo.id)?.sort_order || 0;
+  todo.sort_order = currentSortOrder;
+
+  // 他のTodoの順序も更新
+  updatedTodos.forEach((t) => {
+    if (t.id !== todo.id) {
+      const originalTodo = targetList.find((original) => original.id === t.id);
+      if (originalTodo) {
+        originalTodo.sort_order = t.sort_order;
+      }
+    }
+  });
+
+  // ドラッグ終了フラグを設定
+  setTimeout(() => {
+    isDragging.value = false;
+  }, 50);
+
+  // バックグラウンドで更新処理を実行
   try {
-    await todoStore.updateTodo({
-      id: todo.id,
-      title: todo.title,
-      memo: todo.memo,
-      task_id: todo.task_id,
-      is_private: todo.is_private,
-      status: mappedStatus,
+    // まず現在のTodoのステータスと順序を更新
+    todoStore
+      .updateTodo({
+        id: todo.id,
+        title: todo.title,
+        memo: todo.memo,
+        task_id: todo.task_id,
+        is_private: todo.is_private,
+        status: mappedStatus,
+        sort_order: currentSortOrder,
+      })
+      .catch((error) => {
+        console.error("Todo更新エラー:", error);
+      });
+
+    // 他のTodoの順序を一括更新
+    const updatePromises = updatedTodos
+      .filter((t) => t.id !== todo.id)
+      .map((t) =>
+        todoStore.updateTodoOrder({
+          id: t.id,
+          sort_order: t.sort_order,
+        })
+      );
+
+    Promise.all(updatePromises).catch((error) => {
+      console.error("Todo順序更新エラー:", error);
     });
 
-    console.log("ステータス更新後:", {
-      status: todoStore.todos.find((t) => t.id === todo.id)?.status,
-    });
-
-    // 状態を即時反映
-    updateTodosByStatus();
+    // 5秒後に静かに再同期（オプション）
+    setTimeout(() => {
+      todoStore.fetchTodos().catch((error) => {
+        console.error("Todo再取得エラー:", error);
+      });
+      // 更新フラグを解除（遅延して）
+      isUpdatingRef.value = false;
+    }, 5000);
 
     if (evt.added) {
       useToast().add({
@@ -531,6 +623,9 @@ const handleDragChange = async (evt) => {
       description: "タスクの移動に失敗しました",
       color: "red",
     });
+    // 更新フラグを解除
+    isUpdatingRef.value = false;
+    isDragging.value = false;
     // エラー時は状態を再同期
     updateTodosByStatus();
   }
@@ -553,5 +648,18 @@ const deleteTodo = async (todoId) => {
       color: "red",
     });
   }
+};
+
+// ドラッグ開始時のハンドラ
+const handleDragStart = () => {
+  isDragging.value = true;
+};
+
+// ドラッグ終了時のハンドラ
+const handleDragEnd = () => {
+  // 少し遅延させてドラッグ終了を処理
+  setTimeout(() => {
+    isDragging.value = false;
+  }, 50);
 };
 </script>
