@@ -14,7 +14,9 @@
     </div>
     <div class="flex justify-between items-start">
       <div class="flex-1">
-        <h3 class="font-medium">{{ todo.title }}</h3>
+        <h3 class="font-bold border-b border-gray-200 pb-1 mb-3">
+          {{ todo.title }}
+        </h3>
         <div
           v-if="todo.memo"
           class="mt-1 text-sm prose prose-sm prose-gray max-h-[20em] w-full overflow-y-auto pr-2"

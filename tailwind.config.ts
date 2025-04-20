@@ -18,37 +18,40 @@ export default {
             "> p": {
               marginTop: "0.5em",
               marginBottom: "0 !important",
-              lineHeight: "1.5",
+              lineHeight: "1.3",
             },
             "> ul > li": {
               paddingLeft: "1.25em",
               marginTop: "0.125em",
               marginBottom: "0 !important",
-              lineHeight: "1.5",
+              lineHeight: "1.3",
             },
             "> ol > li": {
               paddingLeft: "1.25em",
               marginTop: "0.125em",
               marginBottom: "0 !important",
-              lineHeight: "1.5",
+              lineHeight: "1.3",
             },
             "> h1": {
               fontSize: "1.25em",
               marginTop: "0.5em",
               marginBottom: "0 !important",
               lineHeight: "1.3",
+              color: "#374151",
             },
             "> h2": {
               fontSize: "1.15em",
               marginTop: "0.5em !important",
               marginBottom: "0 !important",
               lineHeight: "1.3",
+              color: "#374151",
             },
             "> h3": {
               fontSize: "1.05em",
               marginTop: "0.5em",
               marginBottom: "0 !important",
               lineHeight: "1.3",
+              color: "#374151",
             },
             code: {
               color: "#6b7280",
