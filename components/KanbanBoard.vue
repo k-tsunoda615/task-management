@@ -8,80 +8,86 @@
     </div>
 
     <div class="grid grid-cols-1 gap-4 md:grid-cols-3">
-      <!-- 未対応 -->
-      <div class="rounded-lg bg-gray-100 p-4">
-        <h2 class="mb-3 font-semibold text-gray-700">未対応</h2>
-        <draggable
-          v-model="todosByStatus.todo"
-          :group="{ name: 'todos' }"
-          item-key="id"
-          class="space-y-2"
-          data-status="todo"
-          :animation="200"
-          ghost-class="opacity-50"
-          @change="handleDragChange"
-          @start="handleDragStart"
-          @end="handleDragEnd"
-        >
-          <template #item="{ element }">
-            <TodoCard :todo="element" @edit="openEditModal" />
-          </template>
-        </draggable>
-        <div
-          v-if="todosByStatus.todo.length === 0"
-          class="text-gray-500 text-sm p-2"
-        >
-          タスクがありません
+      <!-- 左側カラム（未対応と対応中） - 2/3の幅 -->
+      <div class="md:col-span-2 space-y-4">
+        <!-- 未対応 -->
+        <div class="rounded-lg bg-gray-100 p-4">
+          <h2 class="mb-3 font-semibold text-gray-700">未対応</h2>
+          <draggable
+            v-model="todosByStatus.todo"
+            :group="{ name: 'todos' }"
+            item-key="id"
+            class="space-y-2"
+            data-status="todo"
+            :animation="200"
+            ghost-class="opacity-50"
+            @change="handleDragChange"
+            @start="handleDragStart"
+            @end="handleDragEnd"
+          >
+            <template #item="{ element }">
+              <TodoCard :todo="element" @edit="openEditModal" />
+            </template>
+          </draggable>
+          <div
+            v-if="todosByStatus.todo.length === 0"
+            class="text-gray-500 text-sm p-2"
+          >
+            タスクがありません
+          </div>
+        </div>
+
+        <!-- 対応中 -->
+        <div class="rounded-lg bg-blue-50 p-4">
+          <h2 class="mb-3 font-semibold text-blue-700">対応中</h2>
+          <draggable
+            v-model="todosByStatus.inProgress"
+            :group="{ name: 'todos' }"
+            item-key="id"
+            class="space-y-2"
+            data-status="inProgress"
+            :animation="200"
+            ghost-class="opacity-50"
+            @change="handleDragChange"
+          >
+            <template #item="{ element }">
+              <TodoCard :todo="element" @edit="openEditModal" />
+            </template>
+          </draggable>
+          <div
+            v-if="todosByStatus.inProgress.length === 0"
+            class="text-gray-500 text-sm p-2"
+          >
+            タスクがありません
+          </div>
         </div>
       </div>
 
-      <!-- 対応中 -->
-      <div class="rounded-lg bg-blue-50 p-4">
-        <h2 class="mb-3 font-semibold text-blue-700">対応中</h2>
-        <draggable
-          v-model="todosByStatus.inProgress"
-          :group="{ name: 'todos' }"
-          item-key="id"
-          class="space-y-2"
-          data-status="inProgress"
-          :animation="200"
-          ghost-class="opacity-50"
-          @change="handleDragChange"
-        >
-          <template #item="{ element }">
-            <TodoCard :todo="element" @edit="openEditModal" />
-          </template>
-        </draggable>
-        <div
-          v-if="todosByStatus.inProgress.length === 0"
-          class="text-gray-500 text-sm p-2"
-        >
-          タスクがありません
-        </div>
-      </div>
-
-      <!-- 完了 -->
-      <div class="rounded-lg bg-green-50 p-4">
-        <h2 class="mb-3 font-semibold text-green-700">完了</h2>
-        <draggable
-          v-model="todosByStatus.done"
-          :group="{ name: 'todos' }"
-          item-key="id"
-          class="space-y-2"
-          data-status="done"
-          :animation="200"
-          ghost-class="opacity-50"
-          @change="handleDragChange"
-        >
-          <template #item="{ element }">
-            <TodoCard :todo="element" @edit="openEditModal" />
-          </template>
-        </draggable>
-        <div
-          v-if="todosByStatus.done.length === 0"
-          class="text-gray-500 text-sm p-2"
-        >
-          タスクがありません
+      <!-- 右側カラム（完了） - 1/3の幅 -->
+      <div class="md:col-span-1">
+        <!-- 完了 -->
+        <div class="rounded-lg bg-green-50 p-4">
+          <h2 class="mb-3 font-semibold text-green-700">完了</h2>
+          <draggable
+            v-model="todosByStatus.done"
+            :group="{ name: 'todos' }"
+            item-key="id"
+            class="space-y-2"
+            data-status="done"
+            :animation="200"
+            ghost-class="opacity-50"
+            @change="handleDragChange"
+          >
+            <template #item="{ element }">
+              <TodoCard :todo="element" @edit="openEditModal" />
+            </template>
+          </draggable>
+          <div
+            v-if="todosByStatus.done.length === 0"
+            class="text-gray-500 text-sm p-2"
+          >
+            タスクがありません
+          </div>
         </div>
       </div>
     </div>
