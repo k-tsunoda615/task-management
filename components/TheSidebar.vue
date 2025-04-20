@@ -5,16 +5,11 @@
       <div class="mb-4">
         <UButton
           block
-          :color="todoStore.showPrivateTasks ? 'primary' : 'gray'"
-          :variant="todoStore.showPrivateTasks ? 'soft' : 'ghost'"
-          @click="todoStore.togglePrivateTasks"
-          :icon="
-            todoStore.showPrivateTasks
-              ? 'i-heroicons-eye'
-              : 'i-heroicons-eye-slash'
-          "
-        >
-        </UButton>
+          :color="getFilterButtonColor()"
+          :variant="'ghost'"
+          @click="toggleTaskFilter"
+          :icon="getFilterIcon()"
+        />
       </div>
       <UButton
         variant="ghost"
@@ -82,6 +77,43 @@ const todoStore = useTodoStore();
 
 const trashEventBus = useEventBus("trash-drop");
 const isDragOver = ref(false);
+
+// フィルターに応じたアイコンを取得
+const getFilterIcon = () => {
+  switch (todoStore.taskFilter) {
+    case "all":
+      return "i-heroicons-eye";
+    case "private":
+      return "i-heroicons-user";
+    case "public":
+      return "i-heroicons-squares-2x2";
+    default:
+      return "i-heroicons-squares-2x2";
+  }
+};
+
+const getFilterButtonColor = () => {
+  switch (todoStore.taskFilter) {
+    case "all":
+      return "primary";
+    case "private":
+      return "green";
+    case "public":
+      return "gray";
+    default:
+      return "primary";
+  }
+};
+
+const toggleTaskFilter = () => {
+  if (todoStore.taskFilter === "all") {
+    todoStore.setTaskFilter("private");
+  } else if (todoStore.taskFilter === "private") {
+    todoStore.setTaskFilter("public");
+  } else {
+    todoStore.setTaskFilter("all");
+  }
+};
 
 const logout = async () => {
   await client.auth.signOut();

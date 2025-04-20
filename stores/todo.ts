@@ -24,16 +24,21 @@ export const useTodoStore = defineStore("todo", {
     todos: [] as Todo[],
     tasks: [] as Task[],
     isLoaded: false,
-    showPrivateTasks: true, // 個人タスクの表示状態
+    // 表示フィルター: 'all'=全表示, 'private'=プライベートのみ, 'public'=非プライベートのみ
+    taskFilter: "all",
   }),
 
   getters: {
     // 表示状態に応じてフィルタリングされたTodos
     filteredTodos(): Todo[] {
-      if (this.showPrivateTasks) {
+      if (this.taskFilter === "all") {
         return this.todos;
+      } else if (this.taskFilter === "private") {
+        return this.todos.filter((todo) => todo.is_private);
+      } else {
+        // 'public'
+        return this.todos.filter((todo) => !todo.is_private);
       }
-      return this.todos.filter((todo) => !todo.is_private);
     },
   },
 
@@ -191,9 +196,9 @@ export const useTodoStore = defineStore("todo", {
       this.todos = this.todos.filter((t) => t.id !== id);
     },
 
-    // 個人タスクの表示状態を切り替え
-    togglePrivateTasks() {
-      this.showPrivateTasks = !this.showPrivateTasks;
+    // タスク表示フィルターを設定
+    setTaskFilter(filter: "all" | "private" | "public") {
+      this.taskFilter = filter;
     },
 
     // 順序のみを更新する軽量メソッド
