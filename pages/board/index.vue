@@ -17,20 +17,20 @@
 
         <div class="flex items-center space-x-3">
           <UButton
-            to="/projects"
-            color="gray"
-            variant="ghost"
-            icon="i-heroicons-folder"
-          >
-            プロジェクト
-          </UButton>
-          <UButton
             @click="showHelpModal = true"
             color="gray"
             variant="ghost"
             icon="i-heroicons-question-mark-circle"
           >
             ヘルプ
+          </UButton>
+          <UButton
+            @click="logout"
+            color="gray"
+            variant="ghost"
+            icon="i-heroicons-arrow-right-on-rectangle"
+          >
+            ログアウト
           </UButton>
         </div>
       </nav>
@@ -107,6 +107,13 @@
 <script setup lang="ts">
 const user = useSupabaseUser();
 const showHelpModal = ref(false);
+const client = useSupabaseClient();
+const router = useRouter();
+
+const logout = async () => {
+  await client.auth.signOut();
+  router.push("/auth");
+};
 
 // ユーザーが未ログインの場合はリダイレクト
 if (!user.value) {

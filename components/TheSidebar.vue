@@ -1,8 +1,7 @@
 <template>
   <div class="w-64 bg-white p-4 shadow">
-    <div class="mb-6">
-      <h2 class="mb-2 text-lg font-semibold">タスク管理</h2>
-      <div class="mb-4">
+    <div class="mb-6 flex items-center">
+      <div>
         <UButton
           block
           :color="getFilterButtonColor()"
@@ -11,14 +10,7 @@
           :icon="getFilterIcon()"
         />
       </div>
-      <UButton
-        variant="ghost"
-        block
-        @click="logout"
-        icon="i-heroicons-arrow-right-on-rectangle"
-      >
-        ログアウト
-      </UButton>
+      <h2 class="text-lg font-semibold">タスク管理</h2>
     </div>
 
     <div class="mb-4">
@@ -70,8 +62,6 @@ import { useProjectStore } from "~/stores/project";
 import { useTodoStore } from "~/stores/todo";
 import { useEventBus } from "@vueuse/core";
 
-const client = useSupabaseClient();
-const router = useRouter();
 const projectStore = useProjectStore();
 const todoStore = useTodoStore();
 
@@ -113,11 +103,6 @@ const toggleTaskFilter = () => {
   } else {
     todoStore.setTaskFilter("all");
   }
-};
-
-const logout = async () => {
-  await client.auth.signOut();
-  router.push("/auth");
 };
 
 onMounted(async () => {
