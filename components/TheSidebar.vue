@@ -13,7 +13,8 @@
       <h2 class="text-lg font-semibold">タスク管理</h2>
     </div>
 
-    <div class="mb-4">
+    <!-- 機能ないのにあると気になるからいったん非表示 -->
+    <!-- <div class="mb-4">
       <h3 class="mb-2 font-medium">プロジェクト</h3>
       <ul class="space-y-1">
         <li v-for="project in projectStore.projects" :key="project.id">
@@ -31,7 +32,7 @@
           </UButton>
         </li>
       </ul>
-    </div>
+    </div> -->
 
     <!-- ゴミ箱エリア -->
     <div
