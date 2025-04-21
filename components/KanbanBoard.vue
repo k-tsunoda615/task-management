@@ -7,14 +7,14 @@
       </UButton>
     </div>
 
-    <div class="grid grid-cols-1 gap-4 md:grid-cols-3">
-      <!-- 左側カラム（Priority TasksとIn Progress） - 2/3の幅 -->
-      <div class="md:col-span-2 space-y-4">
-        <!-- Priority Tasks -->
-        <div class="rounded-lg bg-gray-100 p-4">
+    <!-- 上段：PriorityとNext Up（3:2の比率） -->
+    <div class="grid grid-cols-5 gap-4 mb-4">
+      <!-- Priority - 3/5の幅 -->
+      <div class="col-span-3">
+        <div class="rounded-lg bg-gray-100 p-4 h-full">
           <h2 class="mb-3 font-semibold text-gray-700">
             <UIcon name="i-heroicons-inbox" class="mr-1 align-middle" />
-            Priority Tasks
+            Priority
           </h2>
           <draggable
             v-model="todosByStatus.todo"
@@ -39,12 +39,14 @@
             タスクがありません
           </div>
         </div>
+      </div>
 
-        <!-- In Progress -->
-        <div class="rounded-lg bg-blue-50 p-4">
+      <!-- Next Up - 2/5の幅 -->
+      <div class="col-span-2">
+        <div class="rounded-lg bg-blue-50 p-4 h-full">
           <h2 class="mb-3 font-semibold text-blue-700">
             <UIcon name="i-heroicons-clock" class="mr-1 align-middle" />
-            In Progress
+            Next Up
           </h2>
           <draggable
             v-model="todosByStatus.inProgress"
@@ -68,36 +70,33 @@
           </div>
         </div>
       </div>
+    </div>
 
-      <!-- 右側カラム（Completed） - 1/3の幅 -->
-      <div class="md:col-span-1">
-        <!-- Completed -->
-        <div class="rounded-lg bg-green-50 p-4">
-          <h2 class="mb-3 font-semibold text-green-700">
-            <UIcon name="i-heroicons-check-circle" class="mr-1 align-middle" />
-            Completed
-          </h2>
-          <draggable
-            v-model="todosByStatus.done"
-            :group="{ name: 'todos' }"
-            item-key="id"
-            class="space-y-2"
-            data-status="done"
-            :animation="200"
-            ghost-class="opacity-50"
-            @change="handleDragChange"
-          >
-            <template #item="{ element }">
-              <TodoCard :todo="element" @edit="openEditModal" />
-            </template>
-          </draggable>
-          <div
-            v-if="todosByStatus.done.length === 0"
-            class="text-gray-500 text-sm p-2"
-          >
-            タスクがありません
-          </div>
-        </div>
+    <!-- 下段：Archived -->
+    <div class="rounded-lg bg-green-50 p-4">
+      <h2 class="mb-3 font-semibold text-green-700">
+        <UIcon name="i-heroicons-check-circle" class="mr-1 align-middle" />
+        Archived
+      </h2>
+      <draggable
+        v-model="todosByStatus.done"
+        :group="{ name: 'todos' }"
+        item-key="id"
+        class="space-y-2"
+        data-status="done"
+        :animation="200"
+        ghost-class="opacity-50"
+        @change="handleDragChange"
+      >
+        <template #item="{ element }">
+          <TodoCard :todo="element" @edit="openEditModal" />
+        </template>
+      </draggable>
+      <div
+        v-if="todosByStatus.done.length === 0"
+        class="text-gray-500 text-sm p-2"
+      >
+        タスクがありません
       </div>
     </div>
 
@@ -151,9 +150,9 @@
             <USelect
               v-model="newTodo.status"
               :options="[
-                { label: 'Priority Tasks', value: '未対応' },
-                { label: 'In Progress', value: '対応中' },
-                { label: 'Completed', value: '完了' },
+                { label: 'Priority', value: '未対応' },
+                { label: 'Next Up', value: '対応中' },
+                { label: 'Archived', value: '完了' },
               ]"
             />
           </UFormGroup>
@@ -216,9 +215,9 @@
               <USelect
                 v-model="editingTodo.status"
                 :options="[
-                  { label: 'Priority Tasks', value: '未対応' },
-                  { label: 'In Progress', value: '対応中' },
-                  { label: 'Completed', value: '完了' },
+                  { label: 'Priority', value: '未対応' },
+                  { label: 'Next', value: '対応中' },
+                  { label: 'Archived', value: '完了' },
                 ]"
               />
             </UFormGroup>
