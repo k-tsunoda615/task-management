@@ -8,11 +8,14 @@
     </div>
 
     <div class="grid grid-cols-1 gap-4 md:grid-cols-3">
-      <!-- 左側カラム（未対応と対応中） - 2/3の幅 -->
+      <!-- 左側カラム（Priority TasksとIn Progress） - 2/3の幅 -->
       <div class="md:col-span-2 space-y-4">
-        <!-- 未対応 -->
+        <!-- Priority Tasks -->
         <div class="rounded-lg bg-gray-100 p-4">
-          <h2 class="mb-3 font-semibold text-gray-700">未対応</h2>
+          <h2 class="mb-3 font-semibold text-gray-700">
+            <UIcon name="i-heroicons-inbox" class="mr-1 align-middle" />
+            Priority Tasks
+          </h2>
           <draggable
             v-model="todosByStatus.todo"
             :group="{ name: 'todos' }"
@@ -37,9 +40,12 @@
           </div>
         </div>
 
-        <!-- 対応中 -->
+        <!-- In Progress -->
         <div class="rounded-lg bg-blue-50 p-4">
-          <h2 class="mb-3 font-semibold text-blue-700">対応中</h2>
+          <h2 class="mb-3 font-semibold text-blue-700">
+            <UIcon name="i-heroicons-clock" class="mr-1 align-middle" />
+            In Progress
+          </h2>
           <draggable
             v-model="todosByStatus.inProgress"
             :group="{ name: 'todos' }"
@@ -63,11 +69,14 @@
         </div>
       </div>
 
-      <!-- 右側カラム（完了） - 1/3の幅 -->
+      <!-- 右側カラム（Completed） - 1/3の幅 -->
       <div class="md:col-span-1">
-        <!-- 完了 -->
+        <!-- Completed -->
         <div class="rounded-lg bg-green-50 p-4">
-          <h2 class="mb-3 font-semibold text-green-700">完了</h2>
+          <h2 class="mb-3 font-semibold text-green-700">
+            <UIcon name="i-heroicons-check-circle" class="mr-1 align-middle" />
+            Completed
+          </h2>
           <draggable
             v-model="todosByStatus.done"
             :group="{ name: 'todos' }"
@@ -142,9 +151,9 @@
             <USelect
               v-model="newTodo.status"
               :options="[
-                { label: '未対応', value: '未対応' },
-                { label: '対応中', value: '対応中' },
-                { label: '完了', value: '完了' },
+                { label: 'Priority Tasks', value: '未対応' },
+                { label: 'In Progress', value: '対応中' },
+                { label: 'Completed', value: '完了' },
               ]"
             />
           </UFormGroup>
@@ -207,9 +216,9 @@
               <USelect
                 v-model="editingTodo.status"
                 :options="[
-                  { label: '未対応', value: '未対応' },
-                  { label: '対応中', value: '対応中' },
-                  { label: '完了', value: '完了' },
+                  { label: 'Priority Tasks', value: '未対応' },
+                  { label: 'In Progress', value: '対応中' },
+                  { label: 'Completed', value: '完了' },
                 ]"
               />
             </UFormGroup>
