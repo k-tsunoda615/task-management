@@ -1,7 +1,6 @@
 <template>
   <div class="min-h-screen">
-    <TheSidebar />
-    <main class="ml-64 p-4">
+    <main class="p-4">
       <slot />
     </main>
   </div>

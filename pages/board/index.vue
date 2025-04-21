@@ -106,6 +106,7 @@
 
 <script setup lang="ts">
 definePageMeta({
+  layout: "board",
   middleware: ["auth"],
 });
 
