@@ -1,5 +1,5 @@
 <template>
-  <div class="w-64 bg-white p-4 shadow">
+  <div class="fixed top-0 left-0 h-screen w-64 bg-white p-4 shadow">
     <div class="mb-6 flex items-center">
       <div>
         <UButton
