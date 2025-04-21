@@ -19,13 +19,15 @@ type Task = {
   projectId?: string;
 };
 
+type TaskFilter = "all" | "private" | "public";
+
 export const useTodoStore = defineStore("todo", {
   state: () => ({
     todos: [] as Todo[],
     tasks: [] as Task[],
     isLoaded: false,
     // 表示フィルター: 'all'=全表示, 'private'=プライベートのみ, 'public'=非プライベートのみ
-    taskFilter: "all",
+    taskFilter: "public" as TaskFilter,
   }),
 
   getters: {
@@ -197,7 +199,7 @@ export const useTodoStore = defineStore("todo", {
     },
 
     // タスク表示フィルターを設定
-    setTaskFilter(filter: "all" | "private" | "public") {
+    setTaskFilter(filter: TaskFilter) {
       this.taskFilter = filter;
     },
 

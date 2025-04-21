@@ -1,59 +1,89 @@
 <template>
-  <div class="fixed top-0 left-0 h-screen w-64 bg-white p-4 shadow">
-    <div class="mb-6 flex items-center">
-      <div>
+  <div>
+    <!-- サイドバー本体 -->
+    <div
+      class="fixed top-0 left-0 h-screen bg-white shadow transition-all duration-300 ease-in-out flex flex-col"
+      :class="{ 'w-64': isOpen, 'w-16': !isOpen }"
+    >
+      <!-- ヘッダー部分 -->
+      <div class="flex items-center justify-between p-4 border-b">
+        <h2 class="text-lg font-semibold" v-if="isOpen">タスク管理</h2>
         <UButton
-          block
+          @click="toggleSidebar"
+          color="gray"
+          variant="ghost"
+          size="sm"
+          icon
+          class="ml-auto"
+        >
+          <UIcon
+            :name="
+              isOpen ? 'i-heroicons-chevron-left' : 'i-heroicons-chevron-right'
+            "
+            class="h-4 w-4"
+          />
+        </UButton>
+      </div>
+
+      <!-- フィルターボタン -->
+      <div class="p-4" :class="{ 'text-center': !isOpen }">
+        <UButton
+          :block="isOpen"
           :color="getFilterButtonColor()"
           :variant="'ghost'"
           @click="toggleTaskFilter"
           :icon="getFilterIcon()"
-        />
+        >
+          <span v-if="isOpen">{{ getFilterLabel() }}</span>
+        </UButton>
       </div>
-      <h2 class="text-lg font-semibold">タスク管理</h2>
-    </div>
 
-    <!-- 機能ないのにあると気になるからいったん非表示 -->
-    <!-- <div class="mb-4">
-      <h3 class="mb-2 font-medium">プロジェクト</h3>
-      <ul class="space-y-1">
-        <li v-for="project in projectStore.projects" :key="project.id">
-          <UButton
-            block
-            variant="ghost"
-            :color="
-              projectStore.selectedProject?.id === project.id
-                ? 'primary'
-                : 'gray'
-            "
-            @click="projectStore.setSelectedProject(project)"
-          >
-            {{ project.title }}
-          </UButton>
-        </li>
-      </ul>
-    </div> -->
+      <!-- 機能ないのにあると気になるからいったん非表示 -->
+      <!-- <div class="mb-4">
+        <h3 class="mb-2 font-medium">プロジェクト</h3>
+        <ul class="space-y-1">
+          <li v-for="project in projectStore.projects" :key="project.id">
+            <UButton
+              block
+              variant="ghost"
+              :color="
+                projectStore.selectedProject?.id === project.id
+                  ? 'primary'
+                  : 'gray'
+              "
+              @click="projectStore.setSelectedProject(project)"
+            >
+              {{ project.title }}
+            </UButton>
+          </li>
+        </ul>
+      </div> -->
 
-    <!-- ゴミ箱エリア -->
-    <div
-      class="mt-auto p-3 rounded-lg border border-dashed border-gray-300 flex items-center transition-all duration-200"
-      @dragover.prevent
-      @dragenter="isDragOver = true"
-      @dragleave="isDragOver = false"
-      @drop="handleTrashDrop"
-      :class="{ 'bg-red-50 border-red-200 border-solid': isDragOver }"
-    >
-      <UIcon
-        name="i-heroicons-trash"
-        class="mr-2 transition-colors duration-200"
-        :class="isDragOver ? 'text-red-500' : 'text-gray-500'"
-      />
-      <span
-        class="transition-colors duration-200"
-        :class="isDragOver ? 'text-red-700' : 'text-gray-600'"
+      <!-- ゴミ箱エリア -->
+      <div
+        class="mt-auto p-3 border-t flex items-center justify-center transition-all duration-200"
+        :class="{ 'flex-col': !isOpen }"
+        @dragover.prevent
+        @dragenter="isDragOver = true"
+        @dragleave="isDragOver = false"
+        @drop="handleTrashDrop"
       >
-        ドラッグで削除
-      </span>
+        <UIcon
+          name="i-heroicons-trash"
+          class="transition-colors duration-200"
+          :class="[
+            isDragOver ? 'text-red-500' : 'text-gray-500',
+            isOpen ? 'mr-2' : 'mb-1',
+          ]"
+        />
+        <span
+          v-if="isOpen"
+          class="transition-colors duration-200"
+          :class="isDragOver ? 'text-red-700' : 'text-gray-600'"
+        >
+          ドラッグで削除
+        </span>
+      </div>
     </div>
   </div>
 </template>
@@ -68,18 +98,58 @@ const todoStore = useTodoStore();
 
 const trashEventBus = useEventBus("trash-drop");
 const isDragOver = ref(false);
+const isOpen = ref(true); // サイドバーの開閉状態
+
+// サイドバーの開閉を切り替える
+const toggleSidebar = () => {
+  isOpen.value = !isOpen.value;
+  // サイドバーの状態をローカルストレージに保存
+  localStorage.setItem("sidebarOpen", isOpen.value.toString());
+
+  // イベントを発行して他のコンポーネントに通知
+  window.dispatchEvent(
+    new CustomEvent("sidebarToggle", {
+      detail: { isOpen: isOpen.value },
+    })
+  );
+};
+
+// ページ読み込み時にサイドバーの状態を復元
+onMounted(() => {
+  const savedState = localStorage.getItem("sidebarOpen");
+  if (savedState !== null) {
+    isOpen.value = savedState === "true";
+  }
+
+  // プロジェクト取得
+  projectStore.fetchProjects();
+});
+
+// フィルターに応じたラベルを取得
+const getFilterLabel = () => {
+  switch (todoStore.taskFilter) {
+    case "all":
+      return "All Tasks";
+    case "private":
+      return "Private";
+    case "public":
+      return "Public";
+    default:
+      return "All Tasks";
+  }
+};
 
 // フィルターに応じたアイコンを取得
 const getFilterIcon = () => {
   switch (todoStore.taskFilter) {
     case "all":
-      return "i-heroicons-eye";
+      return "i-heroicons-globe-alt";
     case "private":
-      return "i-heroicons-user";
+      return "i-heroicons-lock-closed";
     case "public":
-      return "i-heroicons-squares-2x2";
+      return "i-heroicons-users";
     default:
-      return "i-heroicons-squares-2x2";
+      return "i-heroicons-globe-alt";
   }
 };
 
@@ -105,10 +175,6 @@ const toggleTaskFilter = () => {
     todoStore.setTaskFilter("all");
   }
 };
-
-onMounted(async () => {
-  await projectStore.fetchProjects();
-});
 
 // ゴミ箱へのドロップを処理
 const handleTrashDrop = (event) => {

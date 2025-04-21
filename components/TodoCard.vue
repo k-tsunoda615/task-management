@@ -10,7 +10,7 @@
       class="absolute bottom-0 right-2 text-green-500"
       title="プライベート"
     >
-      <UIcon name="i-heroicons-user" class="w-4 h-4" />
+      <UIcon name="i-heroicons-lock-closed" class="w-4 h-4" />
     </div>
     <div class="flex justify-between items-start">
       <div class="flex-1">

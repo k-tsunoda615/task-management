@@ -22,7 +22,10 @@
       </div>
       <div v-else-if="initialized && user">
         <TheSidebar />
-        <main class="ml-64 p-4">
+        <main
+          class="transition-all duration-300 p-4"
+          :class="{ 'ml-64': sidebarOpen, 'ml-16': !sidebarOpen }"
+        >
           <slot />
         </main>
       </div>
@@ -42,6 +45,9 @@ const user = useSupabaseUser();
 const loading = useState("auth-loading", () => true);
 const initialized = ref(false);
 
+// サイドバーの状態を監視
+const sidebarOpen = ref(true);
+
 onMounted(() => {
   // クライアントサイドでのみ実行
   const checkAuth = async () => {
@@ -52,5 +58,16 @@ onMounted(() => {
   };
 
   checkAuth();
+
+  // サイドバーの状態を初期化
+  const savedState = localStorage.getItem("sidebarOpen");
+  if (savedState !== null) {
+    sidebarOpen.value = savedState === "true";
+  }
+
+  // サイドバーの状態変更を監視（カスタムイベント）
+  window.addEventListener("sidebarToggle", (event: any) => {
+    sidebarOpen.value = event.detail.isOpen;
+  });
 });
 </script>
