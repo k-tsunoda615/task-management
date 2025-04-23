@@ -12,7 +12,7 @@
             ホーム
           </NuxtLink>
           <span class="text-gray-400">/</span>
-          <span class="font-medium text-gray-900">カンバンボード</span>
+          <span class="font-medium text-gray-900">Task Board</span>
         </div>
 
         <div class="flex items-center space-x-3">
@@ -43,7 +43,7 @@
     <div v-else>
       <UAlert
         title="ログインが必要です"
-        description="カンバンボードを利用するにはログインしてください"
+        description="Task Boardを利用するにはログインしてください"
         color="amber"
       >
         <template #icon>
@@ -66,7 +66,7 @@
     <UModal v-model="showHelpModal">
       <UCard>
         <template #header>
-          <h3 class="text-lg font-semibold">カンバンボードの使い方</h3>
+          <h3 class="text-lg font-semibold">Task Board の使い方</h3>
         </template>
         <div class="space-y-6 max-h-[70vh] overflow-y-auto p-1">
           <!-- 基本操作 -->
@@ -358,6 +358,12 @@
 definePageMeta({
   layout: "board",
   middleware: ["auth"],
+});
+
+// ページのメタタイトルを設定
+useHead({
+  title: "Task Board",
+  meta: [{ name: "description", content: "Todoの一覧化と進捗メモ" }],
 });
 
 const user = useSupabaseUser();

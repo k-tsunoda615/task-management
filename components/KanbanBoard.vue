@@ -1,7 +1,7 @@
 <template>
   <div>
     <div class="mb-4 flex items-center justify-between">
-      <h1 class="text-2xl font-bold">カンバンボード</h1>
+      <h1 class="text-2xl font-bold">やること</h1>
       <UButton @click="showNewTaskModal = true" icon="i-heroicons-plus">
         新しいタスク
       </UButton>
