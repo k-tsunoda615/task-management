@@ -2,7 +2,7 @@
   <div>
     <div class="mb-4 flex items-center justify-between">
       <h1 class="text-2xl font-bold">やること</h1>
-      <UButton @click="showNewTaskModal = true" icon="i-heroicons-plus">
+      <UButton @click="openNewTaskModal" icon="i-heroicons-plus">
         新しいタスク
       </UButton>
     </div>
@@ -283,6 +283,13 @@ const showPreviewModal = ref(false);
 const isCreating = ref(false);
 const isUpdating = ref(false);
 const trashEventBus = useEventBus("trash-drop");
+
+// 新規タスクモーダルを開く時に現在のフィルター状態に基づいて初期値を設定
+const openNewTaskModal = () => {
+  // フィルターがプライベートの場合はチェックを入れる
+  newTodo.value.is_private = todoStore.taskFilter === "private";
+  showNewTaskModal.value = true;
+};
 
 const newTodo = ref({
   title: "",
