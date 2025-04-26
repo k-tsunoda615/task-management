@@ -9855,6 +9855,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "task-management-app@workspace:."
   dependencies:
+    "@iconify-json/heroicons": "npm:^1.2.2"
     "@nuxt/ui": "npm:^2.14.2"
     "@nuxtjs/eslint-config-typescript": "npm:^12.1.0"
     "@nuxtjs/supabase": "npm:^1.1.7"
