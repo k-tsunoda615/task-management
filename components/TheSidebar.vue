@@ -3,12 +3,26 @@
     <!-- サイドバー本体 -->
     <div
       class="fixed top-0 left-0 h-screen bg-white shadow transition-all duration-300 ease-in-out flex flex-col"
-      :class="{ 'w-64': isOpen, 'w-16': !isOpen }"
+      :class="[{ 'w-64': isOpen, 'w-16': !isOpen }, isMobile ? 'w-64' : '']"
     >
       <!-- ヘッダー部分 -->
       <div class="flex items-center justify-between p-4 border-b">
-        <h2 class="text-lg font-semibold" v-if="isOpen">タスク管理</h2>
+        <h2 class="text-lg font-semibold" v-if="isOpen || isMobile">
+          Task Board
+        </h2>
         <UButton
+          v-if="isMobile"
+          @click="$emit('close-mobile-menu')"
+          color="gray"
+          variant="ghost"
+          size="sm"
+          icon
+          class="ml-auto"
+        >
+          <UIcon name="i-heroicons-x-mark" class="h-5 w-5" />
+        </UButton>
+        <UButton
+          v-else
           @click="toggleSidebar"
           color="gray"
           variant="ghost"
@@ -26,15 +40,15 @@
       </div>
 
       <!-- フィルターボタン -->
-      <div class="p-4" :class="{ 'text-center': !isOpen }">
+      <div class="p-4" :class="{ 'text-center': !isOpen && !isMobile }">
         <UButton
-          :block="isOpen"
+          :block="isOpen || isMobile"
           :color="getFilterButtonColor()"
           :variant="'ghost'"
           @click="toggleTaskFilter"
           :icon="getFilterIcon()"
         >
-          <span v-if="isOpen">{{ getFilterLabel() }}</span>
+          <span v-if="isOpen || isMobile">{{ getFilterLabel() }}</span>
         </UButton>
       </div>
 
@@ -62,7 +76,7 @@
       <!-- ゴミ箱エリア -->
       <div
         class="mt-auto p-3 border-t flex items-center justify-center transition-all duration-200"
-        :class="{ 'flex-col': !isOpen }"
+        :class="{ 'flex-col': !isOpen && !isMobile }"
         @dragover.prevent
         @dragenter="isDragOver = true"
         @dragleave="isDragOver = false"
@@ -73,11 +87,11 @@
           class="transition-colors duration-200"
           :class="[
             isDragOver ? 'text-red-500' : 'text-gray-500',
-            isOpen ? 'mr-2' : 'mb-1',
+            isOpen || isMobile ? 'mr-2' : 'mb-1',
           ]"
         />
         <span
-          v-if="isOpen"
+          v-if="isOpen || isMobile"
           class="transition-colors duration-200"
           :class="isDragOver ? 'text-red-700' : 'text-gray-600'"
         >
@@ -92,6 +106,15 @@
 import { useProjectStore } from "~/stores/project";
 import { useTodoStore } from "~/stores/todo";
 import { useEventBus } from "@vueuse/core";
+
+const props = defineProps({
+  isMobile: {
+    type: Boolean,
+    default: false,
+  },
+});
+
+const emit = defineEmits(["close-mobile-menu"]);
 
 const projectStore = useProjectStore();
 const todoStore = useTodoStore();

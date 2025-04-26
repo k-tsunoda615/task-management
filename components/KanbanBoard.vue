@@ -1,14 +1,14 @@
 <template>
   <div>
     <div class="mb-4 flex items-center justify-between">
-      <h1 class="text-2xl font-bold">やること</h1>
+      <h1 class="text-2xl font-bold font-en-title">Task Board</h1>
       <UButton @click="openNewTaskModal" icon="i-heroicons-plus">
         新しいタスク
       </UButton>
     </div>
 
-    <!-- 上段：PriorityとNext Up（3:2の比率） -->
-    <div class="grid grid-cols-5 gap-4 mb-4">
+    <!-- PC表示: 上段：PriorityとNext Up（3:2の比率） -->
+    <div class="hidden md:grid grid-cols-5 gap-4 mb-4">
       <!-- Priority - 3/5の幅 -->
       <div class="col-span-3">
         <div class="rounded-lg bg-gray-100 p-4 h-full">
@@ -72,8 +72,69 @@
       </div>
     </div>
 
-    <!-- 下段：Archived -->
-    <div class="rounded-lg bg-green-50 p-4">
+    <!-- モバイル表示: 1カラムレイアウト -->
+    <div class="block md:hidden space-y-4">
+      <!-- Priority -->
+      <div class="rounded-lg bg-gray-100 p-4">
+        <h2 class="mb-3 font-semibold text-gray-700">
+          <UIcon name="i-heroicons-inbox" class="mr-1 align-middle" />
+          Priority
+        </h2>
+        <draggable
+          v-model="todosByStatus.todo"
+          :group="{ name: 'todos' }"
+          item-key="id"
+          class="space-y-2"
+          data-status="todo"
+          :animation="200"
+          ghost-class="opacity-50"
+          @change="handleDragChange"
+          @start="handleDragStart"
+          @end="handleDragEnd"
+        >
+          <template #item="{ element }">
+            <TodoCard :todo="element" @edit="openEditModal" />
+          </template>
+        </draggable>
+        <div
+          v-if="todosByStatus.todo.length === 0"
+          class="text-gray-500 text-sm p-2"
+        >
+          タスクがありません
+        </div>
+      </div>
+
+      <!-- Next Up -->
+      <div class="rounded-lg bg-blue-50 p-4">
+        <h2 class="mb-3 font-semibold text-blue-700">
+          <UIcon name="i-heroicons-clock" class="mr-1 align-middle" />
+          Next Up
+        </h2>
+        <draggable
+          v-model="todosByStatus.inProgress"
+          :group="{ name: 'todos' }"
+          item-key="id"
+          class="space-y-2"
+          data-status="inProgress"
+          :animation="200"
+          ghost-class="opacity-50"
+          @change="handleDragChange"
+        >
+          <template #item="{ element }">
+            <TodoCard :todo="element" @edit="openEditModal" />
+          </template>
+        </draggable>
+        <div
+          v-if="todosByStatus.inProgress.length === 0"
+          class="text-gray-500 text-sm p-2"
+        >
+          タスクがありません
+        </div>
+      </div>
+    </div>
+
+    <!-- PC/モバイル共通: 下段：Archived -->
+    <div class="rounded-lg bg-green-50 p-4 mt-4">
       <h2 class="mb-3 font-semibold text-green-700">
         <UIcon name="i-heroicons-check-circle" class="mr-1 align-middle" />
         Archived
@@ -99,39 +160,6 @@
         タスクがありません
       </div>
     </div>
-
-    <!-- デバッグ用：全てのTodoを表示 -->
-    <!-- <div class="mb-6 p-4 bg-gray-50 rounded-lg">
-      <h2 class="text-lg font-semibold mb-3">全てのタスク (デバッグ用)</h2>
-      <div v-if="todoStore.todos.length === 0" class="text-gray-500">
-        タスクがありません
-      </div>
-      <div v-else class="space-y-2">
-        <div
-          v-for="todo in todoStore.todos"
-          :key="todo.id"
-          class="bg-white p-3 rounded shadow"
-        >
-          <div class="flex justify-between">
-            <div>
-              <span class="font-medium">{{ todo.title }}</span>
-              <span class="ml-2 text-sm text-gray-600"
-                >(ステータス: "{{ todo.status }}")</span
-              >
-            </div>
-            <UBadge v-if="todo.is_private" color="gray" size="sm"
-              >個人タスク</UBadge
-            >
-          </div>
-          <p v-if="todo.memo" class="mt-1 text-sm text-gray-600">
-            {{ todo.memo }}
-          </p>
-          <div class="mt-1 text-xs text-gray-500">
-            ID: {{ todo.id }} | 更新: {{ formatDate(todo.updated_at) }}
-          </div>
-        </div>
-      </div>
-    </div> -->
 
     <!-- 新規タスクモーダル -->
     <UModal v-model="showNewTaskModal">
