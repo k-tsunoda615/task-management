@@ -16,7 +16,6 @@
           color="gray"
           variant="ghost"
           size="sm"
-          icon
           class="ml-auto"
         >
           <UIcon name="i-heroicons-x-mark" class="h-5 w-5" />
@@ -27,7 +26,6 @@
           color="gray"
           variant="ghost"
           size="sm"
-          icon
           class="ml-auto"
         >
           <UIcon
@@ -200,7 +198,7 @@ const toggleTaskFilter = () => {
 };
 
 // ゴミ箱へのドロップを処理
-const handleTrashDrop = (event) => {
+const handleTrashDrop = (event: any) => {
   const todoId = event.dataTransfer.getData("todoId");
   if (todoId) {
     isDragOver.value = false;

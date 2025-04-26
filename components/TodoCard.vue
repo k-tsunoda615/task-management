@@ -61,7 +61,7 @@ const editTodo = () => {
 };
 
 // ドラッグ開始時にTodoのIDをデータ転送オブジェクトに設定
-const handleDragStart = (event) => {
+const handleDragStart = (event: any) => {
   event.dataTransfer.setData("todoId", props.todo.id);
   event.dataTransfer.effectAllowed = "move";
 };
