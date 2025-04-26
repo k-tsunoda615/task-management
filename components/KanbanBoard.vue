@@ -303,6 +303,7 @@ import { useTodoStore } from "~/stores/todo";
 import draggable from "vuedraggable";
 import { marked } from "marked";
 import { useEventBus } from "@vueuse/core";
+import type { Todo } from "~/types/todo";
 
 const todoStore = useTodoStore();
 const showNewTaskModal = ref(false);
@@ -342,7 +343,7 @@ const parsedPreviewMemo = computed(() => {
 });
 
 // 日付フォーマット関数
-const formatDate = (dateString) => {
+const formatDate = (dateString: string | undefined): string => {
   if (!dateString) return "不明";
   const date = new Date(dateString);
   return date.toLocaleString("ja-JP", {
@@ -393,7 +394,7 @@ const updateTodosByStatus = () => {
   todosByStatus.done = [];
 
   // 再分類
-  todoStore.filteredTodos.forEach((todo) => {
+  todoStore.filteredTodos.forEach((todo: Todo) => {
     if (todo.status === "未対応") {
       todosByStatus.todo.push(todo);
     } else if (todo.status === "対応中") {
@@ -408,11 +409,15 @@ const updateTodosByStatus = () => {
   });
 
   // 各リストをsort_orderでソート
-  todosByStatus.todo.sort((a, b) => (a.sort_order || 0) - (b.sort_order || 0));
-  todosByStatus.inProgress.sort(
-    (a, b) => (a.sort_order || 0) - (b.sort_order || 0)
+  todosByStatus.todo.sort(
+    (a: Todo, b: Todo) => (a.sort_order || 0) - (b.sort_order || 0)
   );
-  todosByStatus.done.sort((a, b) => (a.sort_order || 0) - (b.sort_order || 0));
+  todosByStatus.inProgress.sort(
+    (a: Todo, b: Todo) => (a.sort_order || 0) - (b.sort_order || 0)
+  );
+  todosByStatus.done.sort(
+    (a: Todo, b: Todo) => (a.sort_order || 0) - (b.sort_order || 0)
+  );
 };
 
 // todoStoreのtodosが変更されたときに再分類を実行
@@ -448,13 +453,13 @@ onMounted(() => {
   // ゴミ箱へのドロップイベントを監視
   trashEventBus.on((todoId) => {
     if (confirm("このタスクを削除しますか？")) {
-      deleteTodo(todoId);
+      deleteTodo(todoId as string);
     }
   });
 });
 
 // 編集モーダルを開く
-const openEditModal = (todo) => {
+const openEditModal = (todo: Todo) => {
   editingTodo.value = { ...todo };
   showEditModal.value = true;
 };
@@ -465,10 +470,15 @@ const createTodo = async () => {
 
   // 同じステータスのTodoの最小sort_orderを取得
   let minSortOrder = 0;
-  const statusKey = statusMap[newTodo.value.status] || "todo";
-  if (todosByStatus[statusKey].length > 0) {
+  const statusKey =
+    statusMap[newTodo.value.status as keyof typeof statusMap] || "todo";
+  if (todosByStatus[statusKey as keyof typeof todosByStatus].length > 0) {
     minSortOrder =
-      Math.min(...todosByStatus[statusKey].map((t) => t.sort_order || 0)) - 100;
+      Math.min(
+        ...todosByStatus[statusKey as keyof typeof todosByStatus].map(
+          (t: Todo) => t.sort_order || 0
+        )
+      ) - 100;
   }
 
   isCreating.value = true;
@@ -525,7 +535,7 @@ const updateTodo = async () => {
 };
 
 // ドラッグ&ドロップ時の処理
-const handleDragChange = async (evt) => {
+const handleDragChange = async (evt: any) => {
   console.log("ドラッグイベント:", evt); // デバッグ用
 
   // ドラッグ開始時のフラグ設定
@@ -544,19 +554,19 @@ const handleDragChange = async (evt) => {
 
   if (evt.added) {
     // 追加された場合は、追加先のインデックスから判断
-    if (todosByStatus.inProgress.find((t) => t.id === todo.id)) {
+    if (todosByStatus.inProgress.find((t: Todo) => t.id === todo.id)) {
       newStatus = "inProgress";
       targetList = todosByStatus.inProgress;
-    } else if (todosByStatus.done.find((t) => t.id === todo.id)) {
+    } else if (todosByStatus.done.find((t: Todo) => t.id === todo.id)) {
       newStatus = "done";
       targetList = todosByStatus.done;
     }
   } else if (evt.moved) {
     // 移動の場合は、移動先のリストから判断
-    if (todosByStatus.inProgress.find((t) => t.id === todo.id)) {
+    if (todosByStatus.inProgress.find((t: Todo) => t.id === todo.id)) {
       newStatus = "inProgress";
       targetList = todosByStatus.inProgress;
-    } else if (todosByStatus.done.find((t) => t.id === todo.id)) {
+    } else if (todosByStatus.done.find((t: Todo) => t.id === todo.id)) {
       newStatus = "done";
       targetList = todosByStatus.done;
     }
@@ -575,7 +585,7 @@ const handleDragChange = async (evt) => {
     done: "完了",
   };
 
-  const mappedStatus = statusMapping[newStatus];
+  const mappedStatus = statusMapping[newStatus as keyof typeof statusMapping];
   if (!mappedStatus) {
     console.error("不正なステータス:", newStatus);
     isDragging.value = false;
@@ -586,7 +596,7 @@ const handleDragChange = async (evt) => {
   isUpdatingRef.value = true;
 
   // 直接リストの順序を使用（すでにドラッグ後の順序になっている）
-  const updatedTodos = targetList.map((t, index) => {
+  const updatedTodos = targetList.map((t: Todo, index: number) => {
     return {
       ...t,
       sort_order: index * 100, // 大きな間隔で設定（0, 100, 200, ...）
@@ -600,13 +610,15 @@ const handleDragChange = async (evt) => {
 
   // 現在のTodoの順序を設定
   const currentSortOrder =
-    updatedTodos.find((t) => t.id === todo.id)?.sort_order || 0;
+    updatedTodos.find((t: Todo) => t.id === todo.id)?.sort_order || 0;
   todo.sort_order = currentSortOrder;
 
   // 他のTodoの順序も更新
-  updatedTodos.forEach((t) => {
+  updatedTodos.forEach((t: Todo) => {
     if (t.id !== todo.id) {
-      const originalTodo = targetList.find((original) => original.id === t.id);
+      const originalTodo = targetList.find(
+        (original: Todo) => original.id === t.id
+      );
       if (originalTodo) {
         originalTodo.sort_order = t.sort_order;
       }
@@ -631,27 +643,27 @@ const handleDragChange = async (evt) => {
         status: mappedStatus,
         sort_order: currentSortOrder,
       })
-      .catch((error) => {
+      .catch((error: any) => {
         console.error("Todo更新エラー:", error);
       });
 
     // 他のTodoの順序を一括更新
     const updatePromises = updatedTodos
-      .filter((t) => t.id !== todo.id)
-      .map((t) =>
+      .filter((t: Todo) => t.id !== todo.id)
+      .map((t: Todo) =>
         todoStore.updateTodoOrder({
           id: t.id,
           sort_order: t.sort_order,
         })
       );
 
-    Promise.all(updatePromises).catch((error) => {
+    Promise.all(updatePromises).catch((error: any) => {
       console.error("Todo順序更新エラー:", error);
     });
 
     // 5秒後に静かに再同期（オプション）
     setTimeout(() => {
-      todoStore.fetchTodos().catch((error) => {
+      todoStore.fetchTodos().catch((error: any) => {
         console.error("Todo再取得エラー:", error);
       });
       // 更新フラグを解除（遅延して）
@@ -681,7 +693,7 @@ const handleDragChange = async (evt) => {
 };
 
 // Todo削除関数
-const deleteTodo = async (todoId) => {
+const deleteTodo = async (todoId: string) => {
   try {
     await todoStore.deleteTodo(todoId);
     useToast().add({
