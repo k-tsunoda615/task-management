@@ -19,7 +19,7 @@
         </h3>
         <div
           v-if="todo.memo"
-          class="mt-1 text-sm prose prose-sm prose-gray max-h-[20em] w-full overflow-y-auto pr-2"
+          class="mt-1 text-sm prose prose-sm prose-gray max-h-[20em] w-full overflow-y-auto pr-2 break-all"
           v-html="parsedMemo"
         />
       </div>
