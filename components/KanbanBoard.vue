@@ -299,11 +299,11 @@
 </template>
 
 <script setup lang="ts">
-import { useTodoStore } from "~/stores/todo";
+import { useTodoStore } from "../stores/todo";
 import draggable from "vuedraggable";
 import { marked } from "marked";
 import { useEventBus } from "@vueuse/core";
-import type { Todo } from "~/types/todo";
+import type { Todo } from "../types/todo";
 
 const todoStore = useTodoStore();
 const showNewTaskModal = ref(false);

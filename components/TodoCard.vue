@@ -41,7 +41,7 @@
 </template>
 
 <script setup lang="ts">
-import { useTodoStore } from "~/stores/todo";
+import { useTodoStore } from "../stores/todo";
 import { marked } from "marked";
 
 const props = defineProps({

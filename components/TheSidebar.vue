@@ -101,8 +101,8 @@
 </template>
 
 <script setup lang="ts">
-import { useProjectStore } from "~/stores/project";
-import { useTodoStore } from "~/stores/todo";
+import { useProjectStore } from "../stores/project";
+import { useTodoStore } from "../stores/todo";
 import { useEventBus } from "@vueuse/core";
 
 const props = defineProps({
