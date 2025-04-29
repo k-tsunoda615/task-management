@@ -332,11 +332,23 @@
             </UFormGroup>
           </div>
           <UFormGroup label="合計時間 (hh:mm:ss)" class="mt-4">
-            <UInput
-              v-model="editTimeInput"
-              placeholder="00:00:00"
-              @input="validateTimeInput"
-            />
+            <div class="flex items-center gap-2">
+              <UInput
+                v-model="editTimeInput"
+                placeholder="00:00:00"
+                @input="validateTimeInput"
+                :disabled="editingTodo.is_timing"
+              />
+              <UTooltip
+                v-if="editingTodo.is_timing"
+                text="計測中は時間を編集できません"
+              >
+                <UIcon
+                  name="i-heroicons-information-circle"
+                  class="text-blue-500"
+                />
+              </UTooltip>
+            </div>
           </UFormGroup>
         </form>
         <template #footer>
@@ -776,31 +788,22 @@ const createTodo = async () => {
 const updateTodo = async () => {
   if (!editingTodo.value.title) return;
 
-  // 時間文字列を秒数に変換
-  const totalTimeSeconds = parseTimeToSeconds(editTimeInput.value);
-  console.log(
-    "変換された時間（秒）:",
-    totalTimeSeconds,
-    "元の入力:",
-    editTimeInput.value
-  );
+  // 計測中の場合は現在の経過時間を取得
+  let totalTimeSeconds = editingTodo.value.is_timing
+    ? currentTotalTime.value
+    : parseTimeToSeconds(editTimeInput.value);
 
   // 更新するデータを準備
-  const updateData = {
+  const updateData: Partial<Todo> = {
     ...editingTodo.value,
-    // task_idが空文字列の場合はnullを設定
-    task_id:
-      editingTodo.value.task_id === "" ? null : editingTodo.value.task_id,
+    task_id: editingTodo.value.task_id || undefined, // nullの代わりにundefinedを使用
     total_time: [totalTimeSeconds], // 配列として送信
   };
-
-  console.log("更新データ:", updateData);
 
   isUpdating.value = true;
   try {
     await todoStore.updateTodo(updateData);
     showEditModal.value = false;
-    // 成功メッセージを表示
     useToast().add({
       title: "更新完了",
       description: "タスクを更新しました",
@@ -808,7 +811,6 @@ const updateTodo = async () => {
     });
   } catch (error) {
     console.error("Todo更新エラー:", error);
-    // エラーメッセージを表示
     useToast().add({
       title: "エラー",
       description: "更新に失敗しました",

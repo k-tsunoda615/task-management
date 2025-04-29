@@ -28,7 +28,7 @@ const extractTotalTime = (time: number | number[] | undefined): number => {
   if (Array.isArray(time) && time.length > 0) {
     return time[0];
   }
-  return time || 0;
+  return typeof time === "number" ? time : 0;
 };
 
 export const useTodoStore = defineStore("todo", {
@@ -174,29 +174,19 @@ export const useTodoStore = defineStore("todo", {
           throw new Error("Todo IDが指定されていません");
         }
 
-        // total_timeフィールドの型変換
-        const updateData = { ...todo };
-
-        // total_timeの型変換（複数の可能性を試す）
-        if (updateData.total_time !== undefined) {
-          try {
-            // 方法1: 配列として送信
-            updateData.total_time = [updateData.total_time];
-            console.log(
-              "total_timeを配列として送信します:",
-              updateData.total_time
-            );
-          } catch (e) {
-            console.error("total_timeの変換に失敗しました:", e);
+        // 計測中の場合は現在の経過時間を取得
+        if (todo.total_time !== undefined) {
+          if (!Array.isArray(todo.total_time)) {
+            todo.total_time = [todo.total_time];
           }
         }
 
-        console.log("変換後のデータ:", updateData);
+        console.log("変換後のデータ:", todo);
 
         // APIリクエストを送信
         const { data, error } = await useSupabaseClient()
           .from("todos")
-          .update(updateData)
+          .update(todo)
           .eq("id", todo.id)
           .select();
 
