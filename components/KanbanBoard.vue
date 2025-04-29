@@ -1,28 +1,30 @@
 <template>
   <div>
     <!-- 現在計測中のタスク表示 -->
-    <div
-      v-if="currentTimingTodo"
-      class="my-8 p-4 bg-blue-50 rounded-lg border border-blue-200 flex items-center justify-between"
-    >
-      <div class="flex items-center">
-        <UIcon name="i-heroicons-clock" class="w-5 h-5 mr-2 text-blue-500" />
-        <div>
-          <div class="font-semibold">{{ currentTimingTodo.title }}</div>
-          <div class="text-sm text-blue-700">
-            {{ formatTime(currentTotalTime) }}
+    <Transition name="slide">
+      <div
+        v-if="currentTimingTodo"
+        class="mb-8 p-4 bg-blue-50 rounded-lg border border-blue-200 flex items-center justify-between"
+      >
+        <div class="flex items-center">
+          <UIcon name="i-heroicons-clock" class="w-5 h-5 mr-2 text-blue-500" />
+          <div>
+            <div class="font-semibold">{{ currentTimingTodo.title }}</div>
+            <div class="text-sm text-blue-700">
+              {{ formatTime(currentTotalTime) }}
+            </div>
           </div>
         </div>
+        <UButton
+          color="red"
+          size="sm"
+          @click="stopCurrentTiming"
+          icon="i-heroicons-pause"
+        >
+          停止
+        </UButton>
       </div>
-      <UButton
-        color="red"
-        size="sm"
-        @click="stopCurrentTiming"
-        icon="i-heroicons-pause"
-      >
-        停止
-      </UButton>
-    </div>
+    </Transition>
 
     <div class="mb-4 flex items-center justify-between">
       <h1 class="text-2xl font-bold font-en-title">Task Board</h1>
@@ -1265,3 +1267,26 @@ const deleteCurrentTodo = async () => {
   }
 };
 </script>
+
+<style scoped>
+/* スライドアニメーション */
+.slide-enter-active {
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  max-height: 200px;
+  opacity: 1;
+  margin-bottom: 2rem;
+}
+
+.slide-leave-active {
+  transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+  max-height: 200px;
+}
+
+.slide-enter-from,
+.slide-leave-to {
+  max-height: 0;
+  opacity: 0;
+  margin-bottom: 0;
+  overflow: hidden;
+}
+</style>
