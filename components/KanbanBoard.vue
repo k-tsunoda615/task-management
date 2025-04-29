@@ -563,7 +563,7 @@ watch(
     );
     if (timingTodo) {
       currentTimingTodo.value = timingTodo;
-      currentTotalTime.value = timingTodo.total_time || 0;
+      currentTotalTime.value = extractTotalTime(timingTodo.total_time);
       if (!timerInterval.value) {
         startTimerForTodo(timingTodo);
       }
@@ -628,7 +628,18 @@ onMounted(() => {
 
 // 編集モーダルを開く
 const openEditModal = (todo: Todo) => {
-  editingTodo.value = { ...todo };
+  // 必須フィールドを持つオブジェクトを作成
+  editingTodo.value = {
+    id: todo.id,
+    title: todo.title,
+    status: todo.status,
+    memo: todo.memo || "",
+    task_id: todo.task_id || "",
+    is_private: todo.is_private || false,
+    total_time: extractTotalTime(todo.total_time),
+    is_timing: todo.is_timing || false,
+  };
+
   editTimeInput.value = formatTime(todo.total_time || 0);
   showEditModal.value = true;
 };
@@ -662,7 +673,7 @@ const createTodo = async () => {
       task_id: newTodo.value.task_id,
       is_private: newTodo.value.is_private,
       sort_order: minSortOrder, // 最小値より小さい値を設定して先頭に表示
-      total_time: totalTimeSeconds,
+      total_time: [totalTimeSeconds], // 配列として送信
       is_timing: false,
     });
 
@@ -918,7 +929,7 @@ const startTimerForTodo = (todo: Todo) => {
 
   // 現在のタスクを設定
   currentTimingTodo.value = { ...todo }; // オブジェクトをコピーして参照を切る
-  currentTotalTime.value = todo.total_time || 0;
+  currentTotalTime.value = extractTotalTime(todo.total_time);
 
   // 開始時間を記録
   startTime.value = Date.now();
@@ -943,7 +954,7 @@ const startTimerForTodo = (todo: Todo) => {
     const elapsedSeconds = Math.floor((Date.now() - startTime.value) / 1000);
 
     // 合計時間を更新
-    const newTotalTime = (todo.total_time || 0) + elapsedSeconds;
+    const newTotalTime = extractTotalTime(todo.total_time) + elapsedSeconds;
     if (currentTotalTime.value !== newTotalTime) {
       currentTotalTime.value = newTotalTime;
 
@@ -1013,7 +1024,7 @@ const stopTiming = async (todo: Todo) => {
     const updatedTodo = {
       id: todo.id,
       is_timing: false,
-      total_time: finalTime, // 数値のまま送信
+      total_time: [finalTime], // 配列として送信
     };
 
     // サーバーにデータを保存
@@ -1071,7 +1082,7 @@ const stopTimer = () => {
     const elapsedSeconds = Math.floor((Date.now() - startTime.value) / 1000);
     console.log("経過時間:", elapsedSeconds, "秒");
     currentTotalTime.value =
-      (currentTimingTodo.value.total_time || 0) + elapsedSeconds;
+      extractTotalTime(currentTimingTodo.value.total_time) + elapsedSeconds;
     startTime.value = null;
   }
 
@@ -1085,7 +1096,7 @@ const updateTimerInBackground = async () => {
   try {
     await todoStore.updateTodo({
       id: currentTimingTodo.value.id,
-      total_time: currentTotalTime.value, // 数値のまま送信
+      total_time: [currentTotalTime.value], // 配列として送信
       is_timing: true,
     });
   } catch (error) {
@@ -1123,5 +1134,13 @@ const handleDragEnd = () => {
   setTimeout(() => {
     isDragging.value = false;
   }, 50);
+};
+
+// total_timeから数値を抽出するヘルパー関数
+const extractTotalTime = (time: number | number[] | undefined): number => {
+  if (Array.isArray(time) && time.length > 0) {
+    return time[0];
+  }
+  return typeof time === "number" ? time : 0;
 };
 </script>

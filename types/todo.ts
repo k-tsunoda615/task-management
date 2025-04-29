@@ -1,4 +1,4 @@
-export interface Todo {
+export type Todo = {
   id: string;
   title: string;
   status: string;
@@ -8,6 +8,6 @@ export interface Todo {
   is_private?: boolean;
   user_id?: string;
   updated_at?: string;
-  total_time?: number;
+  total_time?: number | number[];
   is_timing?: boolean;
-}
+};
