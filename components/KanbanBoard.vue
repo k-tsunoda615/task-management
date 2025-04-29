@@ -242,7 +242,11 @@
             <UCheckbox v-model="newTodo.is_private" label="Private" />
           </UFormGroup>
           <UFormGroup label="合計時間 (hh:mm:ss)" class="mt-4">
-            <UInput v-model="timeInput" placeholder="00:00:00" />
+            <UInput
+              v-model="timeInput"
+              placeholder="00:00:00"
+              @input="validateTimeInput"
+            />
           </UFormGroup>
         </form>
         <template #footer>
@@ -311,7 +315,11 @@
             </UFormGroup>
           </div>
           <UFormGroup label="合計時間 (hh:mm:ss)" class="mt-4">
-            <UInput v-model="editTimeInput" placeholder="00:00:00" />
+            <UInput
+              v-model="editTimeInput"
+              placeholder="00:00:00"
+              @input="validateTimeInput"
+            />
           </UFormGroup>
         </form>
         <template #footer>
@@ -454,18 +462,34 @@ const formatTime = (seconds: number | number[]) => {
   ].join(":");
 };
 
-// 時間文字列を秒数に変換する関数
+// 時間文字列（hh:mm:ss）を秒数に変換
 const parseTimeToSeconds = (timeStr: string): number => {
   if (!timeStr) return 0;
 
-  const parts = timeStr.split(":").map((part) => parseInt(part, 10));
-  if (parts.length === 3) {
-    return parts[0] * 3600 + parts[1] * 60 + parts[2];
-  } else if (parts.length === 2) {
-    return parts[0] * 60 + parts[1];
-  } else {
+  // 時間形式（hh:mm:ss）の正規表現
+  const timeRegex = /^([0-9]{1,2}):([0-5][0-9]):([0-5][0-9])$/;
+  const match = timeStr.match(timeRegex);
+
+  if (!match) {
+    // 正規表現にマッチしない場合は、単純に:で分割して変換を試みる
+    const parts = timeStr.split(":").map((part) => parseInt(part, 10));
+    if (
+      parts.length === 3 &&
+      !isNaN(parts[0]) &&
+      !isNaN(parts[1]) &&
+      !isNaN(parts[2])
+    ) {
+      return parts[0] * 3600 + parts[1] * 60 + parts[2];
+    }
+    console.warn("不正な時間形式:", timeStr);
     return 0;
   }
+
+  const hours = parseInt(match[1], 10);
+  const minutes = parseInt(match[2], 10);
+  const seconds = parseInt(match[3], 10);
+
+  return hours * 3600 + minutes * 60 + seconds;
 };
 
 // ステータスの日本語と英語のマッピング
@@ -639,14 +663,22 @@ const openEditModal = (todo: Todo) => {
     title: todo.title,
     status: todo.status,
     memo: todo.memo || "",
-    task_id: todo.task_id || "",
+    task_id: todo.task_id || null,
     is_private: todo.is_private || false,
     total_time: extractTotalTime(todo.total_time),
     is_timing: todo.is_timing || false,
   };
 
-  editTimeInput.value = formatTime(todo.total_time || 0);
+  // 時間表示を更新
+  editTimeInput.value = formatTime(extractTotalTime(todo.total_time));
   showEditModal.value = true;
+
+  // デバッグ用
+  console.log("編集モーダルを開きました:", {
+    todo,
+    extractedTime: extractTotalTime(todo.total_time),
+    formattedTime: editTimeInput.value,
+  });
 };
 
 // 新規Todo作成
@@ -706,12 +738,27 @@ const updateTodo = async () => {
 
   // 時間文字列を秒数に変換
   const totalTimeSeconds = parseTimeToSeconds(editTimeInput.value);
-  editingTodo.value.total_time = totalTimeSeconds;
+  console.log(
+    "変換された時間（秒）:",
+    totalTimeSeconds,
+    "元の入力:",
+    editTimeInput.value
+  );
+
+  // 更新するデータを準備
+  const updateData = {
+    ...editingTodo.value,
+    // task_idが空文字列の場合はnullを設定
+    task_id:
+      editingTodo.value.task_id === "" ? null : editingTodo.value.task_id,
+    total_time: [totalTimeSeconds], // 配列として送信
+  };
+
+  console.log("更新データ:", updateData);
 
   isUpdating.value = true;
   try {
-    console.log("タスク更新:", editingTodo.value);
-    await todoStore.updateTodo(editingTodo.value);
+    await todoStore.updateTodo(updateData);
     showEditModal.value = false;
     // 成功メッセージを表示
     useToast().add({
@@ -1147,5 +1194,23 @@ const extractTotalTime = (time: number | number[] | undefined): number => {
     return time[0];
   }
   return typeof time === "number" ? time : 0;
+};
+
+// 時間入力の検証
+const validateTimeInput = (event: Event) => {
+  const input = event.target as HTMLInputElement;
+  const value = input.value;
+
+  // 時間形式（hh:mm:ss）の正規表現
+  const timeRegex = /^([0-9]{1,2}):([0-5][0-9]):([0-5][0-9])$/;
+
+  if (value && !timeRegex.test(value)) {
+    // 形式が正しくない場合は警告を表示
+    useToast().add({
+      title: "入力エラー",
+      description: "時間は hh:mm:ss 形式で入力してください",
+      color: "yellow",
+    });
+  }
 };
 </script>
