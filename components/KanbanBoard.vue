@@ -1,16 +1,9 @@
 <template>
   <div>
-    <div class="mb-4 flex items-center justify-between">
-      <h1 class="text-2xl font-bold font-en-title">Task Board</h1>
-      <UButton @click="openNewTaskModal" icon="i-heroicons-plus">
-        新しいタスク
-      </UButton>
-    </div>
-
     <!-- 現在計測中のタスク表示 -->
     <div
       v-if="currentTimingTodo"
-      class="mb-4 p-4 bg-blue-50 rounded-lg border border-blue-200 flex items-center justify-between"
+      class="my-8 p-4 bg-blue-50 rounded-lg border border-blue-200 flex items-center justify-between"
     >
       <div class="flex items-center">
         <UIcon name="i-heroicons-clock" class="w-5 h-5 mr-2 text-blue-500" />
@@ -28,6 +21,13 @@
         icon="i-heroicons-pause"
       >
         停止
+      </UButton>
+    </div>
+
+    <div class="mb-4 flex items-center justify-between">
+      <h1 class="text-2xl font-bold font-en-title">Task Board</h1>
+      <UButton @click="openNewTaskModal" icon="i-heroicons-plus">
+        新しいタスク
       </UButton>
     </div>
 
