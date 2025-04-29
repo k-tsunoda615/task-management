@@ -273,7 +273,17 @@
     >
       <UCard>
         <template #header>
-          <h3 class="text-lg font-semibold">タスクを編集</h3>
+          <div class="flex justify-between items-center">
+            <h3 class="text-lg font-semibold">タスクを編集</h3>
+            <UButton
+              color="red"
+              variant="ghost"
+              icon="i-heroicons-trash"
+              size="sm"
+              @click="confirmDeleteTodo"
+              title="タスクを削除"
+            />
+          </div>
         </template>
         <form @submit.prevent="updateTodo">
           <UFormGroup label="タイトル" class="mt-4">
@@ -363,6 +373,25 @@
         </UModal>
       </UCard>
     </UModal>
+
+    <!-- 削除確認モーダル -->
+    <UModal v-model="showDeleteConfirmModal">
+      <UCard>
+        <template #header>
+          <h3 class="text-lg font-semibold text-red-600">タスクの削除</h3>
+        </template>
+        <p>「{{ editingTodo.title }}」を削除してもよろしいですか？</p>
+        <p class="text-sm text-gray-500 mt-2">この操作は元に戻せません。</p>
+        <template #footer>
+          <div class="flex justify-end gap-2">
+            <UButton variant="ghost" @click="showDeleteConfirmModal = false">
+              キャンセル
+            </UButton>
+            <UButton color="red" @click="deleteCurrentTodo"> 削除する </UButton>
+          </div>
+        </template>
+      </UCard>
+    </UModal>
   </div>
 </template>
 
@@ -377,6 +406,7 @@ const todoStore = useTodoStore();
 const showNewTaskModal = ref(false);
 const showEditModal = ref(false);
 const showPreviewModal = ref(false);
+const showDeleteConfirmModal = ref(false);
 const isCreating = ref(false);
 const isUpdating = ref(false);
 const trashEventBus = useEventBus("trash-drop");
@@ -1211,6 +1241,27 @@ const validateTimeInput = (event: Event) => {
       description: "時間は hh:mm:ss 形式で入力してください",
       color: "yellow",
     });
+  }
+};
+
+// 削除確認モーダルを開く
+const confirmDeleteTodo = () => {
+  if (editingTodo.value && editingTodo.value.id) {
+    showDeleteConfirmModal.value = true;
+  }
+};
+
+// 削除確認モーダルで削除を確認したときの処理
+const deleteCurrentTodo = async () => {
+  if (editingTodo.value && editingTodo.value.id) {
+    try {
+      await deleteTodo(editingTodo.value.id);
+      // 削除後にモーダルを閉じる
+      showDeleteConfirmModal.value = false;
+      showEditModal.value = false;
+    } catch (error) {
+      console.error("タスク削除エラー:", error);
+    }
   }
 };
 </script>
