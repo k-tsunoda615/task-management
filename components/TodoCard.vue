@@ -35,6 +35,7 @@
             size="xs"
             icon="i-heroicons-play"
             class="ml-2 z-10"
+            :loading="timerLoading"
             @click="startTiming"
           />
           <UButton
@@ -44,6 +45,7 @@
             size="xs"
             icon="i-heroicons-pause"
             class="ml-2 z-10"
+            :loading="timerLoading"
             @click="stopTiming"
           />
         </div>
@@ -96,6 +98,10 @@ const props = defineProps({
   showTimerBar: {
     type: Boolean,
     default: true,
+  },
+  timerLoading: {
+    type: Boolean,
+    default: false,
   },
 });
 

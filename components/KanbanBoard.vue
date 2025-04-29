@@ -58,6 +58,7 @@
               <TodoCard
                 :todo="element"
                 :showTimerBar="showTimerBar"
+                :timerLoading="timerButtonLoading === element.id"
                 @edit="openEditModal"
                 @start-timing="startTiming"
                 @stop-timing="stopTiming"
@@ -94,6 +95,7 @@
               <TodoCard
                 :todo="element"
                 :showTimerBar="showTimerBar"
+                :timerLoading="timerButtonLoading === element.id"
                 @edit="openEditModal"
                 @start-timing="startTiming"
                 @stop-timing="stopTiming"
@@ -134,6 +136,7 @@
             <TodoCard
               :todo="element"
               :showTimerBar="showTimerBar"
+              :timerLoading="timerButtonLoading === element.id"
               @edit="openEditModal"
               @start-timing="startTiming"
               @stop-timing="stopTiming"
@@ -168,6 +171,7 @@
             <TodoCard
               :todo="element"
               :showTimerBar="showTimerBar"
+              :timerLoading="timerButtonLoading === element.id"
               @edit="openEditModal"
               @start-timing="startTiming"
               @stop-timing="stopTiming"
@@ -203,6 +207,7 @@
           <TodoCard
             :todo="element"
             :showTimerBar="showTimerBar"
+            :timerLoading="timerButtonLoading === element.id"
             @edit="openEditModal"
             @start-timing="startTiming"
             @stop-timing="stopTiming"
@@ -549,6 +554,9 @@ const todosByStatus = reactive({
 const isUpdatingRef = ref(false);
 // ドラッグ中フラグ
 const isDragging = ref(false);
+
+// ボタンのローディング状態を管理
+const timerButtonLoading = ref<string | null>(null);
 
 // Todoの状態が変更されたときに再分類する
 const updateTodosByStatus = () => {
@@ -969,24 +977,26 @@ const handleDragChange = async (evt: any) => {
   }
 };
 
-// タイマー開始
+// タイミング開始
 const startTiming = async (todo: Todo) => {
-  console.log("タイマー開始リクエスト:", todo);
-
   // 既に計測中のタスクがある場合は停止
   if (currentTimingTodo.value && currentTimingTodo.value.id !== todo.id) {
     console.log("別のタスクが計測中なので停止します");
     await stopTiming(currentTimingTodo.value);
   }
 
+  // 即座にUI更新
+  currentTimingTodo.value = { ...todo };
+  currentTotalTime.value = extractTotalTime(todo.total_time);
+  startTime.value = Date.now();
+
   try {
-    // タスクのis_timingフラグを更新
-    const updatedTodo = {
+    // バックグラウンドで更新
+    await todoStore.updateTodo({
       id: todo.id,
       is_timing: true,
-    };
-
-    await todoStore.updateTodo(updatedTodo);
+      total_time: [currentTotalTime.value],
+    });
 
     // タイマーを開始
     startTimerForTodo(todo);
@@ -998,10 +1008,50 @@ const startTiming = async (todo: Todo) => {
       color: "blue",
     });
   } catch (error) {
-    console.error("タイマー開始エラー:", error);
+    // エラー時は状態を元に戻す
+    currentTimingTodo.value = null;
+    currentTotalTime.value = 0;
+    startTime.value = null;
+
     useToast().add({
       title: "エラー",
       description: "タイマーの開始に失敗しました",
+      color: "red",
+    });
+  }
+};
+
+// タイミング停止
+const stopTiming = async (todo: Todo) => {
+  // 現在の時間を保存
+  const finalTime = currentTotalTime.value;
+
+  // 即座にUI更新
+  stopTimer();
+  const prevTodo = currentTimingTodo.value;
+  currentTimingTodo.value = null;
+
+  try {
+    // バックグラウンドで更新
+    await todoStore.updateTodo({
+      id: todo.id,
+      is_timing: false,
+      total_time: [finalTime],
+    });
+
+    useToast().add({
+      title: "計測停止",
+      description: `「${todo.title}」の計測を停止しました (${formatTime(finalTime)})`,
+      color: "green",
+    });
+  } catch (error) {
+    // エラー時は状態を元に戻す
+    currentTimingTodo.value = prevTodo;
+    startTimerForTodo(todo);
+
+    useToast().add({
+      title: "エラー",
+      description: "タイマーの停止に失敗しました",
       color: "red",
     });
   }
@@ -1090,65 +1140,6 @@ const updateTimingTodoInLists = (
   updateInList(todosByStatus.todo);
   updateInList(todosByStatus.inProgress);
   updateInList(todosByStatus.done);
-};
-
-// タイマー停止
-const stopTiming = async (todo: Todo) => {
-  console.log("タイマー停止リクエスト:", todo);
-
-  // タイマーを停止して最終時間を取得
-  stopTimer();
-
-  try {
-    // 更新するデータを準備
-    const finalTime = currentTotalTime.value;
-    console.log("タイマー停止処理: 更新するtodo:", todo.id, "時間:", finalTime);
-
-    // タスクのis_timingフラグと合計時間を更新
-    const updatedTodo = {
-      id: todo.id,
-      is_timing: false,
-      total_time: [finalTime], // 配列として送信
-    };
-
-    // サーバーにデータを保存
-    const result = await todoStore.updateTodo(updatedTodo);
-    console.log("タイマー停止: サーバーへの保存完了", result);
-
-    // todoリスト内のタスクも更新
-    updateTimingTodoInLists(todo.id, finalTime, false);
-
-    // 成功メッセージ
-    useToast().add({
-      title: "計測停止",
-      description: `「${todo.title}」の計測を停止しました (${formatTime(finalTime)})`,
-      color: "green",
-    });
-
-    // 現在計測中のタスクをクリア
-    currentTimingTodo.value = null;
-
-    // 最新のデータを再取得
-    await todoStore.fetchTodos();
-  } catch (error) {
-    console.error("タイマー停止エラー:", error);
-    useToast().add({
-      title: "エラー",
-      description: "タイマーの停止に失敗しました",
-      color: "red",
-    });
-  }
-};
-
-// 現在計測中のタスクを停止
-const stopCurrentTiming = () => {
-  console.log("現在計測中のタスクを停止します");
-  if (currentTimingTodo.value) {
-    console.log("停止対象:", currentTimingTodo.value);
-    stopTiming(currentTimingTodo.value);
-  } else {
-    console.warn("計測中のタスクがありません");
-  }
 };
 
 // タイマーを停止する
