@@ -18,7 +18,7 @@
         <UButton
           color="red"
           size="sm"
-          @click="stopCurrentTiming"
+          @click="stopTiming(currentTimingTodo)"
           icon="i-heroicons-pause"
         >
           停止
@@ -703,7 +703,7 @@ const openEditModal = (todo: Todo) => {
     title: todo.title,
     status: todo.status,
     memo: todo.memo || "",
-    task_id: todo.task_id || null,
+    task_id: todo.task_id || "",
     is_private: todo.is_private || false,
     total_time: extractTotalTime(todo.total_time),
     is_timing: todo.is_timing || false,
