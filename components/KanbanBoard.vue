@@ -9,7 +9,7 @@
 
     <!-- 現在計測中のタスク表示 -->
     <div
-      v-if="showTimerBar && currentTimingTodo"
+      v-if="currentTimingTodo"
       class="mb-4 p-4 bg-blue-50 rounded-lg border border-blue-200 flex items-center justify-between"
     >
       <div class="flex items-center">
@@ -55,6 +55,7 @@
             <template #item="{ element }">
               <TodoCard
                 :todo="element"
+                :showTimerBar="showTimerBar"
                 @edit="openEditModal"
                 @start-timing="startTiming"
                 @stop-timing="stopTiming"
@@ -90,6 +91,7 @@
             <template #item="{ element }">
               <TodoCard
                 :todo="element"
+                :showTimerBar="showTimerBar"
                 @edit="openEditModal"
                 @start-timing="startTiming"
                 @stop-timing="stopTiming"
@@ -129,6 +131,7 @@
           <template #item="{ element }">
             <TodoCard
               :todo="element"
+              :showTimerBar="showTimerBar"
               @edit="openEditModal"
               @start-timing="startTiming"
               @stop-timing="stopTiming"
@@ -162,6 +165,7 @@
           <template #item="{ element }">
             <TodoCard
               :todo="element"
+              :showTimerBar="showTimerBar"
               @edit="openEditModal"
               @start-timing="startTiming"
               @stop-timing="stopTiming"
@@ -196,6 +200,7 @@
         <template #item="{ element }">
           <TodoCard
             :todo="element"
+            :showTimerBar="showTimerBar"
             @edit="openEditModal"
             @start-timing="startTiming"
             @stop-timing="stopTiming"

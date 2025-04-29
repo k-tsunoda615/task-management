@@ -17,11 +17,11 @@
       <div class="flex-1">
         <!-- 合計時間表示 -->
         <div
-          v-if="todo.total_time !== undefined"
+          v-if="showTimerBar === true"
           class="mb-2 text-sm text-gray-600 flex items-center"
         >
           <UIcon name="i-heroicons-clock" class="w-4 h-4 mr-1" />
-          {{ formatTime(todo.total_time) }}
+          {{ formatTime(todo.total_time || 0) }}
           <UButton
             v-if="!todo.is_timing"
             color="blue"
@@ -85,6 +85,10 @@ const props = defineProps({
       is_timing?: boolean;
     }>,
     required: true,
+  },
+  showTimerBar: {
+    type: Boolean,
+    default: true,
   },
 });
 
