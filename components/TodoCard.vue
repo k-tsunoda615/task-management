@@ -1,10 +1,15 @@
 <template>
   <div
-    class="bg-white rounded-lg shadow p-4 relative cursor-move"
-    draggable="true"
-    @dragstart="handleDragStart"
+    class="bg-white rounded-lg shadow p-4 relative"
     :class="{ 'border-2 border-blue-500': todo.is_timing }"
   >
+    <!-- ドラッグハンドル - ドラッグ操作をここに限定 -->
+    <div
+      class="absolute top-0 left-0 w-full h-8 cursor-move opacity-0"
+      draggable="true"
+      @dragstart="handleDragStart"
+    ></div>
+
     <!-- プライベートインジケーター -->
     <div
       v-if="todo.is_private"
@@ -13,6 +18,7 @@
     >
       <UIcon name="i-heroicons-lock-closed" class="w-4 h-4" />
     </div>
+
     <div class="flex justify-between items-start">
       <div class="flex-1">
         <!-- 合計時間表示 -->
@@ -28,8 +34,8 @@
             variant="ghost"
             size="xs"
             icon="i-heroicons-play"
-            class="ml-2"
-            @click.stop="startTiming"
+            class="ml-2 z-10"
+            @click="startTiming"
           />
           <UButton
             v-else
@@ -37,8 +43,8 @@
             variant="ghost"
             size="xs"
             icon="i-heroicons-pause"
-            class="ml-2"
-            @click.stop="stopTiming"
+            class="ml-2 z-10"
+            @click="stopTiming"
           />
         </div>
         <h3 class="font-bold border-b border-gray-200 pb-1 mb-3">
@@ -56,7 +62,8 @@
           variant="ghost"
           icon="i-heroicons-pencil-square"
           size="xs"
-          @click="$emit('edit', todo)"
+          class="z-10"
+          @click="editTodo"
         />
       </div>
     </div>
@@ -97,7 +104,9 @@ const emit = defineEmits(["edit", "start-timing", "stop-timing"]);
 const todoStore = useTodoStore();
 const toast = useToast();
 
-const editTodo = () => {
+const editTodo = (event: Event) => {
+  event.preventDefault();
+  event.stopPropagation();
   emit("edit", props.todo);
 };
 
@@ -136,15 +145,34 @@ const formatTime = (seconds: number | number[]) => {
   ].join(":");
 };
 
-// タイミング開始
+// タイミング開始 - イベント伝播を明示的に停止
 const startTiming = (event: Event) => {
+  event.preventDefault();
   event.stopPropagation();
   emit("start-timing", props.todo);
 };
 
-// タイミング停止
+// タイミング停止 - イベント伝播を明示的に停止
 const stopTiming = (event: Event) => {
+  event.preventDefault();
   event.stopPropagation();
   emit("stop-timing", props.todo);
 };
 </script>
+
+<style scoped>
+/* ボタンのクリック領域を拡大 */
+.u-button {
+  position: relative;
+}
+
+.u-button::after {
+  content: "";
+  position: absolute;
+  top: -5px;
+  left: -5px;
+  right: -5px;
+  bottom: -5px;
+  z-index: 1;
+}
+</style>
