@@ -8,7 +8,7 @@
     <!-- プライベートインジケーター -->
     <div
       v-if="todo.is_private"
-      class="absolute bottom-0 right-2 text-green-500"
+      class="absolute bottom-1 right-6 text-green-500"
       title="プライベート"
     >
       <UIcon name="i-heroicons-lock-closed" class="w-4 h-4" />
