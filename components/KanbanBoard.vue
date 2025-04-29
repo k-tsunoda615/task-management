@@ -37,39 +37,47 @@
     <div class="hidden md:grid grid-cols-5 gap-4 mb-4">
       <!-- Priority - 3/5の幅 -->
       <div class="col-span-3">
-        <div class="rounded-lg bg-gray-100 p-4 h-full">
+        <div class="rounded-lg bg-gray-100 p-4 h-full flex flex-col">
           <h2 class="mb-3 font-semibold text-gray-700">
             <UIcon name="i-heroicons-inbox" class="mr-1 align-middle" />
             Priority
           </h2>
-          <draggable
-            v-model="todosByStatus.todo"
-            :group="{ name: 'todos' }"
-            item-key="id"
-            class="space-y-2"
-            data-status="todo"
-            :animation="200"
-            ghost-class="opacity-50"
-            @change="handleDragChange"
-            @start="handleDragStart"
-            @end="handleDragEnd"
-          >
-            <template #item="{ element }">
-              <TodoCard
-                :todo="element"
-                :showTimerBar="showTimerBar"
-                :timerLoading="timerButtonLoading === element.id"
-                @edit="openEditModal"
-                @start-timing="startTiming"
-                @stop-timing="stopTiming"
-              />
-            </template>
-          </draggable>
-          <div
-            v-if="todosByStatus.todo.length === 0"
-            class="text-gray-500 text-sm p-2"
-          >
-            タスクがありません
+          <div class="flex-1 min-h-[300px]">
+            <draggable
+              v-model="todosByStatus.todo"
+              :group="{ name: 'todos' }"
+              item-key="id"
+              class="h-full min-h-[inherit] space-y-2"
+              data-status="todo"
+              :animation="200"
+              ghost-class="opacity-50"
+              :class="{
+                'border-2 border-dashed border-gray-300 rounded-lg':
+                  todosByStatus.todo.length === 0,
+              }"
+              @change="handleDragChange"
+              @start="handleDragStart"
+              @end="handleDragEnd"
+            >
+              <template #item="{ element }">
+                <TodoCard
+                  :todo="element"
+                  :showTimerBar="showTimerBar"
+                  :timerLoading="timerButtonLoading === element.id"
+                  @edit="openEditModal"
+                  @start-timing="startTiming"
+                  @stop-timing="stopTiming"
+                />
+              </template>
+              <template #footer>
+                <div
+                  v-if="todosByStatus.todo.length === 0"
+                  class="text-gray-500 text-sm p-4 text-center"
+                >
+                  タスクがありません
+                </div>
+              </template>
+            </draggable>
           </div>
         </div>
       </div>
