@@ -11,6 +11,8 @@ type Todo = {
   is_private?: boolean;
   user_id?: string;
   updated_at?: string;
+  total_time?: number | number[]; // 配列または数値として定義
+  is_timing?: boolean;
 };
 
 type Task = {
@@ -20,6 +22,14 @@ type Task = {
 };
 
 type TaskFilter = "all" | "private" | "public";
+
+// 配列から数値への変換ヘルパー関数
+const extractTotalTime = (time: number | number[] | undefined): number => {
+  if (Array.isArray(time) && time.length > 0) {
+    return time[0];
+  }
+  return time || 0;
+};
 
 export const useTodoStore = defineStore("todo", {
   state: () => ({
@@ -103,6 +113,15 @@ export const useTodoStore = defineStore("todo", {
             todo.status = "完了";
           }
 
+          // total_timeを配列から数値に変換
+          if (todo.total_time !== undefined) {
+            const extractedTime = extractTotalTime(todo.total_time);
+            console.log(
+              `Todo ${todo.id} の total_time を変換: ${todo.total_time} -> ${extractedTime}`
+            );
+            todo.total_time = extractedTime;
+          }
+
           return todo;
         });
 
@@ -146,47 +165,55 @@ export const useTodoStore = defineStore("todo", {
       this.todos.unshift(data);
     },
 
-    async updateTodo(todo: Todo) {
-      const client = useSupabaseClient();
+    async updateTodo(todo: Partial<Todo>) {
+      try {
+        console.log("Todoを更新します:", todo);
 
-      // 更新に必要な最小限のデータだけを抽出
-      const todoData = {
-        id: todo.id,
-        status: todo.status,
-        updated_at: new Date().toISOString(),
-        // 他の必要なフィールドがあれば追加
-        title: todo.title,
-        memo: todo.memo,
-        task_id: todo.task_id,
-        is_private: todo.is_private,
-        sort_order: todo.sort_order,
-      };
-
-      console.log("更新するTodo:", {
-        id: todoData.id,
-        status: todoData.status,
-        updated_at: todoData.updated_at,
-      });
-
-      const { error, data } = await client
-        .from("todos")
-        .update(todoData)
-        .eq("id", todo.id)
-        .select();
-
-      console.log("更新結果:", { error, data });
-
-      if (error) {
-        console.error("Todo更新エラー:", error);
-        throw error;
-      }
-
-      // データベースから返された最新のデータで状態を更新
-      if (data && data[0]) {
-        const index = this.todos.findIndex((t) => t.id === todo.id);
-        if (index !== -1) {
-          this.todos[index] = data[0];
+        // 必須フィールドの確認
+        if (!todo.id) {
+          throw new Error("Todo IDが指定されていません");
         }
+
+        // total_timeフィールドの型変換
+        const updateData = { ...todo };
+
+        // total_timeの型変換（複数の可能性を試す）
+        if (updateData.total_time !== undefined) {
+          try {
+            // 方法1: 配列として送信
+            updateData.total_time = [updateData.total_time];
+            console.log(
+              "total_timeを配列として送信します:",
+              updateData.total_time
+            );
+          } catch (e) {
+            console.error("total_timeの変換に失敗しました:", e);
+          }
+        }
+
+        console.log("変換後のデータ:", updateData);
+
+        // APIリクエストを送信
+        const { data, error } = await useSupabaseClient()
+          .from("todos")
+          .update(updateData)
+          .eq("id", todo.id)
+          .select();
+
+        if (error) {
+          console.error("Todo更新エラー:", error);
+          throw error;
+        }
+
+        console.log("Todo更新成功:", data);
+
+        // 更新されたTodoを取得して状態を更新
+        await this.fetchTodos();
+
+        return data;
+      } catch (error) {
+        console.error("Todo更新処理エラー:", error);
+        throw error;
       }
     },
 

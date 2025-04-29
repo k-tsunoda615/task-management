@@ -7,6 +7,30 @@
       </UButton>
     </div>
 
+    <!-- 現在計測中のタスク表示 -->
+    <div
+      v-if="showTimerBar && currentTimingTodo"
+      class="mb-4 p-4 bg-blue-50 rounded-lg border border-blue-200 flex items-center justify-between"
+    >
+      <div class="flex items-center">
+        <UIcon name="i-heroicons-clock" class="w-5 h-5 mr-2 text-blue-500" />
+        <div>
+          <div class="font-semibold">{{ currentTimingTodo.title }}</div>
+          <div class="text-sm text-blue-700">
+            {{ formatTime(currentTotalTime) }}
+          </div>
+        </div>
+      </div>
+      <UButton
+        color="red"
+        size="sm"
+        @click="stopCurrentTiming"
+        icon="i-heroicons-pause"
+      >
+        停止
+      </UButton>
+    </div>
+
     <!-- PC表示: 上段：PriorityとNext Up（3:2の比率） -->
     <div class="hidden md:grid grid-cols-5 gap-4 mb-4">
       <!-- Priority - 3/5の幅 -->
@@ -29,7 +53,12 @@
             @end="handleDragEnd"
           >
             <template #item="{ element }">
-              <TodoCard :todo="element" @edit="openEditModal" />
+              <TodoCard
+                :todo="element"
+                @edit="openEditModal"
+                @start-timing="startTiming"
+                @stop-timing="stopTiming"
+              />
             </template>
           </draggable>
           <div
@@ -59,7 +88,12 @@
             @change="handleDragChange"
           >
             <template #item="{ element }">
-              <TodoCard :todo="element" @edit="openEditModal" />
+              <TodoCard
+                :todo="element"
+                @edit="openEditModal"
+                @start-timing="startTiming"
+                @stop-timing="stopTiming"
+              />
             </template>
           </draggable>
           <div
@@ -93,7 +127,12 @@
           @end="handleDragEnd"
         >
           <template #item="{ element }">
-            <TodoCard :todo="element" @edit="openEditModal" />
+            <TodoCard
+              :todo="element"
+              @edit="openEditModal"
+              @start-timing="startTiming"
+              @stop-timing="stopTiming"
+            />
           </template>
         </draggable>
         <div
@@ -121,7 +160,12 @@
           @change="handleDragChange"
         >
           <template #item="{ element }">
-            <TodoCard :todo="element" @edit="openEditModal" />
+            <TodoCard
+              :todo="element"
+              @edit="openEditModal"
+              @start-timing="startTiming"
+              @stop-timing="stopTiming"
+            />
           </template>
         </draggable>
         <div
@@ -150,7 +194,12 @@
         @change="handleDragChange"
       >
         <template #item="{ element }">
-          <TodoCard :todo="element" @edit="openEditModal" />
+          <TodoCard
+            :todo="element"
+            @edit="openEditModal"
+            @start-timing="startTiming"
+            @stop-timing="stopTiming"
+          />
         </template>
       </draggable>
       <div
@@ -186,6 +235,9 @@
           </UFormGroup>
           <UFormGroup class="mt-4">
             <UCheckbox v-model="newTodo.is_private" label="Private" />
+          </UFormGroup>
+          <UFormGroup label="合計時間 (hh:mm:ss)" class="mt-4">
+            <UInput v-model="timeInput" placeholder="00:00:00" />
           </UFormGroup>
         </form>
         <template #footer>
@@ -253,6 +305,9 @@
               <UCheckbox v-model="editingTodo.is_private" label="Private" />
             </UFormGroup>
           </div>
+          <UFormGroup label="合計時間 (hh:mm:ss)" class="mt-4">
+            <UInput v-model="editTimeInput" placeholder="00:00:00" />
+          </UFormGroup>
         </form>
         <template #footer>
           <div class="flex justify-end gap-2">
@@ -313,10 +368,22 @@ const isCreating = ref(false);
 const isUpdating = ref(false);
 const trashEventBus = useEventBus("trash-drop");
 
+// タイマー関連の状態
+const showTimerBar = ref(true);
+const currentTimingTodo = ref<Todo | null>(null);
+const currentTotalTime = ref(0);
+const timerInterval = ref<number | null>(null);
+const startTime = ref<number | null>(null);
+
+// 時間入力フィールド
+const timeInput = ref("00:00:00");
+const editTimeInput = ref("00:00:00");
+
 // 新規タスクモーダルを開く時に現在のフィルター状態に基づいて初期値を設定
 const openNewTaskModal = () => {
   // フィルターがプライベートの場合はチェックを入れる
   newTodo.value.is_private = todoStore.taskFilter === "private";
+  timeInput.value = "00:00:00";
   showNewTaskModal.value = true;
 };
 
@@ -326,6 +393,8 @@ const newTodo = ref({
   status: "未対応",
   task_id: "",
   is_private: false,
+  total_time: 0,
+  is_timing: false,
 });
 
 const editingTodo = ref({
@@ -335,6 +404,8 @@ const editingTodo = ref({
   status: "未対応",
   task_id: "",
   is_private: false,
+  total_time: 0,
+  is_timing: false,
 });
 
 // プレビュー用のマークダウンパース
@@ -353,6 +424,43 @@ const formatDate = (dateString: string | undefined): string => {
     hour: "2-digit",
     minute: "2-digit",
   });
+};
+
+// 時間のフォーマット関数（秒数を hh:mm:ss 形式に変換）
+const formatTime = (seconds: number | number[]) => {
+  // 配列の場合は最初の要素を使用
+  let totalSeconds = 0;
+  if (Array.isArray(seconds) && seconds.length > 0) {
+    totalSeconds = seconds[0];
+  } else if (typeof seconds === "number") {
+    totalSeconds = seconds;
+  }
+
+  if (totalSeconds === undefined) return "00:00:00";
+
+  const hours = Math.floor(totalSeconds / 3600);
+  const minutes = Math.floor((totalSeconds % 3600) / 60);
+  const secs = totalSeconds % 60;
+
+  return [
+    hours.toString().padStart(2, "0"),
+    minutes.toString().padStart(2, "0"),
+    secs.toString().padStart(2, "0"),
+  ].join(":");
+};
+
+// 時間文字列を秒数に変換する関数
+const parseTimeToSeconds = (timeStr: string): number => {
+  if (!timeStr) return 0;
+
+  const parts = timeStr.split(":").map((part) => parseInt(part, 10));
+  if (parts.length === 3) {
+    return parts[0] * 3600 + parts[1] * 60 + parts[2];
+  } else if (parts.length === 2) {
+    return parts[0] * 60 + parts[1];
+  } else {
+    return 0;
+  }
 };
 
 // ステータスの日本語と英語のマッピング
@@ -418,21 +526,81 @@ const updateTodosByStatus = () => {
   todosByStatus.done.sort(
     (a: Todo, b: Todo) => (a.sort_order || 0) - (b.sort_order || 0)
   );
+
+  // 計測中のタスクを確認
+  const timingTodo = todoStore.filteredTodos.find(
+    (todo: Todo) => todo.is_timing
+  );
+
+  if (timingTodo) {
+    console.log("計測中のタスクを検出:", timingTodo);
+    currentTimingTodo.value = timingTodo;
+
+    // タイマーが動いていない場合は開始
+    if (!timerInterval.value) {
+      console.log("タイマーを再開します");
+      startTimerForTodo(timingTodo);
+    }
+  } else if (currentTimingTodo.value && !timingTodo) {
+    // 計測中のタスクがなくなった場合はタイマーを停止
+    console.log("計測中のタスクがなくなったのでタイマーを停止します");
+    stopTimer();
+    currentTimingTodo.value = null;
+  }
 };
 
 // todoStoreのtodosが変更されたときに再分類を実行
 watch(
-  () => [todoStore.filteredTodos, todoStore.showPrivateTasks],
+  () => [todoStore.filteredTodos, todoStore.taskFilter],
   () => {
     // 更新中は再分類をスキップ
     if (isUpdatingRef.value) return;
     updateTodosByStatus();
+
+    // 計測中のタスクを確認
+    const timingTodo = todoStore.filteredTodos.find(
+      (todo: Todo) => todo.is_timing
+    );
+    if (timingTodo) {
+      currentTimingTodo.value = timingTodo;
+      currentTotalTime.value = timingTodo.total_time || 0;
+      if (!timerInterval.value) {
+        startTimerForTodo(timingTodo);
+      }
+    }
   },
   { deep: true }
 );
 
-// 初期分類
+// コンポーネントがマウントされたときの処理
 onMounted(() => {
+  // タイマー表示切り替えイベントを監視する関数を定義
+  const handleTimerVisibilityToggle = (event: any) => {
+    showTimerBar.value = event.detail.showTimer;
+  };
+
+  // イベントリスナーを追加
+  window.addEventListener("timerVisibilityToggle", handleTimerVisibilityToggle);
+
+  // コンポーネントがアンマウントされたときにイベントリスナーを削除
+  onUnmounted(() => {
+    window.removeEventListener(
+      "timerVisibilityToggle",
+      handleTimerVisibilityToggle
+    );
+
+    // タイマーを停止
+    if (timerInterval.value) {
+      cancelAnimationFrame(timerInterval.value);
+    }
+  });
+
+  // 初期タイマー表示状態を設定
+  const savedTimerState = localStorage.getItem("showTimer");
+  if (savedTimerState !== null) {
+    showTimerBar.value = savedTimerState === "true";
+  }
+
   // 初期データの取得
   const fetchInitialData = async () => {
     try {
@@ -461,6 +629,7 @@ onMounted(() => {
 // 編集モーダルを開く
 const openEditModal = (todo: Todo) => {
   editingTodo.value = { ...todo };
+  editTimeInput.value = formatTime(todo.total_time || 0);
   showEditModal.value = true;
 };
 
@@ -481,6 +650,9 @@ const createTodo = async () => {
       ) - 100;
   }
 
+  // 時間文字列を秒数に変換
+  const totalTimeSeconds = parseTimeToSeconds(timeInput.value);
+
   isCreating.value = true;
   try {
     await todoStore.createTodo({
@@ -490,6 +662,8 @@ const createTodo = async () => {
       task_id: newTodo.value.task_id,
       is_private: newTodo.value.is_private,
       sort_order: minSortOrder, // 最小値より小さい値を設定して先頭に表示
+      total_time: totalTimeSeconds,
+      is_timing: false,
     });
 
     showNewTaskModal.value = false;
@@ -499,7 +673,10 @@ const createTodo = async () => {
       status: "未対応",
       task_id: "",
       is_private: false,
+      total_time: 0,
+      is_timing: false,
     };
+    timeInput.value = "00:00:00";
   } catch (error) {
     console.error("Todo作成エラー:", error);
   } finally {
@@ -511,8 +688,13 @@ const createTodo = async () => {
 const updateTodo = async () => {
   if (!editingTodo.value.title) return;
 
+  // 時間文字列を秒数に変換
+  const totalTimeSeconds = parseTimeToSeconds(editTimeInput.value);
+  editingTodo.value.total_time = totalTimeSeconds;
+
   isUpdating.value = true;
   try {
+    console.log("タスク更新:", editingTodo.value);
     await todoStore.updateTodo(editingTodo.value);
     showEditModal.value = false;
     // 成功メッセージを表示
@@ -653,7 +835,7 @@ const handleDragChange = async (evt: any) => {
       .map((t: Todo) =>
         todoStore.updateTodoOrder({
           id: t.id,
-          sort_order: t.sort_order,
+          sort_order: t.sort_order ?? 0,
         })
       );
 
@@ -689,6 +871,225 @@ const handleDragChange = async (evt: any) => {
     isDragging.value = false;
     // エラー時は状態を再同期
     updateTodosByStatus();
+  }
+};
+
+// タイマー開始
+const startTiming = async (todo: Todo) => {
+  console.log("タイマー開始リクエスト:", todo);
+
+  // 既に計測中のタスクがある場合は停止
+  if (currentTimingTodo.value && currentTimingTodo.value.id !== todo.id) {
+    console.log("別のタスクが計測中なので停止します");
+    await stopTiming(currentTimingTodo.value);
+  }
+
+  try {
+    // タスクのis_timingフラグを更新
+    const updatedTodo = {
+      id: todo.id,
+      is_timing: true,
+    };
+
+    await todoStore.updateTodo(updatedTodo);
+
+    // タイマーを開始
+    startTimerForTodo(todo);
+
+    // 成功メッセージ
+    useToast().add({
+      title: "計測開始",
+      description: `「${todo.title}」の計測を開始しました`,
+      color: "blue",
+    });
+  } catch (error) {
+    console.error("タイマー開始エラー:", error);
+    useToast().add({
+      title: "エラー",
+      description: "タイマーの開始に失敗しました",
+      color: "red",
+    });
+  }
+};
+
+// タイマーを開始する
+const startTimerForTodo = (todo: Todo) => {
+  console.log("タイマー開始:", todo);
+
+  // 現在のタスクを設定
+  currentTimingTodo.value = { ...todo }; // オブジェクトをコピーして参照を切る
+  currentTotalTime.value = todo.total_time || 0;
+
+  // 開始時間を記録
+  startTime.value = Date.now();
+
+  // 既存のタイマーがあれば停止
+  if (timerInterval.value) {
+    console.log("既存のタイマーを停止");
+    cancelAnimationFrame(timerInterval.value);
+    timerInterval.value = null;
+  }
+
+  // 新しいタイマーを開始
+  console.log("新しいタイマーを開始");
+
+  const updateTimer = () => {
+    if (!startTime.value || !currentTimingTodo.value) {
+      console.log("タイマー条件が満たされないため停止");
+      return;
+    }
+
+    // 経過時間を計算（ミリ秒から秒に変換）
+    const elapsedSeconds = Math.floor((Date.now() - startTime.value) / 1000);
+
+    // 合計時間を更新
+    const newTotalTime = (todo.total_time || 0) + elapsedSeconds;
+    if (currentTotalTime.value !== newTotalTime) {
+      currentTotalTime.value = newTotalTime;
+
+      // todoリスト内の該当するタスクも更新する（表示を更新するため）
+      updateTimingTodoInLists(
+        currentTimingTodo.value.id,
+        currentTotalTime.value
+      );
+
+      // デバッグ用
+      if (elapsedSeconds % 5 === 0) {
+        console.log("タイマー更新:", currentTotalTime.value);
+      }
+
+      // 1分ごとにバックグラウンドで保存
+      if (elapsedSeconds % 60 === 0 && elapsedSeconds > 0) {
+        updateTimerInBackground();
+      }
+    }
+
+    // 次のフレームをリクエスト
+    timerInterval.value = requestAnimationFrame(updateTimer);
+  };
+
+  // タイマー開始
+  timerInterval.value = requestAnimationFrame(updateTimer);
+  console.log("タイマー開始完了");
+};
+
+// todoリスト内の計測中のタスクを更新する
+const updateTimingTodoInLists = (
+  todoId: string,
+  newTotalTime: number,
+  isTimingValue = true
+) => {
+  // 各リスト内のタスクを検索して更新
+  const updateInList = (list: Todo[]) => {
+    const index = list.findIndex((t) => t.id === todoId);
+    if (index !== -1) {
+      // 新しいオブジェクトを作成して置き換え（リアクティブな更新のため）
+      list[index] = {
+        ...list[index],
+        total_time: newTotalTime,
+        is_timing: isTimingValue,
+      };
+    }
+  };
+
+  updateInList(todosByStatus.todo);
+  updateInList(todosByStatus.inProgress);
+  updateInList(todosByStatus.done);
+};
+
+// タイマー停止
+const stopTiming = async (todo: Todo) => {
+  console.log("タイマー停止リクエスト:", todo);
+
+  // タイマーを停止して最終時間を取得
+  stopTimer();
+
+  try {
+    // 更新するデータを準備
+    const finalTime = currentTotalTime.value;
+    console.log("タイマー停止処理: 更新するtodo:", todo.id, "時間:", finalTime);
+
+    // タスクのis_timingフラグと合計時間を更新
+    const updatedTodo = {
+      id: todo.id,
+      is_timing: false,
+      total_time: finalTime, // 数値のまま送信
+    };
+
+    // サーバーにデータを保存
+    const result = await todoStore.updateTodo(updatedTodo);
+    console.log("タイマー停止: サーバーへの保存完了", result);
+
+    // todoリスト内のタスクも更新
+    updateTimingTodoInLists(todo.id, finalTime, false);
+
+    // 成功メッセージ
+    useToast().add({
+      title: "計測停止",
+      description: `「${todo.title}」の計測を停止しました (${formatTime(finalTime)})`,
+      color: "green",
+    });
+
+    // 現在計測中のタスクをクリア
+    currentTimingTodo.value = null;
+
+    // 最新のデータを再取得
+    await todoStore.fetchTodos();
+  } catch (error) {
+    console.error("タイマー停止エラー:", error);
+    useToast().add({
+      title: "エラー",
+      description: "タイマーの停止に失敗しました",
+      color: "red",
+    });
+  }
+};
+
+// 現在計測中のタスクを停止
+const stopCurrentTiming = () => {
+  console.log("現在計測中のタスクを停止します");
+  if (currentTimingTodo.value) {
+    console.log("停止対象:", currentTimingTodo.value);
+    stopTiming(currentTimingTodo.value);
+  } else {
+    console.warn("計測中のタスクがありません");
+  }
+};
+
+// タイマーを停止する
+const stopTimer = () => {
+  console.log("タイマー停止処理開始");
+
+  if (timerInterval.value) {
+    console.log("アニメーションフレームをキャンセル:", timerInterval.value);
+    cancelAnimationFrame(timerInterval.value);
+    timerInterval.value = null;
+  }
+
+  // タイマーが動いていた場合は最終的な時間を保存
+  if (currentTimingTodo.value && startTime.value) {
+    const elapsedSeconds = Math.floor((Date.now() - startTime.value) / 1000);
+    console.log("経過時間:", elapsedSeconds, "秒");
+    currentTotalTime.value =
+      (currentTimingTodo.value.total_time || 0) + elapsedSeconds;
+    startTime.value = null;
+  }
+
+  console.log("タイマー停止処理完了");
+};
+
+// バックグラウンドでタイマー情報を更新
+const updateTimerInBackground = async () => {
+  if (!currentTimingTodo.value) return;
+
+  try {
+    await todoStore.updateTodo({
+      id: currentTimingTodo.value.id,
+      total_time: currentTotalTime.value, // 数値のまま送信
+      is_timing: true,
+    });
+  } catch (error) {
+    console.error("タイマー情報の更新に失敗:", error);
   }
 };
 

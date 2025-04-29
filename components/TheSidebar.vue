@@ -50,6 +50,21 @@
         </UButton>
       </div>
 
+      <!-- タイマー表示切り替えボタン -->
+      <div class="p-4" :class="{ 'text-center': !isOpen && !isMobile }">
+        <UButton
+          :block="isOpen || isMobile"
+          :color="showTimer ? 'blue' : 'gray'"
+          :variant="'ghost'"
+          @click="toggleTimerVisibility"
+          icon="i-heroicons-clock"
+        >
+          <span v-if="isOpen || isMobile">{{
+            showTimer ? "タイマー表示中" : "タイマー非表示"
+          }}</span>
+        </UButton>
+      </div>
+
       <!-- 機能ないのにあると気になるからいったん非表示 -->
       <!-- <div class="mb-4">
         <h3 class="mb-2 font-medium">プロジェクト</h3>
@@ -120,6 +135,7 @@ const todoStore = useTodoStore();
 const trashEventBus = useEventBus("trash-drop");
 const isDragOver = ref(false);
 const isOpen = ref(true); // サイドバーの開閉状態
+const showTimer = ref(true); // タイマー表示状態
 
 // サイドバーの開閉を切り替える
 const toggleSidebar = () => {
@@ -135,11 +151,31 @@ const toggleSidebar = () => {
   );
 };
 
+// タイマー表示の切り替え
+const toggleTimerVisibility = () => {
+  showTimer.value = !showTimer.value;
+  // タイマー表示状態をローカルストレージに保存
+  localStorage.setItem("showTimer", showTimer.value.toString());
+
+  // イベントを発行して他のコンポーネントに通知
+  window.dispatchEvent(
+    new CustomEvent("timerVisibilityToggle", {
+      detail: { showTimer: showTimer.value },
+    })
+  );
+};
+
 // ページ読み込み時にサイドバーの状態を復元
 onMounted(() => {
   const savedState = localStorage.getItem("sidebarOpen");
   if (savedState !== null) {
     isOpen.value = savedState === "true";
+  }
+
+  // タイマー表示状態を復元
+  const savedTimerState = localStorage.getItem("showTimer");
+  if (savedTimerState !== null) {
+    showTimer.value = savedTimerState === "true";
   }
 
   // プロジェクト取得

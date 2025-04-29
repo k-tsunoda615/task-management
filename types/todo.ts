@@ -8,4 +8,6 @@ export interface Todo {
   is_private?: boolean;
   user_id?: string;
   updated_at?: string;
+  total_time?: number;
+  is_timing?: boolean;
 }
