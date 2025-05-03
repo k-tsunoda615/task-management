@@ -260,6 +260,12 @@
       @add-tag="addTag"
       @toggle-tag="toggleTagOnNewTodo"
       @validate-time="validateTimeInput"
+      @update:newTodoTitle="(val) => (newTodo.title = val)"
+      @update:newTodoMemo="(val) => (newTodo.memo = val)"
+      @update:newTodoStatus="(val) => (newTodo.status = val)"
+      @update:newTodoIsPrivate="(val) => (newTodo.is_private = val)"
+      @update:timeInput="(val) => (timeInput = val)"
+      @update:newTagName="(val) => (newTagName = val)"
     />
 
     <!-- 編集タスクモーダル -->
