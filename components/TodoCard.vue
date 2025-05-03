@@ -49,9 +49,7 @@
       </div>
 
       <!-- アクションボタン -->
-      <div
-        class="flex items-center gap-1 ml-4 opacity-0 group-hover:opacity-100 transition-opacity"
-      >
+      <div class="ml-4 opacity-0 group-hover:opacity-100 transition-opacity">
         <UButton
           color="gray"
           variant="ghost"
@@ -60,8 +58,21 @@
           class="hover:bg-gray-100"
           @click="editTodo"
         />
+      </div>
+    </div>
+
+    <!-- タイマー表示 -->
+    <div
+      v-if="showTimerBar"
+      class="mt-3 pt-3 border-t border-gray-100 flex items-center justify-between"
+    >
+      <div class="flex items-center text-sm text-gray-500">
+        <UIcon name="i-heroicons-clock" class="w-4 h-4 mr-1.5" />
+        {{ formatTime(todo.total_time || 0) }}
+      </div>
+      <div class="flex items-center gap-1">
         <UButton
-          v-if="!todo.is_timing && showTimerBar"
+          v-if="!todo.is_timing"
           color="gray"
           variant="ghost"
           icon="i-heroicons-play"
@@ -71,7 +82,7 @@
           @click="startTiming"
         />
         <UButton
-          v-if="todo.is_timing && showTimerBar"
+          v-else
           color="red"
           variant="ghost"
           icon="i-heroicons-pause"
@@ -81,15 +92,6 @@
           @click="stopTiming"
         />
       </div>
-    </div>
-
-    <!-- タイマー表示 -->
-    <div
-      v-if="showTimerBar && todo.total_time"
-      class="mt-3 pt-3 border-t border-gray-100 flex items-center text-sm text-gray-500"
-    >
-      <UIcon name="i-heroicons-clock" class="w-4 h-4 mr-1.5" />
-      {{ formatTime(todo.total_time) }}
     </div>
   </div>
 </template>
