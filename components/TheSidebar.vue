@@ -187,24 +187,39 @@
         </template>
         <div class="mb-4">
           <div class="flex flex-wrap gap-2 mb-2">
-            <UBadge
+            <div
               v-for="tag in todoStore.tags"
               :key="tag.id"
-              :style="{
-                backgroundColor: tag.color || '#3b82f6',
-                color: '#fff',
-              }"
-              class="flex items-center gap-1"
+              class="relative group"
+              style="display: inline-block"
             >
-              {{ tag.name }}
+              <UBadge
+                :style="{
+                  backgroundColor: 'transparent',
+                  color: tag.color || '#3b82f6',
+                  border: `1px solid ${darkenColor(tag.color || '#3b82f6', 0.2)}`,
+                  fontWeight: 'normal',
+                  fontSize: '0.75em',
+                  borderRadius: '9999px',
+                  padding: '0.15em 0.7em',
+                  transition: 'box-shadow 0.2s, opacity 0.2s',
+                  cursor: 'pointer',
+                  textDecoration: 'none',
+                }"
+                class="tag-modern tag-modal"
+              >
+                {{ tag.name }}
+              </UBadge>
               <UButton
                 icon="i-heroicons-x-mark"
                 size="2xs"
                 color="red"
                 variant="ghost"
+                class="absolute -top-2 -right-2 opacity-0 group-hover:opacity-100 transition-opacity z-10"
+                style="padding: 0.1em; min-width: 1.2em; min-height: 1.2em"
                 @click="deleteTag(tag.id)"
               />
-            </UBadge>
+            </div>
           </div>
           <div class="flex gap-2 mt-2">
             <UInput v-model="newTagName" placeholder="新しいタグ名" size="sm" />
@@ -381,4 +396,28 @@ const deleteTag = async (tagId: string) => {
   await todoStore.deleteTag(tagId);
   await todoStore.fetchTodos(); // タグ一覧を最新化
 };
+
+// 色を暗くするユーティリティ関数
+function darkenColor(hex: string, amount = 0.2) {
+  let c = hex.replace("#", "");
+  if (c.length === 3) c = c[0] + c[0] + c[1] + c[1] + c[2] + c[2];
+  const num = parseInt(c, 16);
+  let r = (num >> 16) & 0xff;
+  let g = (num >> 8) & 0xff;
+  let b = num & 0xff;
+  r = Math.max(0, Math.floor(r * (1 - amount)));
+  g = Math.max(0, Math.floor(g * (1 - amount)));
+  b = Math.max(0, Math.floor(b * (1 - amount)));
+  return `#${r.toString(16).padStart(2, "0")}${g.toString(16).padStart(2, "0")}${b.toString(16).padStart(2, "0")}`;
+}
 </script>
+
+<style scoped>
+.tag-modern.tag-modal:hover {
+  opacity: 1 !important;
+}
+.group:hover .tag-modal + .absolute,
+.group:focus-within .tag-modal + .absolute {
+  opacity: 1 !important;
+}
+</style>

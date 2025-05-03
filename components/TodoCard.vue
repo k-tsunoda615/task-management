@@ -60,7 +60,19 @@
           <UBadge
             v-for="tag in todo.tags"
             :key="tag.id"
-            :style="{ backgroundColor: tag.color || '#3b82f6', color: '#fff' }"
+            :style="{
+              backgroundColor: 'transparent',
+              color: tag.color || '#3b82f6',
+              border: `1px solid ${darkenColor(tag.color || '#3b82f6', 0.2)}`,
+              fontWeight: 'normal',
+              fontSize: '0.75em',
+              borderRadius: '9999px',
+              padding: '0.15em 0.7em',
+              transition: 'box-shadow 0.2s, opacity 0.2s',
+              cursor: 'pointer',
+              textDecoration: 'none',
+            }"
+            class="tag-modern tag-modal"
             size="xs"
             >{{ tag.name }}</UBadge
           >
@@ -178,6 +190,20 @@ const stopTiming = (event: Event) => {
   event.stopPropagation();
   emit("stop-timing", props.todo);
 };
+
+// 色を暗くするユーティリティ関数
+function darkenColor(hex: string, amount = 0.2) {
+  let c = hex.replace("#", "");
+  if (c.length === 3) c = c[0] + c[0] + c[1] + c[1] + c[2] + c[2];
+  const num = parseInt(c, 16);
+  let r = (num >> 16) & 0xff;
+  let g = (num >> 8) & 0xff;
+  let b = num & 0xff;
+  r = Math.max(0, Math.floor(r * (1 - amount)));
+  g = Math.max(0, Math.floor(g * (1 - amount)));
+  b = Math.max(0, Math.floor(b * (1 - amount)));
+  return `#${r.toString(16).padStart(2, "0")}${g.toString(16).padStart(2, "0")}${b.toString(16).padStart(2, "0")}`;
+}
 </script>
 
 <style scoped>
@@ -194,5 +220,9 @@ const stopTiming = (event: Event) => {
   right: -5px;
   bottom: -5px;
   z-index: 1;
+}
+
+.tag-modern.tag-modal:hover {
+  opacity: 1 !important;
 }
 </style>
