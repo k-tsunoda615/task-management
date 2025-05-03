@@ -33,10 +33,13 @@
       </UButton>
     </div>
 
+    <!-- サイドバーコンポーネントにイベントを追加 -->
+    <TheSidebar @toggle-layout="toggleLayout" />
+
     <!-- PC表示: 上段：PriorityとNext Up（3:2の比率） -->
-    <div class="hidden md:grid grid-cols-5 gap-4 mb-4">
-      <!-- Priority - 3/5の幅 -->
-      <div class="col-span-3">
+    <div class="hidden md:grid gap-4 mb-4" :class="getLayoutClass()">
+      <!-- Priority -->
+      <div :class="getPriorityClass()">
         <div class="rounded-lg bg-gray-100 p-4 h-full flex flex-col">
           <h2 class="mb-3 font-semibold text-gray-700">
             <UIcon name="i-heroicons-inbox" class="mr-1 align-middle" />
@@ -82,8 +85,8 @@
         </div>
       </div>
 
-      <!-- Next Up - 2/5の幅 -->
-      <div class="col-span-2">
+      <!-- Next Up -->
+      <div :class="getNextUpClass()">
         <div class="rounded-lg bg-blue-50 p-4 h-full">
           <h2 class="mb-3 font-semibold text-blue-700">
             <UIcon name="i-heroicons-clock" class="mr-1 align-middle" />
@@ -428,6 +431,7 @@ import draggable from "vuedraggable";
 import { marked } from "marked";
 import { useEventBus } from "@vueuse/core";
 import type { Todo } from "../types/todo";
+import TheSidebar from "../components/TheSidebar.vue";
 
 const todoStore = useTodoStore();
 const showNewTaskModal = ref(false);
@@ -713,6 +717,12 @@ onMounted(() => {
       deleteTodo(todoId as string);
     }
   });
+
+  // レイアウトを読み込む
+  // const savedLayout = localStorage.getItem("todoLayout") as LayoutType;
+  // if (savedLayout) {
+  //   currentLayout.value = savedLayout;
+  // }
 });
 
 // 編集モーダルを開く
@@ -1266,6 +1276,77 @@ const deleteCurrentTodo = async () => {
       console.error("タスク削除エラー:", error);
     }
   }
+};
+
+// レイアウトに関する関数
+const getLayoutClass = () => {
+  switch (currentLayout.value) {
+    case "4-1":
+      return "grid-cols-5";
+    case "3-2":
+      return "grid-cols-5";
+    case "1-1":
+      return "grid-cols-2";
+    case "1-col":
+      return "flex flex-col";
+    default:
+      return "grid-cols-5";
+  }
+};
+
+const getPriorityClass = () => {
+  switch (currentLayout.value) {
+    case "4-1":
+      return "col-span-4";
+    case "3-2":
+      return "col-span-3";
+    case "1-1":
+      return "col-span-1";
+    case "1-col":
+      return "w-full mb-4";
+    default:
+      return "col-span-3";
+  }
+};
+
+const getNextUpClass = () => {
+  switch (currentLayout.value) {
+    case "4-1":
+      return "col-span-1";
+    case "3-2":
+      return "col-span-2";
+    case "1-1":
+      return "col-span-1";
+    case "1-col":
+      return "w-full";
+    default:
+      return "col-span-2";
+  }
+};
+
+const getLayoutTooltip = () => {
+  const labels = {
+    "4-1": "レイアウト: 4:1",
+    "3-2": "レイアウト: 3:2",
+    "1-1": "レイアウト: 1:1",
+    "1-col": "レイアウト: 1列",
+  };
+  return labels[currentLayout.value];
+};
+
+type LayoutType = "4-1" | "3-2" | "1-1" | "1-col";
+
+// レイアウト状態の管理
+const currentLayout = ref<LayoutType>("3-2");
+
+// レイアウトを切り替える
+const toggleLayout = () => {
+  const layouts: LayoutType[] = ["4-1", "3-2", "1-1", "1-col"];
+  const currentIndex = layouts.indexOf(currentLayout.value);
+  const nextIndex = (currentIndex + 1) % layouts.length;
+  currentLayout.value = layouts[nextIndex];
+  // ローカルストレージに保存
+  localStorage.setItem("todoLayout", currentLayout.value);
 };
 </script>
 

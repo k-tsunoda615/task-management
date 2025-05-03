@@ -65,6 +65,19 @@
         </UButton>
       </div>
 
+      <!-- レイアウト切り替えボタン -->
+      <div class="p-4" :class="{ 'text-center': !isOpen && !isMobile }">
+        <UButton
+          :block="isOpen || isMobile"
+          color="gray"
+          :variant="'ghost'"
+          @click="$emit('toggle-layout')"
+          icon="i-heroicons-view-columns"
+        >
+          <span v-if="isOpen || isMobile">レイアウト切替</span>
+        </UButton>
+      </div>
+
       <!-- 機能ないのにあると気になるからいったん非表示 -->
       <!-- <div class="mb-4">
         <h3 class="mb-2 font-medium">プロジェクト</h3>
@@ -137,7 +150,7 @@ const props = defineProps({
   },
 });
 
-const emit = defineEmits(["close-mobile-menu"]);
+const emit = defineEmits(["close-mobile-menu", "toggle-layout"]);
 
 const projectStore = useProjectStore();
 const todoStore = useTodoStore();
