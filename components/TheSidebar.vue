@@ -45,48 +45,65 @@
       <div class="flex-1 overflow-y-auto">
         <!-- フィルターボタン -->
         <div class="p-4" :class="{ 'text-center': !isOpen && !isMobile }">
-          <UButton
-            :block="isOpen || isMobile"
-            :color="getFilterButtonColor()"
-            :variant="'ghost'"
-            @click="toggleTaskFilter"
-            :icon="getFilterIcon()"
+          <UTooltip
+            :text="!isOpen ? getFilterLabel() : ''"
+            :ui="{ popper: { strategy: 'fixed' } }"
           >
-            <span v-if="isOpen || isMobile">{{ getFilterLabel() }}</span>
-          </UButton>
+            <UButton
+              :block="isOpen || isMobile"
+              :color="getFilterButtonColor()"
+              :variant="'ghost'"
+              @click="toggleTaskFilter"
+              :icon="getFilterIcon()"
+            >
+              <span v-if="isOpen || isMobile">{{ getFilterLabel() }}</span>
+            </UButton>
+          </UTooltip>
         </div>
 
         <!-- タイマー表示切り替えボタン -->
         <div class="p-4" :class="{ 'text-center': !isOpen && !isMobile }">
-          <UButton
-            :block="isOpen || isMobile"
-            :color="showTimer ? 'blue' : 'gray'"
-            :variant="'ghost'"
-            @click="toggleTimerVisibility"
-            icon="i-heroicons-clock"
+          <UTooltip
+            :text="
+              !isOpen ? (showTimer ? 'タイマーを非表示' : 'タイマーを表示') : ''
+            "
+            :ui="{ popper: { strategy: 'fixed' } }"
           >
-            <span v-if="isOpen || isMobile">{{
-              showTimer ? "タイマー表示中" : "タイマー非表示"
-            }}</span>
-          </UButton>
+            <UButton
+              :block="isOpen || isMobile"
+              :color="showTimer ? 'blue' : 'gray'"
+              :variant="'ghost'"
+              @click="toggleTimerVisibility"
+              icon="i-heroicons-clock"
+            >
+              <span v-if="isOpen || isMobile">
+                {{ showTimer ? "タイマー表示中" : "タイマー非表示" }}
+              </span>
+            </UButton>
+          </UTooltip>
         </div>
 
         <!-- レイアウト切り替えボタン -->
         <div class="p-4" :class="{ 'text-center': !isOpen && !isMobile }">
-          <UButton
-            :block="isOpen || isMobile"
-            color="gray"
-            :variant="'ghost'"
-            @click="$emit('toggle-layout')"
-            icon="i-heroicons-view-columns"
+          <UTooltip
+            :text="!isOpen ? 'レイアウトを切り替える' : ''"
+            :ui="{ popper: { strategy: 'fixed' } }"
           >
-            <span v-if="isOpen || isMobile">レイアウト切替</span>
-          </UButton>
+            <UButton
+              :block="isOpen || isMobile"
+              color="gray"
+              :variant="'ghost'"
+              @click="$emit('toggle-layout')"
+              icon="i-heroicons-view-columns"
+            >
+              <span v-if="isOpen || isMobile">レイアウト切替</span>
+            </UButton>
+          </UTooltip>
         </div>
       </div>
 
       <!-- ゴミ箱エリア -->
-      <div class="mt-auto border-t">
+      <div class="mt-auto border-t mx-auto">
         <!-- タスク数表示 -->
         <div v-if="isOpen || isMobile" class="px-4 py-2 text-center">
           <span class="text-xs text-gray-500">
@@ -94,30 +111,35 @@
           </span>
         </div>
 
-        <div
-          class="p-3 flex items-center justify-center transition-all duration-200"
-          :class="{ 'flex-col': !isOpen && !isMobile }"
-          @dragover.prevent
-          @dragenter="isDragOver = true"
-          @dragleave="isDragOver = false"
-          @drop="handleTrashDrop"
+        <UTooltip
+          :text="!isOpen ? 'タスクをドラッグして削除' : ''"
+          :ui="{ popper: { strategy: 'fixed' } }"
         >
-          <UIcon
-            name="i-heroicons-trash"
-            class="transition-colors duration-200"
-            :class="[
-              isDragOver ? 'text-red-500' : 'text-gray-500',
-              isOpen || isMobile ? 'mr-2' : 'mb-1',
-            ]"
-          />
-          <span
-            v-if="isOpen || isMobile"
-            class="transition-colors duration-200"
-            :class="isDragOver ? 'text-red-700' : 'text-gray-600'"
+          <div
+            class="p-3 flex items-center justify-center transition-all duration-200"
+            :class="{ 'flex-col': !isOpen && !isMobile }"
+            @dragover.prevent
+            @dragenter="isDragOver = true"
+            @dragleave="isDragOver = false"
+            @drop="handleTrashDrop"
           >
-            ドラッグで削除
-          </span>
-        </div>
+            <UIcon
+              name="i-heroicons-trash"
+              class="transition-colors duration-200"
+              :class="[
+                isDragOver ? 'text-red-500' : 'text-gray-500',
+                isOpen || isMobile ? 'mr-2' : 'mb-1',
+              ]"
+            />
+            <span
+              v-if="isOpen || isMobile"
+              class="transition-colors duration-200"
+              :class="isDragOver ? 'text-red-700' : 'text-gray-600'"
+            >
+              ドラッグで削除
+            </span>
+          </div>
+        </UTooltip>
       </div>
     </div>
 
