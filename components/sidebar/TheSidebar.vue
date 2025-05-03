@@ -273,7 +273,7 @@ const toggleTimerVisibility = () => {
 };
 
 // ページ読み込み時にサイドバーの状態を復元
-onMounted(() => {
+onMounted(async () => {
   const savedState = localStorage.getItem("sidebarOpen");
   if (savedState !== null) {
     isOpen.value = savedState === "true";
@@ -285,8 +285,8 @@ onMounted(() => {
     showTimer.value = savedTimerState === "true";
   }
 
-  // プロジェクト取得
-  projectStore.fetchProjects();
+  // プロジェクトとタグを取得
+  await Promise.all([projectStore.fetchProjects(), tagStore.fetchTags()]);
 });
 
 // フィルターに応じたラベルを取得
