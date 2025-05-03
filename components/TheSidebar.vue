@@ -2,7 +2,7 @@
   <div>
     <!-- サイドバー本体 -->
     <div
-      class="fixed top-0 left-0 h-screen bg-white shadow transition-all duration-300 ease-in-out flex flex-col z-40"
+      class="fixed top-0 left-0 h-screen bg-white border-r border-gray-200 transition-all duration-300 ease-in-out flex flex-col z-40"
       :class="[
         { 'w-64': isOpen || isMobile, 'w-16': !isOpen && !isMobile },
         { '-translate-x-full': !isMobile },
@@ -10,8 +10,10 @@
       ]"
     >
       <!-- ヘッダー部分 -->
-      <div class="flex items-center justify-between p-4 border-b">
-        <h2 class="text-lg font-semibold" v-if="isOpen || isMobile">
+      <div
+        class="flex items-center justify-between p-4 border-b border-gray-200"
+      >
+        <h2 class="text-lg font-medium text-gray-900" v-if="isOpen || isMobile">
           Task Board
         </h2>
         <UButton
@@ -20,7 +22,7 @@
           color="gray"
           variant="ghost"
           size="sm"
-          class="ml-auto"
+          class="hover:bg-gray-100"
         >
           <UIcon name="i-heroicons-x-mark" class="h-5 w-5" />
         </UButton>
@@ -30,7 +32,7 @@
           color="gray"
           variant="ghost"
           size="sm"
-          class="ml-auto"
+          class="hover:bg-gray-100"
         >
           <UIcon
             :name="
@@ -42,9 +44,12 @@
       </div>
 
       <!-- ボタン類 -->
-      <div class="flex-1 overflow-y-auto">
+      <div class="flex-1 overflow-y-auto py-2">
         <!-- フィルターボタン -->
-        <div class="p-4" :class="{ 'text-center': !isOpen && !isMobile }">
+        <div
+          class="px-3 py-1.5"
+          :class="{ 'text-center': !isOpen && !isMobile }"
+        >
           <UTooltip
             :text="!isOpen ? getFilterLabel() : ''"
             :ui="{ popper: { strategy: 'fixed' } }"
@@ -55,32 +60,42 @@
               :variant="'ghost'"
               @click="toggleTaskFilter"
               :icon="getFilterIcon()"
+              class="justify-start hover:bg-gray-100"
             >
-              <span v-if="isOpen || isMobile">{{ getFilterLabel() }}</span>
+              <span v-if="isOpen || isMobile" class="ml-2">{{
+                getFilterLabel()
+              }}</span>
             </UButton>
           </UTooltip>
         </div>
 
         <!-- タグ管理ボタン -->
-        <div class="p-4" :class="{ 'text-center': !isOpen && !isMobile }">
+        <div
+          class="px-3 py-1.5"
+          :class="{ 'text-center': !isOpen && !isMobile }"
+        >
           <UTooltip
             :text="!isOpen ? 'タグ管理' : ''"
             :ui="{ popper: { strategy: 'fixed' } }"
           >
             <UButton
               :block="isOpen || isMobile"
-              color="green"
+              color="gray"
               variant="ghost"
               icon="i-heroicons-tag"
               @click="showTagModal = true"
+              class="justify-start hover:bg-gray-100"
             >
-              <span v-if="isOpen || isMobile">タグ管理</span>
+              <span v-if="isOpen || isMobile" class="ml-2">タグ管理</span>
             </UButton>
           </UTooltip>
         </div>
 
         <!-- タイマー表示切り替えボタン -->
-        <div class="p-4" :class="{ 'text-center': !isOpen && !isMobile }">
+        <div
+          class="px-3 py-1.5"
+          :class="{ 'text-center': !isOpen && !isMobile }"
+        >
           <UTooltip
             :text="
               !isOpen ? (showTimer ? 'タイマー非表示' : 'タイマー表示') : ''
@@ -93,8 +108,9 @@
               :variant="'ghost'"
               @click="toggleTimerVisibility"
               icon="i-heroicons-clock"
+              class="justify-start hover:bg-gray-100"
             >
-              <span v-if="isOpen || isMobile">
+              <span v-if="isOpen || isMobile" class="ml-2">
                 {{ showTimer ? "タイマー表示中" : "タイマー非表示" }}
               </span>
             </UButton>
@@ -102,7 +118,10 @@
         </div>
 
         <!-- レイアウト切り替えボタン -->
-        <div class="p-4" :class="{ 'text-center': !isOpen && !isMobile }">
+        <div
+          class="px-3 py-1.5"
+          :class="{ 'text-center': !isOpen && !isMobile }"
+        >
           <UTooltip
             :text="!isOpen ? 'レイアウト切り替え' : ''"
             :ui="{ popper: { strategy: 'fixed' } }"
@@ -110,25 +129,28 @@
             <UButton
               :block="isOpen || isMobile"
               color="gray"
-              :variant="'ghost'"
+              variant="ghost"
               @click="$emit('toggle-layout')"
               icon="i-heroicons-view-columns"
+              class="justify-start hover:bg-gray-100"
             >
-              <span v-if="isOpen || isMobile">レイアウト切り替え</span>
+              <span v-if="isOpen || isMobile" class="ml-2"
+                >レイアウト切り替え</span
+              >
             </UButton>
           </UTooltip>
         </div>
       </div>
 
       <!-- ゴミ箱エリア -->
-      <div class="mt-auto border-t text-center">
+      <div class="mt-auto border-t border-gray-200">
         <!-- ゴミ箱 -->
         <UTooltip
           :text="!isOpen ? 'タスクをドラッグして削除' : ''"
           :ui="{ popper: { strategy: 'fixed' } }"
         >
           <div
-            class="p-3 flex items-center justify-center transition-all duration-200"
+            class="p-4 flex items-center justify-center transition-all duration-200 hover:bg-red-50"
             :class="{ 'flex-col': !isOpen && !isMobile }"
             @dragover.prevent
             @dragenter="isDragOver = true"
@@ -153,17 +175,17 @@
           </div>
         </UTooltip>
 
-        <!-- タスク数表示 - 常に表示 -->
-        <div class="px-4 py-2 text-center border-t">
+        <!-- タスク数表示 -->
+        <div class="px-4 py-3 text-center border-t border-gray-200 bg-gray-50">
           <UTooltip
             :text="!isOpen ? `タスク数: ${todoStore.totalTodoCount}/100` : ''"
             :ui="{ popper: { strategy: 'fixed' } }"
           >
             <div class="flex items-center justify-center">
-              <span class="text-xs text-gray-500" v-if="!isOpen && !isMobile">
+              <span class="text-xs text-gray-600" v-if="!isOpen && !isMobile">
                 {{ todoStore.totalTodoCount }}%
               </span>
-              <span v-else class="text-xs text-gray-500">
+              <span v-else class="text-xs text-gray-600">
                 タスク数: {{ todoStore.totalTodoCount }} / 100
               </span>
             </div>
@@ -175,7 +197,7 @@
     <!-- モバイル用オーバーレイ -->
     <div
       v-if="isMobile"
-      class="fixed inset-0 bg-black bg-opacity-50 z-30"
+      class="fixed inset-0 bg-black/50 backdrop-blur-sm z-30"
       @click="$emit('close-mobile-menu')"
     />
 
@@ -183,30 +205,27 @@
     <UModal v-model="showTagModal">
       <UCard>
         <template #header>
-          <h3 class="text-lg font-semibold">タグ管理</h3>
+          <h3 class="text-lg font-medium text-gray-900">タグ管理</h3>
         </template>
-        <div class="mb-4">
-          <div class="flex flex-wrap gap-2 mb-2">
+        <div class="space-y-4">
+          <div class="flex flex-wrap gap-2">
             <div
               v-for="tag in todoStore.tags"
               :key="tag.id"
               class="relative group"
-              style="display: inline-block"
             >
               <UBadge
                 :style="{
-                  backgroundColor: 'transparent',
+                  backgroundColor: `${tag.color}15`,
                   color: tag.color || '#3b82f6',
-                  border: `1px solid ${darkenColor(tag.color || '#3b82f6', 0.2)}`,
-                  fontWeight: 'normal',
-                  fontSize: '0.75em',
-                  borderRadius: '9999px',
-                  padding: '0.15em 0.7em',
-                  transition: 'box-shadow 0.2s, opacity 0.2s',
-                  cursor: 'pointer',
-                  textDecoration: 'none',
+                  border: 'none',
+                  fontWeight: '500',
+                  fontSize: '0.75rem',
+                  borderRadius: '0.375rem',
+                  padding: '0.25rem 0.75rem',
+                  lineHeight: '1.25',
                 }"
-                class="tag-modern tag-modal"
+                class="transition-all duration-200"
               >
                 {{ tag.name }}
               </UBadge>
@@ -215,21 +234,31 @@
                 size="2xs"
                 color="red"
                 variant="ghost"
-                class="absolute -top-2 -right-2 opacity-0 group-hover:opacity-100 transition-opacity z-10"
-                style="padding: 0.1em; min-width: 1.2em; min-height: 1.2em"
+                class="absolute -top-1 -right-1 opacity-0 group-hover:opacity-100 transition-opacity"
                 @click="deleteTag(tag.id)"
               />
             </div>
           </div>
-          <div class="flex gap-2 mt-2">
-            <UInput v-model="newTagName" placeholder="新しいタグ名" size="sm" />
+          <div class="flex gap-2 items-center">
             <input
               type="color"
               v-model="newTagColor"
-              class="w-8 h-8 p-0 border-none bg-transparent cursor-pointer"
-              title="タグ色を選択"
+              class="w-8 h-8 rounded-md border border-gray-200 p-0.5 cursor-pointer transition-shadow hover:shadow-sm"
             />
-            <UButton size="sm" @click="addTag">追加</UButton>
+            <UInput
+              v-model="newTagName"
+              placeholder="新しいタグ名"
+              size="sm"
+              class="flex-1"
+            />
+            <UButton
+              size="sm"
+              icon="i-heroicons-plus"
+              color="primary"
+              @click="addTag"
+            >
+              追加
+            </UButton>
           </div>
         </div>
         <template #footer>
@@ -267,7 +296,12 @@ const isOpen = ref(true); // サイドバーの開閉状態
 const showTimer = ref(true); // タイマー表示状態
 const showTagModal = ref(false);
 const newTagName = ref("");
-const newTagColor = ref("#3b82f6"); // デフォルト色
+const randomColor = () => {
+  // パステル系のランダム色
+  const hue = Math.floor(Math.random() * 360);
+  return `hsl(${hue}, 70%, 70%)`;
+};
+const newTagColor = ref(randomColor());
 
 // サイドバーの開閉を切り替える
 const toggleSidebar = () => {
@@ -380,14 +414,14 @@ const addTag = async () => {
   if (!name) return;
   if (todoStore.tags.some((t) => t.name === name)) {
     newTagName.value = "";
-    newTagColor.value = "#3b82f6";
+    newTagColor.value = randomColor();
     return;
   }
   const { data, error } = await todoStore.createTag({ name, color });
   if (!error && data) {
     await todoStore.fetchTodos(); // タグ一覧を最新化
     newTagName.value = "";
-    newTagColor.value = "#3b82f6";
+    newTagColor.value = randomColor();
   }
 };
 
@@ -414,10 +448,6 @@ function darkenColor(hex: string, amount = 0.2) {
 
 <style scoped>
 .tag-modern.tag-modal:hover {
-  opacity: 1 !important;
-}
-.group:hover .tag-modal + .absolute,
-.group:focus-within .tag-modal + .absolute {
   opacity: 1 !important;
 }
 </style>

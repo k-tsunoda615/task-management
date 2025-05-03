@@ -1,103 +1,96 @@
 <template>
   <div
-    class="bg-white rounded-lg shadow p-4 relative"
-    :class="{ 'border-2 border-blue-500': todo.is_timing }"
+    class="group bg-white border border-gray-200 rounded-lg p-4 hover:shadow-md transition-all duration-200 relative"
+    draggable="true"
+    @dragstart="handleDragStart"
   >
-    <!-- ドラッグハンドル - ドラッグ操作をここに限定 -->
-    <div
-      class="absolute top-0 left-0 w-full h-8 cursor-move opacity-0"
-      draggable="true"
-      @dragstart="handleDragStart"
-    ></div>
-
-    <!-- プライベートインジケーター -->
-    <div
-      v-if="todo.is_private"
-      class="absolute bottom-1 right-6 text-green-500"
-      title="プライベート"
-    >
-      <UIcon name="i-heroicons-lock-closed" class="w-4 h-4" />
-    </div>
-
-    <div class="flex justify-between items-start">
-      <div class="flex-1">
-        <!-- 合計時間表示 -->
-        <div
-          v-if="showTimerBar === true"
-          class="mb-2 text-sm text-gray-600 flex items-center"
-        >
-          <UIcon name="i-heroicons-clock" class="w-4 h-4 mr-1" />
-          {{ formatTime(todo.total_time || 0) }}
-          <UButton
-            v-if="!todo.is_timing"
-            color="blue"
-            variant="ghost"
-            size="xs"
-            icon="i-heroicons-play"
-            class="ml-2 z-10"
-            :loading="timerLoading"
-            @click="startTiming"
-          />
-          <UButton
-            v-else
-            color="red"
-            variant="ghost"
-            size="xs"
-            icon="i-heroicons-pause"
-            class="ml-2 z-10"
-            :loading="timerLoading"
-            @click="stopTiming"
+    <div class="flex items-start">
+      <div class="flex-1 min-w-0">
+        <!-- タイトル -->
+        <div class="flex items-center gap-2 mb-2">
+          <h3 class="font-medium text-gray-900 truncate">{{ todo.title }}</h3>
+          <UIcon
+            v-if="todo.is_private"
+            name="i-heroicons-lock-closed"
+            class="text-gray-400 w-4 h-4"
           />
         </div>
-        <h3 class="font-bold border-b border-gray-200 pb-1 mb-1">
-          {{ todo.title }}
-        </h3>
-        <!-- タグ表示 -->
+
+        <!-- タグ -->
         <div
           v-if="todo.tags && todo.tags.length > 0"
-          class="mb-2 flex flex-wrap gap-1"
+          class="flex flex-wrap gap-1.5 mb-2"
         >
           <UBadge
             v-for="tag in todo.tags"
             :key="tag.id"
             :style="{
-              backgroundColor: 'transparent',
+              backgroundColor: `${tag.color}15`,
               color: tag.color || '#3b82f6',
-              border: `1px solid ${darkenColor(tag.color || '#3b82f6', 0.2)}`,
-              fontWeight: 'normal',
-              fontSize: '0.75em',
-              borderRadius: '9999px',
-              padding: '0.15em 0.7em',
-              transition: 'box-shadow 0.2s, opacity 0.2s',
-              cursor: 'pointer',
-              textDecoration: 'none',
+              border: 'none',
+              fontWeight: '500',
+              fontSize: '0.75rem',
+              borderRadius: '0.375rem',
+              padding: '0.25rem 0.5rem',
+              lineHeight: '1',
             }"
-            class="tag-modern tag-modal"
-            size="xs"
-            >{{ tag.name }}</UBadge
+            class="transition-all duration-200 hover:bg-opacity-25"
           >
+            {{ tag.name }}
+          </UBadge>
         </div>
+
+        <!-- メモ -->
         <div
           v-if="todo.memo"
-          class="mt-1 text-sm prose prose-sm prose-gray max-h-[20em] w-full overflow-y-auto pr-2 break-all"
+          class="mt-2 text-sm prose prose-sm prose-gray max-h-[20em] w-full overflow-y-auto pr-2 break-all"
           v-html="parsedMemo"
         />
       </div>
-      <div class="flex items-center ml-4">
+
+      <!-- アクションボタン -->
+      <div
+        class="flex items-center gap-1 ml-4 opacity-0 group-hover:opacity-100 transition-opacity"
+      >
         <UButton
           color="gray"
           variant="ghost"
           icon="i-heroicons-pencil-square"
           size="xs"
-          class="z-10"
+          class="hover:bg-gray-100"
           @click="editTodo"
+        />
+        <UButton
+          v-if="!todo.is_timing && showTimerBar"
+          color="gray"
+          variant="ghost"
+          icon="i-heroicons-play"
+          size="xs"
+          :loading="timerLoading"
+          class="hover:bg-gray-100"
+          @click="startTiming"
+        />
+        <UButton
+          v-if="todo.is_timing && showTimerBar"
+          color="red"
+          variant="ghost"
+          icon="i-heroicons-pause"
+          size="xs"
+          :loading="timerLoading"
+          class="hover:bg-red-100"
+          @click="stopTiming"
         />
       </div>
     </div>
-    <!-- sort_order表示 -->
-    <!-- <div class="mt-2 text-xs text-gray-400">
-      順序: {{ todo.sort_order !== undefined ? todo.sort_order : "なし" }}
-    </div> -->
+
+    <!-- タイマー表示 -->
+    <div
+      v-if="showTimerBar && todo.total_time"
+      class="mt-3 pt-3 border-t border-gray-100 flex items-center text-sm text-gray-500"
+    >
+      <UIcon name="i-heroicons-clock" class="w-4 h-4 mr-1.5" />
+      {{ formatTime(todo.total_time) }}
+    </div>
   </div>
 </template>
 
@@ -207,22 +200,43 @@ function darkenColor(hex: string, amount = 0.2) {
 </script>
 
 <style scoped>
-/* ボタンのクリック領域を拡大 */
-.u-button {
-  position: relative;
+.prose :deep(p) {
+  margin: 0.5em 0;
+  color: #4b5563;
+  line-height: 1.5;
 }
 
-.u-button::after {
-  content: "";
-  position: absolute;
-  top: -5px;
-  left: -5px;
-  right: -5px;
-  bottom: -5px;
-  z-index: 1;
+.prose :deep(ul),
+.prose :deep(ol) {
+  margin: 0.5em 0;
+  padding-left: 1.5em;
 }
 
-.tag-modern.tag-modal:hover {
-  opacity: 1 !important;
+.prose :deep(li) {
+  margin: 0.25em 0;
+}
+
+.prose :deep(a) {
+  color: #2563eb;
+  text-decoration: none;
+  border-bottom: 1px solid #93c5fd;
+}
+
+.prose :deep(a:hover) {
+  border-bottom-color: #2563eb;
+}
+
+.prose :deep(code) {
+  background-color: #f3f4f6;
+  padding: 0.2em 0.4em;
+  border-radius: 0.25em;
+  font-size: 0.875em;
+}
+
+.prose :deep(pre) {
+  background-color: #f3f4f6;
+  padding: 1em;
+  border-radius: 0.5em;
+  overflow-x: auto;
 }
 </style>

@@ -4,19 +4,26 @@
     <Transition name="slide">
       <div
         v-if="currentTimingTodo"
-        class="mb-8 p-4 bg-blue-50 rounded-lg border border-blue-200 flex items-center justify-between"
+        class="mb-6 p-4 bg-blue-50/50 rounded-lg border border-blue-100 flex items-center justify-between"
       >
-        <div class="flex items-center">
-          <UIcon name="i-heroicons-clock" class="w-5 h-5 mr-2 text-blue-500" />
+        <div class="flex items-center gap-3">
+          <div
+            class="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center"
+          >
+            <UIcon name="i-heroicons-clock" class="w-5 h-5 text-blue-600" />
+          </div>
           <div>
-            <div class="font-semibold">{{ currentTimingTodo.title }}</div>
-            <div class="text-sm text-blue-700">
+            <div class="font-medium text-gray-900">
+              {{ currentTimingTodo.title }}
+            </div>
+            <div class="text-sm text-blue-600 font-medium">
               {{ formatTime(currentTotalTime) }}
             </div>
           </div>
         </div>
         <UButton
           color="red"
+          variant="soft"
           size="sm"
           @click="stopTiming(currentTimingTodo)"
           icon="i-heroicons-pause"
@@ -26,9 +33,14 @@
       </div>
     </Transition>
 
-    <div class="mb-4 flex items-center justify-between">
-      <h1 class="text-2xl font-bold font-en-title">Task Board</h1>
-      <UButton @click="openNewTaskModal" icon="i-heroicons-plus">
+    <div class="mb-6 flex items-center justify-between">
+      <h1 class="text-2xl font-semibold text-gray-900">Task Board</h1>
+      <UButton
+        @click="openNewTaskModal"
+        icon="i-heroicons-plus"
+        color="primary"
+        variant="soft"
+      >
         新しいタスク
       </UButton>
     </div>
@@ -40,9 +52,11 @@
     <div class="hidden md:grid gap-4 mb-4" :class="getLayoutClass()">
       <!-- Priority -->
       <div :class="getPriorityClass()">
-        <div class="rounded-lg bg-gray-100 p-4 h-full flex flex-col">
-          <h2 class="mb-3 font-semibold text-gray-700">
-            <UIcon name="i-heroicons-inbox" class="mr-1 align-middle" />
+        <div
+          class="rounded-lg bg-gray-50/50 border border-gray-100 p-4 h-full flex flex-col"
+        >
+          <h2 class="mb-4 font-medium text-gray-900 flex items-center gap-2">
+            <UIcon name="i-heroicons-inbox" class="w-5 h-5 text-gray-500" />
             Priority
           </h2>
           <div class="flex-1 min-h-[300px]">
@@ -50,12 +64,12 @@
               v-model="todosByStatus.todo"
               :group="{ name: 'todos' }"
               item-key="id"
-              class="h-full min-h-[inherit] space-y-2"
+              class="h-full min-h-[inherit] space-y-3"
               data-status="todo"
               :animation="200"
               ghost-class="opacity-50"
               :class="{
-                'border-2 border-dashed border-gray-300 rounded-lg':
+                'border-2 border-dashed border-gray-200 rounded-lg p-4':
                   todosByStatus.todo.length === 0,
               }"
               @change="handleDragChange"
@@ -75,7 +89,7 @@
               <template #footer>
                 <div
                   v-if="todosByStatus.todo.length === 0"
-                  class="text-gray-500 text-sm p-4 text-center"
+                  class="text-gray-500 text-sm text-center"
                 >
                   タスクがありません
                 </div>
@@ -87,16 +101,16 @@
 
       <!-- Next Up -->
       <div :class="getNextUpClass()">
-        <div class="rounded-lg bg-blue-50 p-4 h-full">
-          <h2 class="mb-3 font-semibold text-blue-700">
-            <UIcon name="i-heroicons-clock" class="mr-1 align-middle" />
+        <div class="rounded-lg bg-blue-50/50 border border-blue-100 p-4 h-full">
+          <h2 class="mb-4 font-medium text-gray-900 flex items-center gap-2">
+            <UIcon name="i-heroicons-clock" class="w-5 h-5 text-blue-500" />
             Next Up
           </h2>
           <draggable
             v-model="todosByStatus.inProgress"
             :group="{ name: 'todos' }"
             item-key="id"
-            class="space-y-2"
+            class="space-y-3"
             data-status="inProgress"
             :animation="200"
             ghost-class="opacity-50"
@@ -115,7 +129,7 @@
           </draggable>
           <div
             v-if="todosByStatus.inProgress.length === 0"
-            class="text-gray-500 text-sm p-2"
+            class="text-gray-500 text-sm text-center mt-2"
           >
             タスクがありません
           </div>
@@ -126,16 +140,16 @@
     <!-- モバイル表示: 1カラムレイアウト -->
     <div class="block md:hidden space-y-4">
       <!-- Priority -->
-      <div class="rounded-lg bg-gray-100 p-4">
-        <h2 class="mb-3 font-semibold text-gray-700">
-          <UIcon name="i-heroicons-inbox" class="mr-1 align-middle" />
+      <div class="rounded-lg bg-gray-50/50 border border-gray-100 p-4">
+        <h2 class="mb-4 font-medium text-gray-900 flex items-center gap-2">
+          <UIcon name="i-heroicons-inbox" class="w-5 h-5 text-gray-500" />
           Priority
         </h2>
         <draggable
           v-model="todosByStatus.todo"
           :group="{ name: 'todos' }"
           item-key="id"
-          class="space-y-2"
+          class="space-y-3"
           data-status="todo"
           :animation="200"
           ghost-class="opacity-50"
@@ -156,23 +170,23 @@
         </draggable>
         <div
           v-if="todosByStatus.todo.length === 0"
-          class="text-gray-500 text-sm p-2"
+          class="text-gray-500 text-sm text-center mt-2"
         >
           タスクがありません
         </div>
       </div>
 
       <!-- Next Up -->
-      <div class="rounded-lg bg-blue-50 p-4">
-        <h2 class="mb-3 font-semibold text-blue-700">
-          <UIcon name="i-heroicons-clock" class="mr-1 align-middle" />
+      <div class="rounded-lg bg-blue-50/50 border border-blue-100 p-4">
+        <h2 class="mb-4 font-medium text-gray-900 flex items-center gap-2">
+          <UIcon name="i-heroicons-clock" class="w-5 h-5 text-blue-500" />
           Next Up
         </h2>
         <draggable
           v-model="todosByStatus.inProgress"
           :group="{ name: 'todos' }"
           item-key="id"
-          class="space-y-2"
+          class="space-y-3"
           data-status="inProgress"
           :animation="200"
           ghost-class="opacity-50"
@@ -191,7 +205,7 @@
         </draggable>
         <div
           v-if="todosByStatus.inProgress.length === 0"
-          class="text-gray-500 text-sm p-2"
+          class="text-gray-500 text-sm text-center mt-2"
         >
           タスクがありません
         </div>
@@ -199,16 +213,16 @@
     </div>
 
     <!-- PC/モバイル共通: 下段：Archived -->
-    <div class="rounded-lg bg-green-50 p-4 mt-4">
-      <h2 class="mb-3 font-semibold text-green-700">
-        <UIcon name="i-heroicons-check-circle" class="mr-1 align-middle" />
+    <div class="rounded-lg bg-green-50/50 border border-green-100 p-4 mt-4">
+      <h2 class="mb-4 font-medium text-gray-900 flex items-center gap-2">
+        <UIcon name="i-heroicons-check-circle" class="w-5 h-5 text-green-500" />
         Archived
       </h2>
       <draggable
         v-model="todosByStatus.done"
         :group="{ name: 'todos' }"
         item-key="id"
-        class="space-y-2"
+        class="space-y-3"
         data-status="done"
         :animation="200"
         ghost-class="opacity-50"
@@ -227,7 +241,7 @@
       </draggable>
       <div
         v-if="todosByStatus.done.length === 0"
-        class="text-gray-500 text-sm p-2"
+        class="text-gray-500 text-sm text-center mt-2"
       >
         タスクがありません
       </div>
@@ -237,16 +251,16 @@
     <UModal v-model="showNewTaskModal">
       <UCard>
         <template #header>
-          <h3 class="text-lg font-semibold">新しいタスク</h3>
+          <h3 class="text-lg font-medium text-gray-900">新しいタスク</h3>
         </template>
-        <form @submit.prevent="createTodo">
-          <UFormGroup label="タイトル" class="mt-4">
+        <form @submit.prevent="createTodo" class="space-y-4">
+          <UFormGroup label="タイトル">
             <UInput v-model="newTodo.title" required />
           </UFormGroup>
-          <UFormGroup label="メモ" class="mt-4">
+          <UFormGroup label="メモ">
             <UTextarea v-model="newTodo.memo" />
           </UFormGroup>
-          <UFormGroup label="ステータス" class="mt-4">
+          <UFormGroup label="ステータス">
             <USelect
               v-model="newTodo.status"
               :options="[
@@ -256,56 +270,68 @@
               ]"
             />
           </UFormGroup>
-          <UFormGroup class="mt-4">
+          <UFormGroup>
             <UCheckbox v-model="newTodo.is_private" label="Private" />
           </UFormGroup>
-          <UFormGroup label="合計時間 (hh:mm:ss)" class="mt-4">
+          <UFormGroup label="合計時間 (hh:mm:ss)">
             <UInput
               v-model="timeInput"
               placeholder="00:00:00"
               @input="validateTimeInput"
             />
           </UFormGroup>
-          <UFormGroup label="タグ" class="mt-4">
-            <div class="flex flex-wrap gap-2 mb-2">
-              <UBadge
-                v-for="tag in todoStore.tags"
-                :key="tag.id"
-                :style="{
-                  backgroundColor: 'transparent',
-                  color: tag.color || '#3b82f6',
-                  border: `1px solid ${darkenColor(tag.color || '#3b82f6', 0.2)}`,
-                  fontWeight: 'normal',
-                  fontSize: '0.75em',
-                  borderRadius: '9999px',
-                  padding: '0.15em 0.7em',
-                  transition: 'box-shadow 0.2s, opacity 0.2s',
-                  cursor: 'pointer',
-                  opacity: newTodo.tags.some((t) => t.id === tag.id) ? 1 : 0.5,
-                  textDecoration: 'none',
-                }"
-                class="tag-modern tag-modal"
-                @click="
-                  () => {
-                    if (newTodo.tags.some((t) => t.id === tag.id)) {
-                      newTodo.tags = newTodo.tags.filter(
-                        (t) => t.id !== tag.id
-                      );
-                    } else {
-                      newTodo.tags.push(tag);
+          <UFormGroup label="タグ">
+            <div class="space-y-3">
+              <div class="flex flex-wrap gap-2">
+                <UBadge
+                  v-for="tag in todoStore.tags"
+                  :key="tag.id"
+                  :style="{
+                    backgroundColor: `${tag.color}15`,
+                    color: tag.color || '#3b82f6',
+                    border: 'none',
+                    fontWeight: '500',
+                    fontSize: '0.75rem',
+                    borderRadius: '0.375rem',
+                    padding: '0.25rem 0.75rem',
+                    lineHeight: '1.25',
+                    opacity: newTodo.tags.some((t) => t.id === tag.id)
+                      ? 1
+                      : 0.5,
+                    cursor: 'pointer',
+                  }"
+                  class="transition-all duration-200 hover:opacity-100"
+                  @click="
+                    () => {
+                      if (newTodo.tags.some((t) => t.id === tag.id)) {
+                        newTodo.tags = newTodo.tags.filter(
+                          (t) => t.id !== tag.id
+                        );
+                      } else {
+                        newTodo.tags.push(tag);
+                      }
                     }
-                  }
-                "
-                >{{ tag.name }}</UBadge
-              >
-            </div>
-            <div class="flex gap-2 mt-2">
-              <UInput
-                v-model="newTagName"
-                placeholder="新しいタグ名"
-                size="sm"
-              />
-              <UButton size="sm" @click="addTag">追加</UButton>
+                  "
+                >
+                  {{ tag.name }}
+                </UBadge>
+              </div>
+              <div class="flex gap-2">
+                <UInput
+                  v-model="newTagName"
+                  placeholder="新しいタグ名"
+                  size="sm"
+                  class="flex-1"
+                />
+                <UButton
+                  size="sm"
+                  color="primary"
+                  variant="soft"
+                  @click="addTag"
+                >
+                  追加
+                </UButton>
+              </div>
             </div>
           </UFormGroup>
         </form>
@@ -334,7 +360,7 @@
       <UCard>
         <template #header>
           <div class="flex justify-between items-center">
-            <h3 class="text-lg font-semibold">タスクを編集</h3>
+            <h3 class="text-lg font-medium text-gray-900">タスクを編集</h3>
             <UButton
               color="red"
               variant="ghost"
@@ -342,14 +368,15 @@
               size="sm"
               @click="confirmDeleteTodo"
               title="タスクを削除"
+              class="hover:bg-red-50"
             />
           </div>
         </template>
-        <form @submit.prevent="updateTodo">
-          <UFormGroup label="タイトル" class="mt-4">
+        <form @submit.prevent="updateTodo" class="space-y-4">
+          <UFormGroup label="タイトル">
             <UInput v-model="editingTodo.title" required />
           </UFormGroup>
-          <UFormGroup label="メモ" class="mt-4">
+          <UFormGroup label="メモ">
             <div class="space-y-2">
               <UTextarea
                 v-model="editingTodo.memo"
@@ -361,7 +388,7 @@
               />
               <UButton
                 size="sm"
-                variant="ghost"
+                variant="soft"
                 @click="showPreviewModal = true"
                 icon="i-heroicons-eye"
               >
@@ -369,7 +396,7 @@
               </UButton>
             </div>
           </UFormGroup>
-          <div class="flex gap-4 mt-4">
+          <div class="flex gap-4">
             <UFormGroup label="ステータス" class="flex-1">
               <USelect
                 v-model="editingTodo.status"
@@ -384,7 +411,7 @@
               <UCheckbox v-model="editingTodo.is_private" label="Private" />
             </UFormGroup>
           </div>
-          <UFormGroup label="合計時間 (hh:mm:ss)" class="mt-4">
+          <UFormGroup label="合計時間 (hh:mm:ss)">
             <div class="flex items-center gap-2">
               <UInput
                 v-model="editTimeInput"
@@ -403,48 +430,58 @@
               </UTooltip>
             </div>
           </UFormGroup>
-          <UFormGroup label="タグ" class="mt-4">
-            <div class="flex flex-wrap gap-2 mb-2">
-              <UBadge
-                v-for="tag in todoStore.tags"
-                :key="tag.id"
-                :style="{
-                  backgroundColor: 'transparent',
-                  color: tag.color || '#3b82f6',
-                  border: `1px solid ${darkenColor(tag.color || '#3b82f6', 0.2)}`,
-                  fontWeight: 'normal',
-                  fontSize: '0.75em',
-                  borderRadius: '9999px',
-                  padding: '0.15em 0.7em',
-                  transition: 'box-shadow 0.2s, opacity 0.2s',
-                  cursor: 'pointer',
-                  opacity: editingTodo.tags.some((t) => t.id === tag.id)
-                    ? 1
-                    : 0.5,
-                  textDecoration: 'none',
-                }"
-                class="tag-modern tag-modal"
-                @click="
-                  () => {
-                    if (editingTodo.tags.some((t) => t.id === tag.id)) {
-                      editingTodo.tags = editingTodo.tags.filter(
-                        (t) => t.id !== tag.id
-                      );
-                    } else {
-                      editingTodo.tags.push(tag);
+          <UFormGroup label="タグ">
+            <div class="space-y-3">
+              <div class="flex flex-wrap gap-2">
+                <UBadge
+                  v-for="tag in todoStore.tags"
+                  :key="tag.id"
+                  :style="{
+                    backgroundColor: `${tag.color}15`,
+                    color: tag.color || '#3b82f6',
+                    border: 'none',
+                    fontWeight: '500',
+                    fontSize: '0.75rem',
+                    borderRadius: '0.375rem',
+                    padding: '0.25rem 0.75rem',
+                    lineHeight: '1.25',
+                    opacity: editingTodo.tags.some((t) => t.id === tag.id)
+                      ? 1
+                      : 0.5,
+                    cursor: 'pointer',
+                  }"
+                  class="transition-all duration-200 hover:opacity-100"
+                  @click="
+                    () => {
+                      if (editingTodo.tags.some((t) => t.id === tag.id)) {
+                        editingTodo.tags = editingTodo.tags.filter(
+                          (t) => t.id !== tag.id
+                        );
+                      } else {
+                        editingTodo.tags.push(tag);
+                      }
                     }
-                  }
-                "
-                >{{ tag.name }}</UBadge
-              >
-            </div>
-            <div class="flex gap-2 mt-2">
-              <UInput
-                v-model="newTagName"
-                placeholder="新しいタグ名"
-                size="sm"
-              />
-              <UButton size="sm" @click="addTag">追加</UButton>
+                  "
+                >
+                  {{ tag.name }}
+                </UBadge>
+              </div>
+              <div class="flex gap-2">
+                <UInput
+                  v-model="newTagName"
+                  placeholder="新しいタグ名"
+                  size="sm"
+                  class="flex-1"
+                />
+                <UButton
+                  size="sm"
+                  color="primary"
+                  variant="soft"
+                  @click="addTag"
+                >
+                  追加
+                </UButton>
+              </div>
             </div>
           </UFormGroup>
         </form>
@@ -472,7 +509,7 @@
         >
           <UCard>
             <template #header>
-              <h3 class="text-lg font-semibold">プレビュー</h3>
+              <h3 class="text-lg font-medium text-gray-900">プレビュー</h3>
             </template>
             <div
               class="prose prose-sm max-w-none min-h-[300px] overflow-y-auto max-h-[60vh]"
@@ -494,16 +531,20 @@
     <UModal v-model="showDeleteConfirmModal">
       <UCard>
         <template #header>
-          <h3 class="text-lg font-semibold text-red-600">タスクの削除</h3>
+          <h3 class="text-lg font-medium text-red-600">タスクの削除</h3>
         </template>
-        <p>「{{ editingTodo.title }}」を削除してもよろしいですか？</p>
+        <p class="text-gray-700">
+          「{{ editingTodo.title }}」を削除してもよろしいですか？
+        </p>
         <p class="text-sm text-gray-500 mt-2">この操作は元に戻せません。</p>
         <template #footer>
           <div class="flex justify-end gap-2">
             <UButton variant="ghost" @click="showDeleteConfirmModal = false">
               キャンセル
             </UButton>
-            <UButton color="red" @click="deleteCurrentTodo"> 削除する </UButton>
+            <UButton color="red" variant="soft" @click="deleteCurrentTodo">
+              削除する
+            </UButton>
           </div>
         </template>
       </UCard>
@@ -1446,7 +1487,7 @@ function darkenColor(hex: string, amount = 0.2) {
   transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
   max-height: 200px;
   opacity: 1;
-  margin-bottom: 2rem;
+  margin-bottom: 1.5rem;
 }
 
 .slide-leave-active {
@@ -1460,9 +1501,5 @@ function darkenColor(hex: string, amount = 0.2) {
   opacity: 0;
   margin-bottom: 0;
   overflow: hidden;
-}
-
-.tag-modern.tag-modal:hover {
-  opacity: 1 !important;
 }
 </style>
