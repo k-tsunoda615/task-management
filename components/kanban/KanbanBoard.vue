@@ -248,105 +248,19 @@
     </div>
 
     <!-- 新規タスクモーダル -->
-    <UModal v-model="showNewTaskModal">
-      <UCard>
-        <template #header>
-          <h3 class="text-lg font-medium text-gray-900">新しいタスク</h3>
-        </template>
-        <form @submit.prevent="createTodo" class="space-y-4">
-          <UFormGroup label="タイトル">
-            <UInput v-model="newTodo.title" required />
-          </UFormGroup>
-          <UFormGroup label="メモ">
-            <UTextarea v-model="newTodo.memo" />
-          </UFormGroup>
-          <UFormGroup label="ステータス">
-            <USelect
-              v-model="newTodo.status"
-              :options="[
-                { label: 'Priority', value: '未対応' },
-                { label: 'Next Up', value: '対応中' },
-                { label: 'Archived', value: '完了' },
-              ]"
-            />
-          </UFormGroup>
-          <UFormGroup>
-            <UCheckbox v-model="newTodo.is_private" label="Private" />
-          </UFormGroup>
-          <UFormGroup label="合計時間 (hh:mm:ss)">
-            <UInput
-              v-model="timeInput"
-              placeholder="00:00:00"
-              @input="validateTimeInput"
-            />
-          </UFormGroup>
-          <UFormGroup label="タグ">
-            <div class="space-y-3">
-              <div class="flex flex-wrap gap-2">
-                <UBadge
-                  v-for="tag in tagStore.tags"
-                  :key="tag.id"
-                  :style="{
-                    backgroundColor: `${tag.color}15`,
-                    color: tag.color || '#3b82f6',
-                    border: 'none',
-                    fontWeight: '500',
-                    fontSize: '0.75rem',
-                    borderRadius: '0.375rem',
-                    padding: '0.25rem 0.75rem',
-                    lineHeight: '1.25',
-                    opacity: newTodo.tags.some((t) => t.id === tag.id)
-                      ? 1
-                      : 0.5,
-                    cursor: 'pointer',
-                  }"
-                  class="transition-all duration-200 hover:opacity-100"
-                  @click="
-                    () => {
-                      if (newTodo.tags.some((t) => t.id === tag.id)) {
-                        newTodo.tags = newTodo.tags.filter(
-                          (t) => t.id !== tag.id
-                        );
-                      } else {
-                        newTodo.tags.push(tag);
-                      }
-                    }
-                  "
-                >
-                  {{ tag.name }}
-                </UBadge>
-              </div>
-              <div class="flex gap-2">
-                <UInput
-                  v-model="newTagName"
-                  placeholder="新しいタグ名"
-                  size="sm"
-                  class="flex-1"
-                />
-                <UButton
-                  size="sm"
-                  color="primary"
-                  variant="soft"
-                  @click="addTag"
-                >
-                  追加
-                </UButton>
-              </div>
-            </div>
-          </UFormGroup>
-        </form>
-        <template #footer>
-          <div class="flex justify-end gap-2">
-            <UButton variant="ghost" @click="showNewTaskModal = false">
-              キャンセル
-            </UButton>
-            <UButton color="primary" @click="createTodo" :loading="isCreating">
-              作成
-            </UButton>
-          </div>
-        </template>
-      </UCard>
-    </UModal>
+    <TaskCreateModal
+      :show="showNewTaskModal"
+      :newTodo="newTodo"
+      :timeInput="timeInput"
+      :tagStore="tagStore"
+      :isCreating="isCreating"
+      :newTagName="newTagName"
+      @close="showNewTaskModal = false"
+      @create="createTodo"
+      @add-tag="addTag"
+      @toggle-tag="toggleTagOnNewTodo"
+      @validate-time="validateTimeInput"
+    />
 
     <!-- 編集タスクモーダル -->
     <UModal
@@ -560,6 +474,7 @@ import { marked } from "marked";
 import { useEventBus } from "@vueuse/core";
 import type { Todo, Tag } from "../types/todo";
 import TheSidebar from "../sidebar/TheSidebar.vue";
+import TaskCreateModal from "../modals/TaskCreateModal.vue";
 
 const todoStore = useTodoStore();
 const tagStore = useTagStore();
@@ -1480,6 +1395,16 @@ function darkenColor(hex: string, amount = 0.2) {
   b = Math.max(0, Math.floor(b * (1 - amount)));
   return `#${r.toString(16).padStart(2, "0")}${g.toString(16).padStart(2, "0")}${b.toString(16).padStart(2, "0")}`;
 }
+
+// タグのON/OFF切り替え用関数を追加
+const toggleTagOnNewTodo = (tag: Tag) => {
+  const idx = newTodo.value.tags.findIndex((t: Tag) => t.id === tag.id);
+  if (idx !== -1) {
+    newTodo.value.tags = newTodo.value.tags.filter((t: Tag) => t.id !== tag.id);
+  } else {
+    newTodo.value.tags.push(tag);
+  }
+};
 </script>
 
 <style scoped>
