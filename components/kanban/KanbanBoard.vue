@@ -441,28 +441,12 @@
       </UCard>
     </UModal>
 
-    <!-- 削除確認モーダル -->
-    <UModal v-model="showDeleteConfirmModal">
-      <UCard>
-        <template #header>
-          <h3 class="text-lg font-medium text-red-600">タスクの削除</h3>
-        </template>
-        <p class="text-gray-700">
-          「{{ editingTodo.title }}」を削除してもよろしいですか？
-        </p>
-        <p class="text-sm text-gray-500 mt-2">この操作は元に戻せません。</p>
-        <template #footer>
-          <div class="flex justify-end gap-2">
-            <UButton variant="ghost" @click="showDeleteConfirmModal = false">
-              キャンセル
-            </UButton>
-            <UButton color="red" variant="soft" @click="deleteCurrentTodo">
-              削除する
-            </UButton>
-          </div>
-        </template>
-      </UCard>
-    </UModal>
+    <DeleteConfirmModal
+      :show="showDeleteConfirmModal"
+      :editingTodo="editingTodo"
+      @close="showDeleteConfirmModal = false"
+      @delete="deleteCurrentTodo"
+    />
   </div>
 </template>
 
@@ -475,6 +459,7 @@ import { useEventBus } from "@vueuse/core";
 import type { Todo, Tag } from "../types/todo";
 import TheSidebar from "../sidebar/TheSidebar.vue";
 import TaskCreateModal from "../modals/TaskCreateModal.vue";
+import DeleteConfirmModal from "../modals/DeleteConfirmModal.vue";
 
 const todoStore = useTodoStore();
 const tagStore = useTagStore();
