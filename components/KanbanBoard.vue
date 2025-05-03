@@ -284,7 +284,7 @@
             <div class="space-y-3">
               <div class="flex flex-wrap gap-2">
                 <UBadge
-                  v-for="tag in todoStore.tags"
+                  v-for="tag in tagStore.tags"
                   :key="tag.id"
                   :style="{
                     backgroundColor: `${tag.color}15`,
@@ -434,7 +434,7 @@
             <div class="space-y-3">
               <div class="flex flex-wrap gap-2">
                 <UBadge
-                  v-for="tag in todoStore.tags"
+                  v-for="tag in tagStore.tags"
                   :key="tag.id"
                   :style="{
                     backgroundColor: `${tag.color}15`,
@@ -554,13 +554,15 @@
 
 <script setup lang="ts">
 import { useTodoStore } from "../stores/todo";
+import { useTagStore } from "../stores/tag";
 import draggable from "vuedraggable";
 import { marked } from "marked";
 import { useEventBus } from "@vueuse/core";
-import type { Todo } from "../types/todo";
+import type { Todo, Tag } from "../types/todo";
 import TheSidebar from "../components/TheSidebar.vue";
 
 const todoStore = useTodoStore();
+const tagStore = useTagStore();
 const showNewTaskModal = ref(false);
 const showEditModal = ref(false);
 const showPreviewModal = ref(false);
@@ -715,14 +717,13 @@ const addTag = async () => {
   const name = newTagName.value.trim();
   if (!name) return;
   // 既存タグに同名があれば追加しない
-  if (todoStore.tags.some((t) => t.name === name)) {
+  if (tagStore.tags.some((t: Tag) => t.name === name)) {
     newTagName.value = "";
     return;
   }
   // Supabaseに追加
-  const { data, error } = await todoStore.createTag({ name });
+  const { data, error } = await tagStore.createTag({ name });
   if (!error && data) {
-    todoStore.tags.push(data);
     newTagName.value = "";
   }
 };

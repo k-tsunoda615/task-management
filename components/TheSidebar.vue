@@ -210,7 +210,7 @@
         <div class="space-y-4">
           <div class="flex flex-wrap gap-2">
             <div
-              v-for="tag in todoStore.tags"
+              v-for="tag in tagStore.tags"
               :key="tag.id"
               class="relative group"
             >
@@ -276,7 +276,9 @@
 <script setup lang="ts">
 import { useProjectStore } from "../stores/project";
 import { useTodoStore } from "../stores/todo";
+import { useTagStore } from "../stores/tag";
 import { useEventBus } from "@vueuse/core";
+import type { Tag } from "@/types/todo";
 
 const props = defineProps({
   isMobile: {
@@ -289,6 +291,7 @@ const emit = defineEmits(["close-mobile-menu", "toggle-layout"]);
 
 const projectStore = useProjectStore();
 const todoStore = useTodoStore();
+const tagStore = useTagStore();
 
 const trashEventBus = useEventBus("trash-drop");
 const isDragOver = ref(false);
@@ -412,14 +415,13 @@ const addTag = async () => {
   const name = newTagName.value.trim();
   const color = newTagColor.value;
   if (!name) return;
-  if (todoStore.tags.some((t) => t.name === name)) {
+  if (tagStore.tags.some((t: Tag) => t.name === name)) {
     newTagName.value = "";
     newTagColor.value = randomColor();
     return;
   }
-  const { data, error } = await todoStore.createTag({ name, color });
+  const { data, error } = await tagStore.createTag({ name, color });
   if (!error && data) {
-    await todoStore.fetchTodos(); // タグ一覧を最新化
     newTagName.value = "";
     newTagColor.value = randomColor();
   }
@@ -427,8 +429,7 @@ const addTag = async () => {
 
 const deleteTag = async (tagId: string) => {
   if (!confirm("このタグを削除しますか？")) return;
-  await todoStore.deleteTag(tagId);
-  await todoStore.fetchTodos(); // タグ一覧を最新化
+  await tagStore.deleteTag(tagId);
 };
 
 // 色を暗くするユーティリティ関数

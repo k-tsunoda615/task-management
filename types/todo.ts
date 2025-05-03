@@ -1,3 +1,9 @@
+export type Tag = {
+  id: string;
+  name: string;
+  color?: string;
+};
+
 export type Todo = {
   id: string;
   title: string;
@@ -10,4 +16,5 @@ export type Todo = {
   updated_at?: string;
   total_time?: number | number[];
   is_timing?: boolean;
+  tags?: Tag[];
 };
