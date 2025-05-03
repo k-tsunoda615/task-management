@@ -1,11 +1,14 @@
 <template>
-  <UModal v-model="show">
+  <UModal
+    :model-value="show"
+    @update:model-value="$emit('update:show', $event)"
+  >
     <UCard>
       <template #header>
         <h3 class="text-lg font-medium text-red-600">タスクの削除</h3>
       </template>
       <p class="text-gray-700">
-        「{{ editingTodo.title }}」を削除してもよろしいですか？
+        「{{ editingTodo?.title }}」を削除してもよろしいですか？
       </p>
       <p class="text-sm text-gray-500 mt-2">この操作は元に戻せません。</p>
       <template #footer>
@@ -27,5 +30,5 @@ defineProps({
   show: Boolean,
   editingTodo: Object,
 });
-defineEmits(["close", "delete"]);
+defineEmits(["close", "delete", "update:show"]);
 </script>

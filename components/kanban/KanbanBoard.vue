@@ -1106,67 +1106,6 @@ const stopTiming = async (todo: Todo) => {
   }
 };
 
-// タイマーを開始する
-const startTimerForTodo = (todo: Todo) => {
-  console.log("タイマー開始:", todo);
-
-  // 現在のタスクを設定
-  currentTimingTodo.value = { ...todo }; // オブジェクトをコピーして参照を切る
-  currentTotalTime.value = extractTotalTime(todo.total_time);
-
-  // 開始時間を記録
-  startTime.value = Date.now();
-
-  // 既存のタイマーがあれば停止
-  if (timerInterval.value) {
-    console.log("既存のタイマーを停止");
-    cancelAnimationFrame(timerInterval.value);
-    timerInterval.value = null;
-  }
-
-  // 新しいタイマーを開始
-  console.log("新しいタイマーを開始");
-
-  const updateTimer = () => {
-    if (!startTime.value || !currentTimingTodo.value) {
-      console.log("タイマー条件が満たされないため停止");
-      return;
-    }
-
-    // 経過時間を計算（ミリ秒から秒に変換）
-    const elapsedSeconds = Math.floor((Date.now() - startTime.value) / 1000);
-
-    // 合計時間を更新
-    const newTotalTime = extractTotalTime(todo.total_time) + elapsedSeconds;
-    if (currentTotalTime.value !== newTotalTime) {
-      currentTotalTime.value = newTotalTime;
-
-      // todoリスト内の該当するタスクも更新する（表示を更新するため）
-      updateTimingTodoInLists(
-        currentTimingTodo.value.id,
-        currentTotalTime.value
-      );
-
-      // デバッグ用
-      if (elapsedSeconds % 5 === 0) {
-        console.log("タイマー更新:", currentTotalTime.value);
-      }
-
-      // 1分ごとにバックグラウンドで保存
-      if (elapsedSeconds % 60 === 0 && elapsedSeconds > 0) {
-        updateTimerInBackground();
-      }
-    }
-
-    // 次のフレームをリクエスト
-    timerInterval.value = requestAnimationFrame(updateTimer);
-  };
-
-  // タイマー開始
-  timerInterval.value = requestAnimationFrame(updateTimer);
-  console.log("タイマー開始完了");
-};
-
 // todoリスト内の計測中のタスクを更新する
 const updateTimingTodoInLists = (
   todoId: string,
@@ -1189,28 +1128,6 @@ const updateTimingTodoInLists = (
   updateInList(todosByStatus.todo);
   updateInList(todosByStatus.inProgress);
   updateInList(todosByStatus.done);
-};
-
-// タイマーを停止する
-const stopTimer = () => {
-  console.log("タイマー停止処理開始");
-
-  if (timerInterval.value) {
-    console.log("アニメーションフレームをキャンセル:", timerInterval.value);
-    cancelAnimationFrame(timerInterval.value);
-    timerInterval.value = null;
-  }
-
-  // タイマーが動いていた場合は最終的な時間を保存
-  if (currentTimingTodo.value && startTime.value) {
-    const elapsedSeconds = Math.floor((Date.now() - startTime.value) / 1000);
-    console.log("経過時間:", elapsedSeconds, "秒");
-    currentTotalTime.value =
-      extractTotalTime(currentTimingTodo.value.total_time) + elapsedSeconds;
-    startTime.value = null;
-  }
-
-  console.log("タイマー停止処理完了");
 };
 
 // バックグラウンドでタイマー情報を更新

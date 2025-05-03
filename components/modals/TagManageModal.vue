@@ -1,5 +1,8 @@
 <template>
-  <UModal v-model="show">
+  <UModal
+    :model-value="show"
+    @update:model-value="$emit('update:show', $event)"
+  >
     <UCard>
       <template #header>
         <h3 class="text-lg font-medium text-gray-900">タグ管理</h3>
@@ -82,5 +85,6 @@ defineEmits([
   "deleteTag",
   "updateNewTagName",
   "updateNewTagColor",
+  "update:show",
 ]);
 </script>
