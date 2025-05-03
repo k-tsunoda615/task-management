@@ -460,6 +460,13 @@ import type { Todo, Tag } from "../types/todo";
 import TheSidebar from "../sidebar/TheSidebar.vue";
 import TaskCreateModal from "../modals/TaskCreateModal.vue";
 import DeleteConfirmModal from "../modals/DeleteConfirmModal.vue";
+import {
+  formatTime,
+  parseTimeToSeconds,
+  validateTimeInput as validateTimeInputUtil,
+} from "@/utils/time";
+import { darkenColor } from "@/utils/color";
+import { useTaskTimer } from "@/composables/useTaskTimer";
 
 const todoStore = useTodoStore();
 const tagStore = useTagStore();
@@ -472,11 +479,16 @@ const isUpdating = ref(false);
 const trashEventBus = useEventBus("trash-drop");
 
 // タイマー関連の状態
+const {
+  timerInterval,
+  startTime,
+  currentTotalTime,
+  startTimerForTodo,
+  stopTimer,
+  extractTotalTime,
+} = useTaskTimer();
 const showTimerBar = ref(true);
 const currentTimingTodo = ref<Todo | null>(null);
-const currentTotalTime = ref(0);
-const timerInterval = ref<number | null>(null);
-const startTime = ref<number | null>(null);
 
 // 時間入力フィールド
 const timeInput = ref("00:00:00");
@@ -1248,24 +1260,11 @@ const handleDragEnd = () => {
   }, 50);
 };
 
-// total_timeから数値を抽出するヘルパー関数
-const extractTotalTime = (time: number | number[] | undefined): number => {
-  if (Array.isArray(time) && time.length > 0) {
-    return time[0];
-  }
-  return typeof time === "number" ? time : 0;
-};
-
 // 時間入力の検証
 const validateTimeInput = (event: Event) => {
   const input = event.target as HTMLInputElement;
   const value = input.value;
-
-  // 時間形式（hh:mm:ss）の正規表現
-  const timeRegex = /^([0-9]{1,2}):([0-5][0-9]):([0-5][0-9])$/;
-
-  if (value && !timeRegex.test(value)) {
-    // 形式が正しくない場合は警告を表示
+  if (value && !validateTimeInputUtil(value)) {
     useToast().add({
       title: "入力エラー",
       description: "時間は hh:mm:ss 形式で入力してください",
