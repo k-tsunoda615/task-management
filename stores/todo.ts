@@ -83,7 +83,7 @@ export const useTodoStore = defineStore("todo", {
           throw todosError;
         }
 
-        // タグ一覧も取得
+        // タグ一覧も取得（自分のタグのみ）
         const { data: tags, error: tagsError } = await client
           .from("tags")
           .select("*");
@@ -142,14 +142,12 @@ export const useTodoStore = defineStore("todo", {
       const client = useSupabaseClient();
       const user = useSupabaseUser();
 
-      const todoData = {
-        title: todo.title,
-        memo: todo.memo,
-        status: todo.status || "未対応",
-        is_private: todo.is_private || false,
-        user_id: user.value?.id,
-        sort_order: todo.sort_order || 0,
-      };
+      // tagsを除外してtodos本体を作成
+      const { tags, ...todoData } = todo;
+      todoData.user_id = user.value?.id;
+      todoData.status = todo.status || "未対応";
+      todoData.is_private = todo.is_private || false;
+      todoData.sort_order = todo.sort_order || 0;
 
       console.log("作成するTodo:", todoData);
 
@@ -166,8 +164,8 @@ export const useTodoStore = defineStore("todo", {
       }
 
       // tagsが指定されていれば中間テーブルに登録
-      if (todo.tags && todo.tags.length > 0) {
-        const todoTags = todo.tags.map((tag) => ({
+      if (tags && tags.length > 0) {
+        const todoTags = tags.map((tag) => ({
           todo_id: data.id,
           tag_id: tag.id,
         }));
@@ -196,10 +194,12 @@ export const useTodoStore = defineStore("todo", {
             todo.total_time = [todo.total_time];
           }
         }
+        // tagsを除外してtodos本体を更新
+        const { tags, ...updateData } = todo;
         // APIリクエストを送信
         const { data, error } = await useSupabaseClient()
           .from("todos")
-          .update(todo)
+          .update(updateData)
           .eq("id", todo.id)
           .select();
         if (error) {
@@ -207,13 +207,13 @@ export const useTodoStore = defineStore("todo", {
           throw error;
         }
         // tagsの更新
-        if (todo.tags) {
+        if (tags) {
           const client = useSupabaseClient();
           // 既存のtodo_tagsを削除
           await client.from("todo_tags").delete().eq("todo_id", todo.id);
           // 新しいtagsを挿入
-          if (todo.tags.length > 0) {
-            const todoTags = todo.tags.map((tag) => ({
+          if (tags.length > 0) {
+            const todoTags = tags.map((tag) => ({
               todo_id: todo.id,
               tag_id: tag.id,
             }));
@@ -261,6 +261,17 @@ export const useTodoStore = defineStore("todo", {
       if (index !== -1) {
         this.todos[index].sort_order = todo.sort_order;
       }
+    },
+
+    async createTag(tag: { name: string }) {
+      const client = useSupabaseClient();
+      const user = useSupabaseUser();
+      const { data, error } = await client
+        .from("tags")
+        .insert({ name: tag.name, user_id: user.value?.id })
+        .select()
+        .single();
+      return { data, error };
     },
   },
 });

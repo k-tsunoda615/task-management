@@ -61,6 +61,24 @@
           </UTooltip>
         </div>
 
+        <!-- タグ管理ボタン -->
+        <div class="p-4" :class="{ 'text-center': !isOpen && !isMobile }">
+          <UTooltip
+            :text="!isOpen ? 'タグ管理' : ''"
+            :ui="{ popper: { strategy: 'fixed' } }"
+          >
+            <UButton
+              :block="isOpen || isMobile"
+              color="green"
+              variant="ghost"
+              icon="i-heroicons-tag"
+              @click="showTagModal = true"
+            >
+              <span v-if="isOpen || isMobile">タグ管理</span>
+            </UButton>
+          </UTooltip>
+        </div>
+
         <!-- タイマー表示切り替えボタン -->
         <div class="p-4" :class="{ 'text-center': !isOpen && !isMobile }">
           <UTooltip
@@ -160,6 +178,45 @@
       class="fixed inset-0 bg-black bg-opacity-50 z-30"
       @click="$emit('close-mobile-menu')"
     />
+
+    <!-- タグ管理モーダル -->
+    <UModal v-model="showTagModal">
+      <UCard>
+        <template #header>
+          <h3 class="text-lg font-semibold">タグ管理</h3>
+        </template>
+        <div class="mb-4">
+          <div class="flex flex-wrap gap-2 mb-2">
+            <UBadge
+              v-for="tag in todoStore.tags"
+              :key="tag.id"
+              color="primary"
+              class="flex items-center gap-1"
+            >
+              {{ tag.name }}
+              <UButton
+                icon="i-heroicons-x-mark"
+                size="2xs"
+                color="red"
+                variant="ghost"
+                @click="deleteTag(tag.id)"
+              />
+            </UBadge>
+          </div>
+          <div class="flex gap-2 mt-2">
+            <UInput v-model="newTagName" placeholder="新しいタグ名" size="sm" />
+            <UButton size="sm" @click="addTag">追加</UButton>
+          </div>
+        </div>
+        <template #footer>
+          <div class="flex justify-end">
+            <UButton variant="ghost" @click="showTagModal = false"
+              >閉じる</UButton
+            >
+          </div>
+        </template>
+      </UCard>
+    </UModal>
   </div>
 </template>
 
@@ -184,6 +241,10 @@ const trashEventBus = useEventBus("trash-drop");
 const isDragOver = ref(false);
 const isOpen = ref(true); // サイドバーの開閉状態
 const showTimer = ref(true); // タイマー表示状態
+const showTagModal = ref(false);
+const newTagName = ref("");
+
+const useSupabaseClient = () => (window as any).$supabase;
 
 // サイドバーの開閉を切り替える
 const toggleSidebar = () => {
@@ -287,6 +348,30 @@ const handleTrashDrop = (event: any) => {
   if (todoId) {
     isDragOver.value = false;
     trashEventBus.emit(todoId);
+  }
+};
+
+const addTag = async () => {
+  const name = newTagName.value.trim();
+  if (!name) return;
+  if (todoStore.tags.some((t) => t.name === name)) {
+    newTagName.value = "";
+    return;
+  }
+  const client = useSupabaseClient();
+  const { data, error } = await client.from("tags").insert([{ name }]);
+  if (!error && data) {
+    todoStore.tags.push(data[0]);
+    newTagName.value = "";
+  }
+};
+
+const deleteTag = async (tagId: string) => {
+  if (!confirm("このタグを削除しますか？")) return;
+  const client = useSupabaseClient();
+  const { error } = await client.from("tags").delete().eq("id", tagId);
+  if (!error) {
+    todoStore.tags = todoStore.tags.filter((t) => t.id !== tagId);
   }
 };
 </script>

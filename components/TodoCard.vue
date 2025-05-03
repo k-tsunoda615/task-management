@@ -49,9 +49,22 @@
             @click="stopTiming"
           />
         </div>
-        <h3 class="font-bold border-b border-gray-200 pb-1 mb-3">
+        <h3 class="font-bold border-b border-gray-200 pb-1 mb-1">
           {{ todo.title }}
         </h3>
+        <!-- タグ表示 -->
+        <div
+          v-if="todo.tags && todo.tags.length > 0"
+          class="mb-2 flex flex-wrap gap-1"
+        >
+          <UBadge
+            v-for="tag in todo.tags"
+            :key="tag.id"
+            color="primary"
+            size="xs"
+            >{{ tag.name }}</UBadge
+          >
+        </div>
         <div
           v-if="todo.memo"
           class="mt-1 text-sm prose prose-sm prose-gray max-h-[20em] w-full overflow-y-auto pr-2 break-all"
@@ -92,6 +105,7 @@ const props = defineProps({
       is_private?: boolean;
       total_time?: number | number[];
       is_timing?: boolean;
+      tags?: { id: string; name: string }[];
     }>,
     required: true,
   },

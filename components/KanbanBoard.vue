@@ -266,6 +266,38 @@
               @input="validateTimeInput"
             />
           </UFormGroup>
+          <UFormGroup label="タグ" class="mt-4">
+            <div class="flex flex-wrap gap-2 mb-2">
+              <UBadge
+                v-for="tag in todoStore.tags"
+                :key="tag.id"
+                :color="
+                  newTodo.tags.some((t) => t.id === tag.id) ? 'primary' : 'gray'
+                "
+                class="cursor-pointer"
+                @click="
+                  () => {
+                    if (newTodo.tags.some((t) => t.id === tag.id)) {
+                      newTodo.tags = newTodo.tags.filter(
+                        (t) => t.id !== tag.id
+                      );
+                    } else {
+                      newTodo.tags.push(tag);
+                    }
+                  }
+                "
+                >{{ tag.name }}</UBadge
+              >
+            </div>
+            <div class="flex gap-2 mt-2">
+              <UInput
+                v-model="newTagName"
+                placeholder="新しいタグ名"
+                size="sm"
+              />
+              <UButton size="sm" @click="addTag">追加</UButton>
+            </div>
+          </UFormGroup>
         </form>
         <template #footer>
           <div class="flex justify-end gap-2">
@@ -359,6 +391,40 @@
                   class="text-blue-500"
                 />
               </UTooltip>
+            </div>
+          </UFormGroup>
+          <UFormGroup label="タグ" class="mt-4">
+            <div class="flex flex-wrap gap-2 mb-2">
+              <UBadge
+                v-for="tag in todoStore.tags"
+                :key="tag.id"
+                :color="
+                  editingTodo.tags.some((t) => t.id === tag.id)
+                    ? 'primary'
+                    : 'gray'
+                "
+                class="cursor-pointer"
+                @click="
+                  () => {
+                    if (editingTodo.tags.some((t) => t.id === tag.id)) {
+                      editingTodo.tags = editingTodo.tags.filter(
+                        (t) => t.id !== tag.id
+                      );
+                    } else {
+                      editingTodo.tags.push(tag);
+                    }
+                  }
+                "
+                >{{ tag.name }}</UBadge
+              >
+            </div>
+            <div class="flex gap-2 mt-2">
+              <UInput
+                v-model="newTagName"
+                placeholder="新しいタグ名"
+                size="sm"
+              />
+              <UButton size="sm" @click="addTag">追加</UButton>
             </div>
           </UFormGroup>
         </form>
@@ -465,10 +531,10 @@ const newTodo = ref({
   title: "",
   memo: "",
   status: "未対応",
-  task_id: "",
   is_private: false,
   total_time: 0,
   is_timing: false,
+  tags: [] as { id: string; name: string }[],
 });
 
 const editingTodo = ref({
@@ -476,10 +542,10 @@ const editingTodo = ref({
   title: "",
   memo: "",
   status: "未対応",
-  task_id: "",
   is_private: false,
   total_time: 0,
   is_timing: false,
+  tags: [] as { id: string; name: string }[],
 });
 
 // プレビュー用のマークダウンパース
@@ -581,6 +647,24 @@ const isDragging = ref(false);
 
 // ボタンのローディング状態を管理
 const timerButtonLoading = ref<string | null>(null);
+
+// タグ追加用
+const newTagName = ref("");
+const addTag = async () => {
+  const name = newTagName.value.trim();
+  if (!name) return;
+  // 既存タグに同名があれば追加しない
+  if (todoStore.tags.some((t) => t.name === name)) {
+    newTagName.value = "";
+    return;
+  }
+  // Supabaseに追加
+  const { data, error } = await todoStore.createTag({ name });
+  if (!error && data) {
+    todoStore.tags.push(data);
+    newTagName.value = "";
+  }
+};
 
 // Todoの状態が変更されたときに再分類する
 const updateTodosByStatus = () => {
@@ -727,35 +811,23 @@ onMounted(() => {
 
 // 編集モーダルを開く
 const openEditModal = (todo: Todo) => {
-  // 必須フィールドを持つオブジェクトを作成
   editingTodo.value = {
     id: todo.id,
     title: todo.title,
     status: todo.status,
     memo: todo.memo || "",
-    task_id: todo.task_id || "",
     is_private: todo.is_private || false,
     total_time: extractTotalTime(todo.total_time),
     is_timing: todo.is_timing || false,
+    tags: todo.tags ? [...todo.tags] : [],
   };
-
-  // 時間表示を更新
   editTimeInput.value = formatTime(extractTotalTime(todo.total_time));
   showEditModal.value = true;
-
-  // デバッグ用
-  console.log("編集モーダルを開きました:", {
-    todo,
-    extractedTime: extractTotalTime(todo.total_time),
-    formattedTime: editTimeInput.value,
-  });
 };
 
 // 新規Todo作成
 const createTodo = async () => {
   if (!newTodo.value.title) return;
-
-  // 同じステータスのTodoの最小sort_orderを取得
   let minSortOrder = 0;
   const statusKey =
     statusMap[newTodo.value.status as keyof typeof statusMap] || "todo";
@@ -767,32 +839,28 @@ const createTodo = async () => {
         )
       ) - 100;
   }
-
-  // 時間文字列を秒数に変換
   const totalTimeSeconds = parseTimeToSeconds(timeInput.value);
-
   isCreating.value = true;
   try {
     await todoStore.createTodo({
       title: newTodo.value.title,
       memo: newTodo.value.memo,
       status: newTodo.value.status,
-      task_id: newTodo.value.task_id,
       is_private: newTodo.value.is_private,
-      sort_order: minSortOrder, // 最小値より小さい値を設定して先頭に表示
-      total_time: [totalTimeSeconds], // 配列として送信
+      sort_order: minSortOrder,
+      total_time: [totalTimeSeconds],
       is_timing: false,
+      tags: newTodo.value.tags,
     });
-
     showNewTaskModal.value = false;
     newTodo.value = {
       title: "",
       memo: "",
       status: "未対応",
-      task_id: "",
       is_private: false,
       total_time: 0,
       is_timing: false,
+      tags: [],
     };
     timeInput.value = "00:00:00";
   } catch (error) {
@@ -805,19 +873,14 @@ const createTodo = async () => {
 // Todo更新
 const updateTodo = async () => {
   if (!editingTodo.value.title) return;
-
-  // 計測中の場合は現在の経過時間を取得
   let totalTimeSeconds = editingTodo.value.is_timing
     ? currentTotalTime.value
     : parseTimeToSeconds(editTimeInput.value);
-
-  // 更新するデータを準備
   const updateData: Partial<Todo> = {
     ...editingTodo.value,
-    task_id: editingTodo.value.task_id || undefined, // nullの代わりにundefinedを使用
-    total_time: [totalTimeSeconds], // 配列として送信
+    total_time: [totalTimeSeconds],
+    tags: editingTodo.value.tags,
   };
-
   isUpdating.value = true;
   try {
     await todoStore.updateTodo(updateData);
@@ -938,19 +1001,13 @@ const handleDragChange = async (evt: any) => {
   // バックグラウンドで更新処理を実行
   try {
     // まず現在のTodoのステータスと順序を更新
-    todoStore
-      .updateTodo({
-        id: todo.id,
-        title: todo.title,
-        memo: todo.memo,
-        task_id: todo.task_id,
-        is_private: todo.is_private,
-        status: mappedStatus,
-        sort_order: currentSortOrder,
-      })
-      .catch((error: any) => {
-        console.error("Todo更新エラー:", error);
-      });
+    await todoStore.updateTodo({
+      id: todo.id,
+      title: todo.title,
+      memo: todo.memo,
+      status: mappedStatus,
+      sort_order: currentSortOrder,
+    });
 
     // 他のTodoの順序を一括更新
     const updatePromises = updatedTodos
@@ -962,9 +1019,7 @@ const handleDragChange = async (evt: any) => {
         })
       );
 
-    Promise.all(updatePromises).catch((error: any) => {
-      console.error("Todo順序更新エラー:", error);
-    });
+    await Promise.all(updatePromises);
 
     // 5秒後に静かに再同期（オプション）
     setTimeout(() => {
