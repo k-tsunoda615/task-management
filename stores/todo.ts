@@ -1,18 +1,22 @@
 import { defineStore } from "pinia";
 
+type Tag = {
+  id: string;
+  name: string;
+};
+
 type Todo = {
   id: string;
   title: string;
   status: string;
-  task_id?: string;
-  taskId?: string; // 互換性のために残す
   memo?: string;
   sort_order?: number;
   is_private?: boolean;
   user_id?: string;
   updated_at?: string;
-  total_time?: number | number[]; // 配列または数値として定義
+  total_time?: number | number[];
   is_timing?: boolean;
+  tags?: Tag[];
 };
 
 type Task = {
@@ -34,7 +38,7 @@ const extractTotalTime = (time: number | number[] | undefined): number => {
 export const useTodoStore = defineStore("todo", {
   state: () => ({
     todos: [] as Todo[],
-    tasks: [] as Task[],
+    tags: [] as Tag[],
     isLoaded: false,
     // 表示フィルター: 'all'=全表示, 'private'=プライベートのみ, 'public'=非プライベートのみ
     taskFilter: "public" as TaskFilter,
@@ -67,9 +71,10 @@ export const useTodoStore = defineStore("todo", {
       console.log("Todoの取得を開始...");
 
       try {
+        // todosとtagsのリレーションをJOINで取得
         const { data: todos, error: todosError } = await client
           .from("todos")
-          .select("*")
+          .select("*, todo_tags:todo_tags(*, tag:tag_id(*))")
           .order("sort_order", { ascending: true })
           .order("updated_at", { ascending: false });
 
@@ -78,26 +83,22 @@ export const useTodoStore = defineStore("todo", {
           throw todosError;
         }
 
-        const { data: tasks, error: tasksError } = await client
-          .from("tasks")
+        // タグ一覧も取得
+        const { data: tags, error: tagsError } = await client
+          .from("tags")
           .select("*");
 
-        if (tasksError) {
-          console.error("Taskの取得エラー:", tasksError);
-          throw tasksError;
+        if (tagsError) {
+          console.error("Tagの取得エラー:", tagsError);
+          throw tagsError;
         }
 
-        console.log("取得したTodos（生データ）:", todos);
-        console.log("取得したTasks:", tasks);
-
-        // ステータスの標準化（大文字小文字や空白の違いを吸収）
-        const normalizedTodos = todos?.map((todo) => {
-          // ステータスが未設定の場合は「未対応」にする
+        // todosのtagsを整形
+        const normalizedTodos = todos?.map((todo: any) => {
+          // ステータスの標準化などは従来通り
           if (!todo.status) {
             todo.status = "未対応";
           }
-
-          // ステータスの標準化
           if (
             todo.status.includes("未") ||
             todo.status.toLowerCase().includes("todo")
@@ -117,21 +118,19 @@ export const useTodoStore = defineStore("todo", {
           ) {
             todo.status = "完了";
           }
-
-          // total_timeを配列から数値に変換
           if (todo.total_time !== undefined) {
             const extractedTime = extractTotalTime(todo.total_time);
-            console.log(
-              `Todo ${todo.id} の total_time を変換: ${todo.total_time} -> ${extractedTime}`
-            );
             todo.total_time = extractedTime;
           }
-
+          // tagsの整形
+          todo.tags = (todo.todo_tags || [])
+            .map((tt: any) => tt.tag)
+            .filter(Boolean);
           return todo;
         });
 
         this.todos = normalizedTodos || [];
-        this.tasks = tasks || [];
+        this.tags = tags || [];
         this.isLoaded = true;
       } catch (error) {
         console.error("Todoの取得中にエラーが発生しました:", error);
@@ -147,7 +146,6 @@ export const useTodoStore = defineStore("todo", {
         title: todo.title,
         memo: todo.memo,
         status: todo.status || "未対応",
-        task_id: todo.taskId || todo.task_id || null,
         is_private: todo.is_private || false,
         user_id: user.value?.id,
         sort_order: todo.sort_order || 0,
@@ -155,6 +153,7 @@ export const useTodoStore = defineStore("todo", {
 
       console.log("作成するTodo:", todoData);
 
+      // Todo本体を作成
       const { data, error } = await client
         .from("todos")
         .insert(todoData)
@@ -166,45 +165,63 @@ export const useTodoStore = defineStore("todo", {
         throw error;
       }
 
-      console.log("作成されたTodo:", data);
-      this.todos.unshift(data);
+      // tagsが指定されていれば中間テーブルに登録
+      if (todo.tags && todo.tags.length > 0) {
+        const todoTags = todo.tags.map((tag) => ({
+          todo_id: data.id,
+          tag_id: tag.id,
+        }));
+        await client.from("todo_tags").insert(todoTags);
+      }
+
+      // tagsをJOINして再取得
+      const { data: newTodo } = await client
+        .from("todos")
+        .select("*, todo_tags:todo_tags(*, tag:tag_id(*))")
+        .eq("id", data.id)
+        .single();
+      newTodo.tags = (newTodo.todo_tags || [])
+        .map((tt: any) => tt.tag)
+        .filter(Boolean);
+      this.todos.unshift(newTodo);
     },
 
     async updateTodo(todo: Partial<Todo>) {
       try {
-        console.log("Todoを更新します:", todo);
-
-        // 必須フィールドの確認
         if (!todo.id) {
           throw new Error("Todo IDが指定されていません");
         }
-
-        // 計測中の場合は現在の経過時間を取得
         if (todo.total_time !== undefined) {
           if (!Array.isArray(todo.total_time)) {
             todo.total_time = [todo.total_time];
           }
         }
-
-        console.log("変換後のデータ:", todo);
-
         // APIリクエストを送信
         const { data, error } = await useSupabaseClient()
           .from("todos")
           .update(todo)
           .eq("id", todo.id)
           .select();
-
         if (error) {
           console.error("Todo更新エラー:", error);
           throw error;
         }
-
-        console.log("Todo更新成功:", data);
-
+        // tagsの更新
+        if (todo.tags) {
+          const client = useSupabaseClient();
+          // 既存のtodo_tagsを削除
+          await client.from("todo_tags").delete().eq("todo_id", todo.id);
+          // 新しいtagsを挿入
+          if (todo.tags.length > 0) {
+            const todoTags = todo.tags.map((tag) => ({
+              todo_id: todo.id,
+              tag_id: tag.id,
+            }));
+            await client.from("todo_tags").insert(todoTags);
+          }
+        }
         // 更新されたTodoを取得して状態を更新
         await this.fetchTodos();
-
         return data;
       } catch (error) {
         console.error("Todo更新処理エラー:", error);
