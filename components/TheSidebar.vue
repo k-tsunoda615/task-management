@@ -65,7 +65,7 @@
         <div class="p-4" :class="{ 'text-center': !isOpen && !isMobile }">
           <UTooltip
             :text="
-              !isOpen ? (showTimer ? 'タイマーを非表示' : 'タイマーを表示') : ''
+              !isOpen ? (showTimer ? 'タイマー非表示' : 'タイマー表示') : ''
             "
             :ui="{ popper: { strategy: 'fixed' } }"
           >
@@ -86,7 +86,7 @@
         <!-- レイアウト切り替えボタン -->
         <div class="p-4" :class="{ 'text-center': !isOpen && !isMobile }">
           <UTooltip
-            :text="!isOpen ? 'レイアウトを切り替える' : ''"
+            :text="!isOpen ? 'レイアウト切り替え' : ''"
             :ui="{ popper: { strategy: 'fixed' } }"
           >
             <UButton
@@ -96,21 +96,15 @@
               @click="$emit('toggle-layout')"
               icon="i-heroicons-view-columns"
             >
-              <span v-if="isOpen || isMobile">レイアウト切替</span>
+              <span v-if="isOpen || isMobile">レイアウト切り替え</span>
             </UButton>
           </UTooltip>
         </div>
       </div>
 
       <!-- ゴミ箱エリア -->
-      <div class="mt-auto border-t mx-auto">
-        <!-- タスク数表示 -->
-        <div v-if="isOpen || isMobile" class="px-4 py-2 text-center">
-          <span class="text-xs text-gray-500">
-            Tasks: {{ todoStore.totalTodoCount }} / 100
-          </span>
-        </div>
-
+      <div class="mt-auto border-t text-center">
+        <!-- ゴミ箱 -->
         <UTooltip
           :text="!isOpen ? 'タスクをドラッグして削除' : ''"
           :ui="{ popper: { strategy: 'fixed' } }"
@@ -140,6 +134,23 @@
             </span>
           </div>
         </UTooltip>
+
+        <!-- タスク数表示 - 常に表示 -->
+        <div class="px-4 py-2 text-center border-t">
+          <UTooltip
+            :text="!isOpen ? `タスク数: ${todoStore.totalTodoCount}/100` : ''"
+            :ui="{ popper: { strategy: 'fixed' } }"
+          >
+            <div class="flex items-center justify-center">
+              <span class="text-xs text-gray-500" v-if="!isOpen && !isMobile">
+                {{ todoStore.totalTodoCount }}%
+              </span>
+              <span v-else class="text-xs text-gray-500">
+                タスク数: {{ todoStore.totalTodoCount }} / 100
+              </span>
+            </div>
+          </UTooltip>
+        </div>
       </div>
     </div>
 
