@@ -559,7 +559,7 @@ import draggable from "vuedraggable";
 import { marked } from "marked";
 import { useEventBus } from "@vueuse/core";
 import type { Todo, Tag } from "../types/todo";
-import TheSidebar from "../components/TheSidebar.vue";
+import TheSidebar from "../sidebar/TheSidebar.vue";
 
 const todoStore = useTodoStore();
 const tagStore = useTagStore();
