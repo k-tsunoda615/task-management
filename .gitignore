@@ -39,6 +39,7 @@ dist-ssr
 # その他
 .vercel
 .yarn
+.cursor
 
 # bolt
 .bolt
