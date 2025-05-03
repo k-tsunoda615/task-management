@@ -10,7 +10,7 @@
       <div class="space-y-4">
         <div class="flex flex-wrap gap-2">
           <div
-            v-for="tag in tagStore.tags"
+            v-for="tag in tagStore?.tags"
             :key="tag.id"
             class="relative group"
           >
@@ -43,12 +43,22 @@
           <input
             type="color"
             :value="newTagColor"
-            @input="$emit('updateNewTagColor', $event.target.value)"
+            @input="
+              $emit(
+                'updateNewTagColor',
+                ($event.target as HTMLInputElement).value
+              )
+            "
             class="w-8 h-8 rounded-md border border-gray-200 p-0.5 cursor-pointer transition-shadow hover:shadow-sm"
           />
           <UInput
             :value="newTagName"
-            @input="$emit('updateNewTagName', $event.target.value)"
+            @input="
+              $emit(
+                'updateNewTagName',
+                ($event.target as HTMLInputElement).value
+              )
+            "
             placeholder="新しいタグ名"
             size="sm"
             class="flex-1"

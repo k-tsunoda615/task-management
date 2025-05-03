@@ -94,7 +94,7 @@
 </template>
 
 <script setup lang="ts">
-import TheSidebar from "~/components/sidebar/TheSidebar.vue";
+import TheSidebar from "../components/sidebar/TheSidebar.vue";
 
 const user = useSupabaseUser();
 const loading = useState("auth-loading", () => true);

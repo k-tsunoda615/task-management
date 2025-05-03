@@ -1,5 +1,4 @@
-import { ref } from "vue";
-import type { Todo } from "@/types/todo";
+import type { Todo } from "../types/todo";
 
 export function useTaskTimer() {
   const timerInterval = ref<number | null>(null);

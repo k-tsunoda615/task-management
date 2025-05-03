@@ -209,20 +209,20 @@
       @close="showTagModal = false"
       @addTag="addTag"
       @deleteTag="deleteTag"
-      @updateNewTagName="(val) => (newTagName.value = val)"
-      @updateNewTagColor="(val) => (newTagColor.value = val)"
+      @updateNewTagName="(val) => (newTagName = val)"
+      @updateNewTagColor="(val) => (newTagColor = val)"
     />
   </div>
 </template>
 
 <script setup lang="ts">
-import { useProjectStore } from "../stores/project";
-import { useTodoStore } from "../stores/todo";
-import { useTagStore } from "../stores/tag";
+import { useProjectStore } from "../../stores/project";
+import { useTodoStore } from "../../stores/todo";
+import { useTagStore } from "../../stores/tag";
 import { useEventBus } from "@vueuse/core";
-import type { Tag } from "@/types/todo";
+import type { Tag } from "../../types/todo";
 import TagManageModal from "../modals/TagManageModal.vue";
-import { darkenColor } from "@/utils/color";
+// import { darkenColor } from "@/utils/color";
 
 const props = defineProps({
   isMobile: {

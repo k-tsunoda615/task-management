@@ -457,22 +457,22 @@
 </template>
 
 <script setup lang="ts">
-import { useTodoStore } from "@/stores/todo";
-import { useTagStore } from "@/stores/tag";
+import { useTodoStore } from "../../stores/todo";
+import { useTagStore } from "../../stores/tag";
 import draggable from "vuedraggable";
 import { marked } from "marked";
 import { useEventBus } from "@vueuse/core";
-import type { Todo, Tag } from "@/types/todo";
-import TheSidebar from "@/components/sidebar/TheSidebar.vue";
+import type { Todo, Tag } from "../../types/todo";
+import TheSidebar from "../../components/sidebar/TheSidebar.vue";
 import TaskCreateModal from "../modals/TaskCreateModal.vue";
 import DeleteConfirmModal from "../modals/DeleteConfirmModal.vue";
 import {
-  formatTime,
-  parseTimeToSeconds,
+  // formatTime,
+  // parseTimeToSeconds,
   validateTimeInput as validateTimeInputUtil,
-} from "@/utils/time";
-import { darkenColor } from "@/utils/color";
-import { useTaskTimer } from "@/composables/useTaskTimer";
+} from "../../utils/time";
+// import { darkenColor } from "../../utils/color";
+import { useTaskTimer } from "../../composables/useTaskTimer";
 
 const todoStore = useTodoStore();
 const tagStore = useTagStore();
@@ -696,12 +696,12 @@ const updateTodosByStatus = () => {
     // タイマーが動いていない場合は開始
     if (!timerInterval.value) {
       console.log("タイマーを再開します");
-      startTimerForTodo(timingTodo);
+      startTimerForTodo(timingTodo, () => {});
     }
   } else if (currentTimingTodo.value && !timingTodo) {
     // 計測中のタスクがなくなった場合はタイマーを停止
     console.log("計測中のタスクがなくなったのでタイマーを停止します");
-    stopTimer();
+    stopTimer(currentTimingTodo.value);
     currentTimingTodo.value = null;
   }
 };
@@ -722,7 +722,7 @@ watch(
       currentTimingTodo.value = timingTodo;
       currentTotalTime.value = extractTotalTime(timingTodo.total_time);
       if (!timerInterval.value) {
-        startTimerForTodo(timingTodo);
+        startTimerForTodo(timingTodo, () => {});
       }
     }
   },
@@ -1054,7 +1054,7 @@ const startTiming = async (todo: Todo) => {
     });
 
     // タイマーを開始
-    startTimerForTodo(todo);
+    startTimerForTodo(todo, () => {});
 
     // 成功メッセージ
     useToast().add({
@@ -1082,7 +1082,7 @@ const stopTiming = async (todo: Todo) => {
   const finalTime = currentTotalTime.value;
 
   // 即座にUI更新
-  stopTimer();
+  stopTimer(todo);
   const prevTodo = currentTimingTodo.value;
   currentTimingTodo.value = null;
 
@@ -1102,7 +1102,7 @@ const stopTiming = async (todo: Todo) => {
   } catch (error) {
     // エラー時は状態を元に戻す
     currentTimingTodo.value = prevTodo;
-    startTimerForTodo(todo);
+    startTimerForTodo(todo, () => {});
 
     useToast().add({
       title: "エラー",

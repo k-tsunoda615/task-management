@@ -62,7 +62,7 @@
                   borderRadius: '0.375rem',
                   padding: '0.25rem 0.75rem',
                   lineHeight: '1.25',
-                  opacity: newTodo?.tags?.some((t) => t.id === tag.id)
+                  opacity: newTodo?.tags?.some((t: Tag) => t.id === tag.id)
                     ? 1
                     : 0.5,
                   cursor: 'pointer',
@@ -112,6 +112,8 @@
 </template>
 
 <script setup lang="ts">
+import type { Tag } from "../../types/todo";
+
 defineProps({
   show: Boolean,
   newTodo: Object,
