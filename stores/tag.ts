@@ -1,5 +1,5 @@
 import { defineStore } from "pinia";
-import type { Tag } from "@/types/todo";
+import type { Tag } from "../types/todo";
 
 export const useTagStore = defineStore("tag", {
   state: () => ({

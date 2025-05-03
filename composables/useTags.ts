@@ -1,6 +1,6 @@
 import { ref } from "vue";
-import { useTagStore } from "@/stores/tag";
-import type { Tag } from "@/types/todo";
+import { useTagStore } from "../stores/tag";
+import type { Tag } from "../types/todo";
 
 export function useTags() {
   const tagStore = useTagStore();
