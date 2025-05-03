@@ -3,6 +3,7 @@ import { defineStore } from "pinia";
 type Tag = {
   id: string;
   name: string;
+  color?: string;
 };
 
 type Todo = {
@@ -263,12 +264,16 @@ export const useTodoStore = defineStore("todo", {
       }
     },
 
-    async createTag(tag: { name: string }) {
+    async createTag(tag: { name: string; color?: string }) {
       const client = useSupabaseClient();
       const user = useSupabaseUser();
       const { data, error } = await client
         .from("tags")
-        .insert({ name: tag.name, user_id: user.value?.id })
+        .insert({
+          name: tag.name,
+          user_id: user.value?.id,
+          color: tag.color || "#3b82f6",
+        })
         .select()
         .single();
       return { data, error };

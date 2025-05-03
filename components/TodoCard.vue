@@ -60,7 +60,7 @@
           <UBadge
             v-for="tag in todo.tags"
             :key="tag.id"
-            color="primary"
+            :style="{ backgroundColor: tag.color || '#3b82f6', color: '#fff' }"
             size="xs"
             >{{ tag.name }}</UBadge
           >
@@ -105,7 +105,7 @@ const props = defineProps({
       is_private?: boolean;
       total_time?: number | number[];
       is_timing?: boolean;
-      tags?: { id: string; name: string }[];
+      tags?: { id: string; name: string; color?: string }[];
     }>,
     required: true,
   },

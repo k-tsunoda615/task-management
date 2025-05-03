@@ -271,9 +271,11 @@
               <UBadge
                 v-for="tag in todoStore.tags"
                 :key="tag.id"
-                :color="
-                  newTodo.tags.some((t) => t.id === tag.id) ? 'primary' : 'gray'
-                "
+                :style="{
+                  backgroundColor: tag.color || '#3b82f6',
+                  color: '#fff',
+                  opacity: newTodo.tags.some((t) => t.id === tag.id) ? 1 : 0.5,
+                }"
                 class="cursor-pointer"
                 @click="
                   () => {
@@ -398,11 +400,13 @@
               <UBadge
                 v-for="tag in todoStore.tags"
                 :key="tag.id"
-                :color="
-                  editingTodo.tags.some((t) => t.id === tag.id)
-                    ? 'primary'
-                    : 'gray'
-                "
+                :style="{
+                  backgroundColor: tag.color || '#3b82f6',
+                  color: '#fff',
+                  opacity: editingTodo.tags.some((t) => t.id === tag.id)
+                    ? 1
+                    : 0.5,
+                }"
                 class="cursor-pointer"
                 @click="
                   () => {
@@ -534,7 +538,7 @@ const newTodo = ref({
   is_private: false,
   total_time: 0,
   is_timing: false,
-  tags: [] as { id: string; name: string }[],
+  tags: [] as { id: string; name: string; color?: string }[],
 });
 
 const editingTodo = ref({
@@ -545,7 +549,7 @@ const editingTodo = ref({
   is_private: false,
   total_time: 0,
   is_timing: false,
-  tags: [] as { id: string; name: string }[],
+  tags: [] as { id: string; name: string; color?: string }[],
 });
 
 // プレビュー用のマークダウンパース

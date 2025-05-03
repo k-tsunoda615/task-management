@@ -190,7 +190,10 @@
             <UBadge
               v-for="tag in todoStore.tags"
               :key="tag.id"
-              color="primary"
+              :style="{
+                backgroundColor: tag.color || '#3b82f6',
+                color: '#fff',
+              }"
               class="flex items-center gap-1"
             >
               {{ tag.name }}
@@ -205,6 +208,12 @@
           </div>
           <div class="flex gap-2 mt-2">
             <UInput v-model="newTagName" placeholder="新しいタグ名" size="sm" />
+            <input
+              type="color"
+              v-model="newTagColor"
+              class="w-8 h-8 p-0 border-none bg-transparent cursor-pointer"
+              title="タグ色を選択"
+            />
             <UButton size="sm" @click="addTag">追加</UButton>
           </div>
         </div>
@@ -243,6 +252,7 @@ const isOpen = ref(true); // サイドバーの開閉状態
 const showTimer = ref(true); // タイマー表示状態
 const showTagModal = ref(false);
 const newTagName = ref("");
+const newTagColor = ref("#3b82f6"); // デフォルト色
 
 // サイドバーの開閉を切り替える
 const toggleSidebar = () => {
@@ -351,15 +361,18 @@ const handleTrashDrop = (event: any) => {
 
 const addTag = async () => {
   const name = newTagName.value.trim();
+  const color = newTagColor.value;
   if (!name) return;
   if (todoStore.tags.some((t) => t.name === name)) {
     newTagName.value = "";
+    newTagColor.value = "#3b82f6";
     return;
   }
-  const { data, error } = await todoStore.createTag({ name });
+  const { data, error } = await todoStore.createTag({ name, color });
   if (!error && data) {
     await todoStore.fetchTodos(); // タグ一覧を最新化
     newTagName.value = "";
+    newTagColor.value = "#3b82f6";
   }
 };
 
