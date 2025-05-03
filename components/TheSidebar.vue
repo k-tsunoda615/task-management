@@ -244,8 +244,6 @@ const showTimer = ref(true); // タイマー表示状態
 const showTagModal = ref(false);
 const newTagName = ref("");
 
-const useSupabaseClient = () => (window as any).$supabase;
-
 // サイドバーの開閉を切り替える
 const toggleSidebar = () => {
   isOpen.value = !isOpen.value;
@@ -358,20 +356,16 @@ const addTag = async () => {
     newTagName.value = "";
     return;
   }
-  const client = useSupabaseClient();
-  const { data, error } = await client.from("tags").insert([{ name }]);
+  const { data, error } = await todoStore.createTag({ name });
   if (!error && data) {
-    todoStore.tags.push(data[0]);
+    await todoStore.fetchTodos(); // タグ一覧を最新化
     newTagName.value = "";
   }
 };
 
 const deleteTag = async (tagId: string) => {
   if (!confirm("このタグを削除しますか？")) return;
-  const client = useSupabaseClient();
-  const { error } = await client.from("tags").delete().eq("id", tagId);
-  if (!error) {
-    todoStore.tags = todoStore.tags.filter((t) => t.id !== tagId);
-  }
+  await todoStore.deleteTag(tagId);
+  await todoStore.fetchTodos(); // タグ一覧を最新化
 };
 </script>

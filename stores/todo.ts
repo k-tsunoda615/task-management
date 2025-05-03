@@ -273,5 +273,18 @@ export const useTodoStore = defineStore("todo", {
         .single();
       return { data, error };
     },
+
+    async deleteTag(tagId: string) {
+      const client = useSupabaseClient();
+      const { error } = await client.from("tags").delete().eq("id", tagId);
+      if (error) throw error;
+      // 削除後にtags一覧を再取得
+      const { data: tags, error: tagsError } = await client
+        .from("tags")
+        .select("*");
+      if (!tagsError) {
+        this.tags = tags || [];
+      }
+    },
   },
 });
