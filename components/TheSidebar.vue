@@ -2,8 +2,12 @@
   <div>
     <!-- サイドバー本体 -->
     <div
-      class="fixed top-0 left-0 h-screen bg-white shadow transition-all duration-300 ease-in-out flex flex-col"
-      :class="[{ 'w-64': isOpen, 'w-16': !isOpen }, isMobile ? 'w-64' : '']"
+      class="fixed top-0 left-0 h-screen bg-white shadow transition-all duration-300 ease-in-out flex flex-col z-40"
+      :class="[
+        { 'w-64': isOpen || isMobile, 'w-16': !isOpen && !isMobile },
+        { '-translate-x-full': !isMobile },
+        'md:translate-x-0',
+      ]"
     >
       <!-- ヘッダー部分 -->
       <div class="flex items-center justify-between p-4 border-b">
@@ -37,80 +41,61 @@
         </UButton>
       </div>
 
-      <!-- フィルターボタン -->
-      <div class="p-4" :class="{ 'text-center': !isOpen && !isMobile }">
-        <UButton
-          :block="isOpen || isMobile"
-          :color="getFilterButtonColor()"
-          :variant="'ghost'"
-          @click="toggleTaskFilter"
-          :icon="getFilterIcon()"
-        >
-          <span v-if="isOpen || isMobile">{{ getFilterLabel() }}</span>
-        </UButton>
+      <!-- ボタン類 -->
+      <div class="flex-1 overflow-y-auto">
+        <!-- フィルターボタン -->
+        <div class="p-4" :class="{ 'text-center': !isOpen && !isMobile }">
+          <UButton
+            :block="isOpen || isMobile"
+            :color="getFilterButtonColor()"
+            :variant="'ghost'"
+            @click="toggleTaskFilter"
+            :icon="getFilterIcon()"
+          >
+            <span v-if="isOpen || isMobile">{{ getFilterLabel() }}</span>
+          </UButton>
+        </div>
+
+        <!-- タイマー表示切り替えボタン -->
+        <div class="p-4" :class="{ 'text-center': !isOpen && !isMobile }">
+          <UButton
+            :block="isOpen || isMobile"
+            :color="showTimer ? 'blue' : 'gray'"
+            :variant="'ghost'"
+            @click="toggleTimerVisibility"
+            icon="i-heroicons-clock"
+          >
+            <span v-if="isOpen || isMobile">{{
+              showTimer ? "タイマー表示中" : "タイマー非表示"
+            }}</span>
+          </UButton>
+        </div>
+
+        <!-- レイアウト切り替えボタン -->
+        <div class="p-4" :class="{ 'text-center': !isOpen && !isMobile }">
+          <UButton
+            :block="isOpen || isMobile"
+            color="gray"
+            :variant="'ghost'"
+            @click="$emit('toggle-layout')"
+            icon="i-heroicons-view-columns"
+          >
+            <span v-if="isOpen || isMobile">レイアウト切替</span>
+          </UButton>
+        </div>
       </div>
 
-      <!-- タイマー表示切り替えボタン -->
-      <div class="p-4" :class="{ 'text-center': !isOpen && !isMobile }">
-        <UButton
-          :block="isOpen || isMobile"
-          :color="showTimer ? 'blue' : 'gray'"
-          :variant="'ghost'"
-          @click="toggleTimerVisibility"
-          icon="i-heroicons-clock"
-        >
-          <span v-if="isOpen || isMobile">{{
-            showTimer ? "タイマー表示中" : "タイマー非表示"
-          }}</span>
-        </UButton>
-      </div>
-
-      <!-- レイアウト切り替えボタン -->
-      <div class="p-4" :class="{ 'text-center': !isOpen && !isMobile }">
-        <UButton
-          :block="isOpen || isMobile"
-          color="gray"
-          :variant="'ghost'"
-          @click="$emit('toggle-layout')"
-          icon="i-heroicons-view-columns"
-        >
-          <span v-if="isOpen || isMobile">レイアウト切替</span>
-        </UButton>
-      </div>
-
-      <!-- 機能ないのにあると気になるからいったん非表示 -->
-      <!-- <div class="mb-4">
-        <h3 class="mb-2 font-medium">プロジェクト</h3>
-        <ul class="space-y-1">
-          <li v-for="project in projectStore.projects" :key="project.id">
-            <UButton
-              block
-              variant="ghost"
-              :color="
-                projectStore.selectedProject?.id === project.id
-                  ? 'primary'
-                  : 'gray'
-              "
-              @click="projectStore.setSelectedProject(project)"
-            >
-              {{ project.title }}
-            </UButton>
-          </li>
-        </ul>
-      </div> -->
-
-      <!-- ゴミ箱エリアの直前に配置 -->
-      <div class="mt-auto">
-        <!-- タスク数表示 - サイドバーが開いているときのみ表示 -->
-        <div v-if="isOpen && !isMobile" class="px-4 py-2 text-center">
+      <!-- ゴミ箱エリア -->
+      <div class="mt-auto border-t">
+        <!-- タスク数表示 -->
+        <div v-if="isOpen || isMobile" class="px-4 py-2 text-center">
           <span class="text-xs text-gray-500">
             Tasks: {{ todoStore.totalTodoCount }} / 100
           </span>
         </div>
 
-        <!-- ゴミ箱エリア -->
         <div
-          class="p-3 border-t flex items-center justify-center transition-all duration-200"
+          class="p-3 flex items-center justify-center transition-all duration-200"
           :class="{ 'flex-col': !isOpen && !isMobile }"
           @dragover.prevent
           @dragenter="isDragOver = true"
@@ -135,6 +120,13 @@
         </div>
       </div>
     </div>
+
+    <!-- モバイル用オーバーレイ -->
+    <div
+      v-if="isMobile"
+      class="fixed inset-0 bg-black bg-opacity-50 z-30"
+      @click="$emit('close-mobile-menu')"
+    />
   </div>
 </template>
 
