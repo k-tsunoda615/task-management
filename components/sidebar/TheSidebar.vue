@@ -222,6 +222,7 @@ import { useTagStore } from "../../stores/tag";
 import { useEventBus } from "@vueuse/core";
 import type { Tag } from "../../types/todo";
 import TagManageModal from "../modals/TagManageModal.vue";
+import { useTags } from "../../composables/useTags";
 // import { darkenColor } from "@/utils/color";
 
 const props = defineProps({
@@ -235,20 +236,13 @@ const emit = defineEmits(["close-mobile-menu", "toggle-layout"]);
 
 const projectStore = useProjectStore();
 const todoStore = useTodoStore();
-const tagStore = useTagStore();
+const { tagStore, newTagName, newTagColor, addTag, deleteTag } = useTags();
 
 const trashEventBus = useEventBus("trash-drop");
 const isDragOver = ref(false);
 const isOpen = ref(true); // サイドバーの開閉状態
 const showTimer = ref(true); // タイマー表示状態
 const showTagModal = ref(false);
-const newTagName = ref("");
-const randomColor = () => {
-  // パステル系のランダム色
-  const hue = Math.floor(Math.random() * 360);
-  return `hsl(${hue}, 70%, 70%)`;
-};
-const newTagColor = ref(randomColor());
 
 // サイドバーの開閉を切り替える
 const toggleSidebar = () => {
@@ -353,27 +347,6 @@ const handleTrashDrop = (event: any) => {
     isDragOver.value = false;
     trashEventBus.emit(todoId);
   }
-};
-
-const addTag = async () => {
-  const name = newTagName.value.trim();
-  const color = newTagColor.value;
-  if (!name) return;
-  if (tagStore.tags.some((t: Tag) => t.name === name)) {
-    newTagName.value = "";
-    newTagColor.value = randomColor();
-    return;
-  }
-  const { data, error } = await tagStore.createTag({ name, color });
-  if (!error && data) {
-    newTagName.value = "";
-    newTagColor.value = randomColor();
-  }
-};
-
-const deleteTag = async (tagId: string) => {
-  if (!confirm("このタグを削除しますか？")) return;
-  await tagStore.deleteTag(tagId);
 };
 </script>
 

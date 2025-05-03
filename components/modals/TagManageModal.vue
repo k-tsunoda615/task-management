@@ -1,8 +1,5 @@
 <template>
-  <UModal
-    :model-value="show"
-    @update:model-value="$emit('update:show', $event)"
-  >
+  <UModal v-model="isOpen">
     <UCard>
       <template #header>
         <h3 class="text-lg font-medium text-gray-900">タグ管理</h3>
@@ -42,23 +39,11 @@
         <div class="flex gap-2 items-center">
           <input
             type="color"
-            :value="newTagColor"
-            @input="
-              $emit(
-                'updateNewTagColor',
-                ($event.target as HTMLInputElement).value
-              )
-            "
+            v-model="localColor"
             class="w-8 h-8 rounded-md border border-gray-200 p-0.5 cursor-pointer transition-shadow hover:shadow-sm"
           />
           <UInput
-            :value="newTagName"
-            @input="
-              $emit(
-                'updateNewTagName',
-                ($event.target as HTMLInputElement).value
-              )
-            "
+            v-model="localName"
             placeholder="新しいタグ名"
             size="sm"
             class="flex-1"
@@ -67,7 +52,7 @@
             size="sm"
             icon="i-heroicons-plus"
             color="primary"
-            @click="$emit('addTag')"
+            @click="handleAddTag"
           >
             追加
           </UButton>
@@ -75,7 +60,7 @@
       </div>
       <template #footer>
         <div class="flex justify-end">
-          <UButton variant="ghost" @click="$emit('close')">閉じる</UButton>
+          <UButton variant="ghost" @click="closeModal">閉じる</UButton>
         </div>
       </template>
     </UCard>
@@ -83,13 +68,16 @@
 </template>
 
 <script setup lang="ts">
-defineProps({
+import { ref, watch } from "vue";
+
+const props = defineProps({
   show: Boolean,
   tagStore: Object,
   newTagName: String,
   newTagColor: String,
 });
-defineEmits([
+
+const emit = defineEmits([
   "close",
   "addTag",
   "deleteTag",
@@ -97,4 +85,52 @@ defineEmits([
   "updateNewTagColor",
   "update:show",
 ]);
+
+const isOpen = ref(props.show);
+const localName = ref(props.newTagName || "");
+const localColor = ref(props.newTagColor || "#3b82f6");
+
+watch(
+  () => props.show,
+  (newVal) => {
+    isOpen.value = newVal;
+  }
+);
+
+watch(isOpen, (newVal) => {
+  emit("update:show", newVal);
+  if (!newVal) {
+    emit("close");
+  }
+});
+
+watch(
+  () => props.newTagName,
+  (newVal) => {
+    localName.value = newVal || "";
+  }
+);
+
+watch(
+  () => props.newTagColor,
+  (newVal) => {
+    localColor.value = newVal || "#3b82f6";
+  }
+);
+
+watch(localName, (newVal) => {
+  emit("updateNewTagName", newVal);
+});
+
+watch(localColor, (newVal) => {
+  emit("updateNewTagColor", newVal);
+});
+
+const handleAddTag = () => {
+  emit("addTag");
+};
+
+const closeModal = () => {
+  isOpen.value = false;
+};
 </script>
