@@ -77,7 +77,7 @@
               @end="handleDragEnd"
             >
               <template #item="{ element }">
-                <TodoCard
+                <KanbanTodoCard
                   :todo="element"
                   :showTimerBar="showTimerBar"
                   :timerLoading="timerButtonLoading === element.id"
@@ -117,7 +117,7 @@
             @change="handleDragChange"
           >
             <template #item="{ element }">
-              <TodoCard
+              <KanbanTodoCard
                 :todo="element"
                 :showTimerBar="showTimerBar"
                 :timerLoading="timerButtonLoading === element.id"
@@ -158,7 +158,7 @@
           @end="handleDragEnd"
         >
           <template #item="{ element }">
-            <TodoCard
+            <KanbanTodoCard
               :todo="element"
               :showTimerBar="showTimerBar"
               :timerLoading="timerButtonLoading === element.id"
@@ -193,7 +193,7 @@
           @change="handleDragChange"
         >
           <template #item="{ element }">
-            <TodoCard
+            <KanbanTodoCard
               :todo="element"
               :showTimerBar="showTimerBar"
               :timerLoading="timerButtonLoading === element.id"
@@ -229,7 +229,7 @@
         @change="handleDragChange"
       >
         <template #item="{ element }">
-          <TodoCard
+          <KanbanTodoCard
             :todo="element"
             :showTimerBar="showTimerBar"
             :timerLoading="timerButtonLoading === element.id"
@@ -473,6 +473,7 @@ import {
 } from "../../utils/time";
 // import { darkenColor } from "../../utils/color";
 import { useTaskTimer } from "../../composables/useTaskTimer";
+// import TodoCard from "./TodoCard.vue";
 
 const todoStore = useTodoStore();
 const tagStore = useTagStore();
@@ -774,6 +775,13 @@ onMounted(() => {
 
   fetchInitialData();
   updateTodosByStatus();
+
+  // テスト用ダミーデータを追加
+  todoStore.todos = [
+    { id: "1", title: "テストタスク", status: "未対応", tags: [] },
+  ];
+  updateTodosByStatus();
+  console.log("[テスト] todosByStatus.todo:", todosByStatus.todo);
 
   // ゴミ箱へのドロップイベントを監視
   trashEventBus.on((todoId) => {

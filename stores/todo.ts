@@ -1,5 +1,5 @@
 import { defineStore } from "pinia";
-import type { Todo } from "@/types/todo";
+import type { Todo } from "../types/todo";
 
 export const useTodoStore = defineStore("todo", {
   state: () => ({
@@ -32,6 +32,7 @@ export const useTodoStore = defineStore("todo", {
           .order("sort_order", { ascending: true })
           .order("updated_at", { ascending: false });
         if (error) throw error;
+        console.log("[fetchTodos] raw todos:", todos);
         const normalizedTodos = todos?.map((todo: any) => {
           if (!todo.status) todo.status = "未対応";
           if (
@@ -63,7 +64,12 @@ export const useTodoStore = defineStore("todo", {
             .filter(Boolean);
           return todo;
         });
+        console.log("[fetchTodos] normalizedTodos:", normalizedTodos);
         this.todos = normalizedTodos || [];
+        console.log("[fetchTodos] this.todos:", this.todos);
+        console.log("[fetchTodos] taskFilter:", this.taskFilter);
+        // filteredTodosはgetterなのでthis.filteredTodosでアクセス
+        console.log("[fetchTodos] filteredTodos:", this.filteredTodos);
         this.isLoaded = true;
       } catch (error) {
         console.error("Todoの取得中にエラーが発生しました:", error);
