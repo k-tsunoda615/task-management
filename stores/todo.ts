@@ -52,6 +52,11 @@ export const useTodoStore = defineStore("todo", {
         return this.todos.filter((todo) => !todo.is_private);
       }
     },
+
+    // 総Todo数を取得
+    totalTodoCount(): number {
+      return this.todos.length;
+    },
   },
 
   actions: {

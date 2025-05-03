@@ -86,30 +86,40 @@
         </ul>
       </div> -->
 
-      <!-- ゴミ箱エリア -->
-      <div
-        class="mt-auto p-3 border-t flex items-center justify-center transition-all duration-200"
-        :class="{ 'flex-col': !isOpen && !isMobile }"
-        @dragover.prevent
-        @dragenter="isDragOver = true"
-        @dragleave="isDragOver = false"
-        @drop="handleTrashDrop"
-      >
-        <UIcon
-          name="i-heroicons-trash"
-          class="transition-colors duration-200"
-          :class="[
-            isDragOver ? 'text-red-500' : 'text-gray-500',
-            isOpen || isMobile ? 'mr-2' : 'mb-1',
-          ]"
-        />
-        <span
-          v-if="isOpen || isMobile"
-          class="transition-colors duration-200"
-          :class="isDragOver ? 'text-red-700' : 'text-gray-600'"
+      <!-- ゴミ箱エリアの直前に配置 -->
+      <div class="mt-auto">
+        <!-- タスク数表示 - サイドバーが開いているときのみ表示 -->
+        <div v-if="isOpen && !isMobile" class="px-4 py-2 text-center">
+          <span class="text-xs text-gray-500">
+            Tasks: {{ todoStore.totalTodoCount }} / 100
+          </span>
+        </div>
+
+        <!-- ゴミ箱エリア -->
+        <div
+          class="p-3 border-t flex items-center justify-center transition-all duration-200"
+          :class="{ 'flex-col': !isOpen && !isMobile }"
+          @dragover.prevent
+          @dragenter="isDragOver = true"
+          @dragleave="isDragOver = false"
+          @drop="handleTrashDrop"
         >
-          ドラッグで削除
-        </span>
+          <UIcon
+            name="i-heroicons-trash"
+            class="transition-colors duration-200"
+            :class="[
+              isDragOver ? 'text-red-500' : 'text-gray-500',
+              isOpen || isMobile ? 'mr-2' : 'mb-1',
+            ]"
+          />
+          <span
+            v-if="isOpen || isMobile"
+            class="transition-colors duration-200"
+            :class="isDragOver ? 'text-red-700' : 'text-gray-600'"
+          >
+            ドラッグで削除
+          </span>
+        </div>
       </div>
     </div>
   </div>
