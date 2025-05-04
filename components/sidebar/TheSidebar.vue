@@ -57,12 +57,15 @@
           >
             <UButton
               :block="isOpen || isMobile"
-              color="primary"
-              variant="soft"
-              icon="i-heroicons-plus"
+              color="gray"
+              variant="ghost"
               @click="$emit('open-new-task-modal')"
-              class="justify-start hover:bg-primary-50"
+              class="justify-start hover:bg-gray-100"
             >
+              <UIcon
+                name="i-heroicons-plus-circle"
+                class="w-5 h-5 text-primary-500"
+              />
               <span v-if="isOpen || isMobile" class="ml-2">新しいタスク</span>
             </UButton>
           </UTooltip>
@@ -391,13 +394,13 @@ onMounted(async () => {
 const getFilterLabel = () => {
   switch (todoStore.taskFilter) {
     case "all":
-      return "All Tasks";
+      return "全てのタスク";
     case "private":
-      return "Private";
+      return "プライベート";
     case "public":
-      return "Public";
+      return "パブリック";
     default:
-      return "All Tasks";
+      return "全てのタスク";
   }
 };
 
@@ -409,7 +412,7 @@ const getFilterIcon = () => {
     case "private":
       return "i-heroicons-lock-closed";
     case "public":
-      return "i-heroicons-users";
+      return "i-heroicons-eye";
     default:
       return "i-heroicons-globe-alt";
   }
@@ -418,13 +421,13 @@ const getFilterIcon = () => {
 const getFilterButtonColor = () => {
   switch (todoStore.taskFilter) {
     case "all":
-      return "primary";
+      return "green";
     case "private":
       return "green";
     case "public":
       return "gray";
     default:
-      return "primary";
+      return "gray";
   }
 };
 
