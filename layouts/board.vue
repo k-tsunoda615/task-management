@@ -79,7 +79,7 @@
             'mt-14': isMobile,
           }"
         >
-          <!-- 匿名ユーåザー向け注意バナー -->
+          <!-- 匿名ユーザー向け注意バナー -->
           <div
             v-if="showAnonymousBanner && user?.is_anonymous"
             class="anonymous-warning"
@@ -88,7 +88,10 @@
               >&times;</span
             >
             ゲスト（匿名）ユーザーとして利用中です。データは一定期間で自動削除されます。<br />
-            データを永続的に保存したい場合は、アカウント登録をご検討ください。
+            <strong
+              >【重要】ゲストのままログアウトすると、同じアカウントで再ログインすることはできません。</strong
+            ><br />
+            作成したタスクやタグを残したい場合は、アカウント登録（メールアドレスとパスワードの設定）を行うことで、現在のデータをそのまま引き継ぐことができます。
           </div>
           <slot />
         </main>
@@ -158,6 +161,7 @@ onMounted(() => {
   margin: 1em 0;
   text-align: center;
   position: relative;
+  font-size: 0.8em;
 }
 .close-btn {
   position: absolute;
