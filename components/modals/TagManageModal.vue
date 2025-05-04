@@ -3,7 +3,7 @@
     <UCard class="w-full max-w-md">
       <template #header>
         <div class="flex items-center justify-between">
-          <h3 class="text-lg font-medium text-gray-900">タグ管理</h3>
+          <h3 class="text-lg font-medium text-gray-900">タグ編集</h3>
           <UButton
             icon="i-heroicons-plus-circle"
             color="gray"

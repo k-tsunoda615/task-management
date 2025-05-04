@@ -45,7 +45,7 @@
 
       <!-- ボタン類 -->
       <div class="flex-1 overflow-y-auto py-2">
-        <!-- フィルターボタン -->
+        <!-- 表示切り替え系ボタン群 -->
         <div
           class="px-3 py-1.5"
           :class="{ 'text-center': !isOpen && !isMobile }"
@@ -69,31 +69,6 @@
             </UButton>
           </UTooltip>
         </div>
-
-        <!-- タグ管理ボタン -->
-        <div
-          class="px-3 py-1.5"
-          :class="{ 'text-center': !isOpen && !isMobile }"
-        >
-          <UTooltip
-            :text="!isOpen ? 'タグ管理' : ''"
-            :ui="{ popper: { strategy: 'fixed' } }"
-            class="w-full"
-          >
-            <UButton
-              :block="isOpen || isMobile"
-              color="gray"
-              variant="ghost"
-              icon="i-heroicons-tag"
-              @click="showTagModal = true"
-              class="justify-start hover:bg-gray-100"
-            >
-              <span v-if="isOpen || isMobile" class="ml-2">タグ管理</span>
-            </UButton>
-          </UTooltip>
-        </div>
-
-        <!-- タイマー表示切り替えボタン -->
         <div
           class="px-3 py-1.5"
           :class="{ 'text-center': !isOpen && !isMobile }"
@@ -119,33 +94,6 @@
             </UButton>
           </UTooltip>
         </div>
-
-        <!-- レイアウト切り替えボタン -->
-        <div
-          class="px-3 py-1.5"
-          :class="{ 'text-center': !isOpen && !isMobile }"
-        >
-          <UTooltip
-            :text="!isOpen ? 'レイアウト切り替え' : ''"
-            :ui="{ popper: { strategy: 'fixed' } }"
-            class="w-full"
-          >
-            <UButton
-              :block="isOpen || isMobile"
-              color="gray"
-              variant="ghost"
-              @click="$emit('toggle-layout')"
-              icon="i-heroicons-view-columns"
-              class="justify-start hover:bg-gray-100"
-            >
-              <span v-if="isOpen || isMobile" class="ml-2"
-                >レイアウト切り替え</span
-              >
-            </UButton>
-          </UTooltip>
-        </div>
-
-        <!-- タグ表示切り替えボタン -->
         <div
           class="px-3 py-1.5"
           :class="{ 'text-center': !isOpen && !isMobile }"
@@ -166,6 +114,61 @@
               <span v-if="isOpen || isMobile" class="ml-2">
                 {{ showTagBar ? "タグ表示中" : "タグ非表示" }}
               </span>
+            </UButton>
+          </UTooltip>
+        </div>
+
+        <!-- 区切り線 -->
+        <div class="my-2 border-t border-gray-200" />
+
+        <!-- 機能系ボタン群 -->
+        <div
+          class="px-3 py-1.5"
+          :class="{ 'text-center': !isOpen && !isMobile }"
+        >
+          <UTooltip
+            :text="!isOpen ? 'タグ編集' : ''"
+            :ui="{ popper: { strategy: 'fixed' } }"
+            class="w-full"
+          >
+            <UButton
+              :block="isOpen || isMobile"
+              color="gray"
+              variant="ghost"
+              @click="showTagModal = true"
+              class="justify-start hover:bg-gray-100 relative"
+            >
+              <span class="relative inline-block w-5 h-5">
+                <UIcon name="i-heroicons-tag" class="w-5 h-5 text-gray-500" />
+                <UIcon
+                  name="i-heroicons-plus"
+                  class="w-3 h-3 text-gray-500 absolute right-[-3px] top-[-4px]"
+                />
+              </span>
+              <span v-if="isOpen || isMobile" class="ml-2">タグ編集</span>
+            </UButton>
+          </UTooltip>
+        </div>
+        <div
+          class="px-3 py-1.5"
+          :class="{ 'text-center': !isOpen && !isMobile }"
+        >
+          <UTooltip
+            :text="!isOpen ? 'レイアウト切り替え' : ''"
+            :ui="{ popper: { strategy: 'fixed' } }"
+            class="w-full"
+          >
+            <UButton
+              :block="isOpen || isMobile"
+              color="gray"
+              variant="ghost"
+              @click="$emit('toggle-layout')"
+              icon="i-heroicons-view-columns"
+              class="justify-start hover:bg-gray-100"
+            >
+              <span v-if="isOpen || isMobile" class="ml-2"
+                >レイアウト切り替え</span
+              >
             </UButton>
           </UTooltip>
         </div>
