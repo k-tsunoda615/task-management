@@ -41,6 +41,18 @@ export const useTagStore = defineStore("tag", {
       await this.fetchTags();
       return { data, error };
     },
+    async updateTag(tagId: string, updates: { name?: string; color?: string }) {
+      const client = useSupabaseClient();
+      const { data, error } = await client
+        .from("tags")
+        .update(updates)
+        .eq("id", tagId)
+        .select()
+        .single();
+      if (error) throw error;
+      await this.fetchTags();
+      return { data, error };
+    },
     async deleteTag(tagId: string) {
       const client = useSupabaseClient();
       const { error } = await client.from("tags").delete().eq("id", tagId);

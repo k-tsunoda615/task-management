@@ -23,6 +23,7 @@
                 lineHeight: '1.25',
               }"
               class="transition-all duration-200"
+              @click="startEditing(tag)"
             >
               {{ tag.name }}
             </UBadge>
@@ -36,7 +37,45 @@
             />
           </div>
         </div>
-        <div class="flex gap-2 items-center">
+
+        <!-- タグ編集フォーム -->
+        <div
+          v-if="isEditing"
+          class="flex gap-2 items-center bg-gray-50 p-2 rounded-md"
+        >
+          <input
+            type="color"
+            v-model="editColor"
+            class="w-8 h-8 rounded-md border border-gray-200 p-0.5 cursor-pointer transition-shadow hover:shadow-sm"
+          />
+          <UInput
+            v-model="editName"
+            placeholder="タグ名を編集"
+            size="sm"
+            class="flex-1"
+          />
+          <div class="flex gap-1">
+            <UButton
+              size="sm"
+              icon="i-heroicons-check"
+              color="green"
+              @click="handleUpdateTag"
+            >
+              保存
+            </UButton>
+            <UButton
+              size="sm"
+              icon="i-heroicons-x-mark"
+              color="gray"
+              @click="cancelEditing"
+            >
+              キャンセル
+            </UButton>
+          </div>
+        </div>
+
+        <!-- 新規タグ追加フォーム -->
+        <div v-else class="flex gap-2 items-center">
           <input
             type="color"
             v-model="localColor"
@@ -69,6 +108,7 @@
 
 <script setup lang="ts">
 import { ref, watch } from "vue";
+import type { Tag } from "../../types/todo";
 
 const props = defineProps({
   show: Boolean,
@@ -84,11 +124,18 @@ const emit = defineEmits([
   "updateNewTagName",
   "updateNewTagColor",
   "update:show",
+  "updateTag",
 ]);
 
 const isOpen = ref(props.show);
 const localName = ref(props.newTagName || "");
 const localColor = ref(props.newTagColor || "#3b82f6");
+
+// 編集モード用の状態
+const isEditing = ref(false);
+const editingTagId = ref<string | null>(null);
+const editName = ref("");
+const editColor = ref("#3b82f6");
 
 watch(
   () => props.show,
@@ -101,6 +148,7 @@ watch(isOpen, (newVal) => {
   emit("update:show", newVal);
   if (!newVal) {
     emit("close");
+    cancelEditing();
   }
 });
 
@@ -128,6 +176,31 @@ watch(localColor, (newVal) => {
 
 const handleAddTag = () => {
   emit("addTag");
+};
+
+const startEditing = (tag: Tag) => {
+  isEditing.value = true;
+  editingTagId.value = tag.id;
+  editName.value = tag.name;
+  editColor.value = tag.color || "#3b82f6";
+};
+
+const cancelEditing = () => {
+  isEditing.value = false;
+  editingTagId.value = null;
+  editName.value = "";
+  editColor.value = "#3b82f6";
+};
+
+const handleUpdateTag = () => {
+  if (editingTagId.value) {
+    emit("updateTag", {
+      id: editingTagId.value,
+      name: editName.value,
+      color: editColor.value,
+    });
+    cancelEditing();
+  }
 };
 
 const closeModal = () => {

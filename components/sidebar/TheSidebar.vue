@@ -215,6 +215,7 @@
       @close="showTagModal = false"
       @addTag="addTag"
       @deleteTag="deleteTag"
+      @updateTag="updateTag"
       @updateNewTagName="(val) => (newTagName = val)"
       @updateNewTagColor="(val) => (newTagColor = val)"
     />
@@ -242,7 +243,8 @@ const emit = defineEmits(["close-mobile-menu", "toggle-layout"]);
 
 const projectStore = useProjectStore();
 const todoStore = useTodoStore();
-const { tagStore, newTagName, newTagColor, addTag, deleteTag } = useTags();
+const { tagStore, newTagName, newTagColor, addTag, deleteTag, updateTag } =
+  useTags();
 
 const trashEventBus = useEventBus("trash-drop");
 const isDragOver = ref(false);
