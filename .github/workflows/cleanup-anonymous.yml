@@ -11,4 +11,8 @@ jobs:
     steps:
       - name: Call Cleanup Function
         run: |
-          curl -X POST ${{ secrets.CLEANUP_FUNCTION_URL }}
+          curl -X POST "$CLEANUP_FUNCTION_URL" \
+            -H "Authorization: Bearer $SUPABASE_SERVICE_ROLE_KEY"
+        env:
+          CLEANUP_FUNCTION_URL: ${{ secrets.CLEANUP_FUNCTION_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
