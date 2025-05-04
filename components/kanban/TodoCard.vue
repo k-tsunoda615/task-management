@@ -103,6 +103,7 @@ import { useTodoStore } from "../../stores/todo";
 import { marked } from "marked";
 import type { PropType } from "vue";
 import type { TaskStatus } from "../../utils/constants";
+import { formatTime } from "../../utils/time";
 
 const props = defineProps({
   todo: {
@@ -151,29 +152,6 @@ const parsedMemo = computed(() => {
   if (!props.todo.memo) return "";
   return marked(props.todo.memo);
 });
-
-// 時間のフォーマット関数（秒数を hh:mm:ss 形式に変換）
-const formatTime = (seconds: number | number[]) => {
-  // 配列の場合は最初の要素を使用
-  let totalSeconds = 0;
-  if (Array.isArray(seconds) && seconds.length > 0) {
-    totalSeconds = seconds[0];
-  } else if (typeof seconds === "number") {
-    totalSeconds = seconds;
-  }
-
-  if (totalSeconds === undefined) return "00:00:00";
-
-  const hours = Math.floor(totalSeconds / 3600);
-  const minutes = Math.floor((totalSeconds % 3600) / 60);
-  const secs = totalSeconds % 60;
-
-  return [
-    hours.toString().padStart(2, "0"),
-    minutes.toString().padStart(2, "0"),
-    secs.toString().padStart(2, "0"),
-  ].join(":");
-};
 
 // タイミング開始 - イベント伝播を明示的に停止
 const startTiming = (event: Event) => {
