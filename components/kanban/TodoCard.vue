@@ -20,7 +20,7 @@
 
         <!-- タグ -->
         <div
-          v-if="todo.tags && todo.tags.length > 0"
+          v-if="showTagBar && todo.tags && todo.tags.length > 0"
           class="flex flex-wrap gap-1.5 mb-2"
         >
           <UBadge
@@ -121,6 +121,10 @@ const props = defineProps({
     required: true,
   },
   showTimerBar: {
+    type: Boolean,
+    default: true,
+  },
+  showTagBar: {
     type: Boolean,
     default: true,
   },

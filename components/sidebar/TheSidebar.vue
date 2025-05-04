@@ -144,6 +144,31 @@
             </UButton>
           </UTooltip>
         </div>
+
+        <!-- タグ表示切り替えボタン -->
+        <div
+          class="px-3 py-1.5"
+          :class="{ 'text-center': !isOpen && !isMobile }"
+        >
+          <UTooltip
+            :text="!isOpen ? (showTagBar ? 'タグ非表示' : 'タグ表示') : ''"
+            :ui="{ popper: { strategy: 'fixed' } }"
+            class="w-full"
+          >
+            <UButton
+              :block="isOpen || isMobile"
+              :color="showTagBar ? 'blue' : 'gray'"
+              :variant="'ghost'"
+              @click="toggleTagVisibility"
+              icon="i-heroicons-tag"
+              class="justify-start hover:bg-gray-100"
+            >
+              <span v-if="isOpen || isMobile" class="ml-2">
+                {{ showTagBar ? "タグ表示中" : "タグ非表示" }}
+              </span>
+            </UButton>
+          </UTooltip>
+        </div>
       </div>
 
       <!-- ゴミ箱エリア -->
@@ -251,6 +276,7 @@ const isDragOver = ref(false);
 const isOpen = ref(true); // サイドバーの開閉状態
 const showTimer = ref(true); // タイマー表示状態
 const showTagModal = ref(false);
+const showTagBar = ref(true); // タグ表示状態
 
 // tagStoreを直接インポート
 const directTagStore = useTagStore();
@@ -292,6 +318,17 @@ const toggleTimerVisibility = () => {
   );
 };
 
+// タグ表示の切り替え
+const toggleTagVisibility = () => {
+  showTagBar.value = !showTagBar.value;
+  localStorage.setItem("showTagBar", showTagBar.value.toString());
+  window.dispatchEvent(
+    new CustomEvent("tagVisibilityToggle", {
+      detail: { showTagBar: showTagBar.value },
+    })
+  );
+};
+
 // ページ読み込み時にサイドバーの状態を復元
 onMounted(async () => {
   const savedState = localStorage.getItem("sidebarOpen");
@@ -303,6 +340,12 @@ onMounted(async () => {
   const savedTimerState = localStorage.getItem("showTimer");
   if (savedTimerState !== null) {
     showTimer.value = savedTimerState === "true";
+  }
+
+  // タグ表示状態を復元
+  const savedTagBarState = localStorage.getItem("showTagBar");
+  if (savedTagBarState !== null) {
+    showTagBar.value = savedTagBarState === "true";
   }
 
   // プロジェクトとタグを取得

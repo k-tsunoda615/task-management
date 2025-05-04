@@ -91,6 +91,7 @@
                 <TodoCard
                   :todo="element"
                   :showTimerBar="showTimerBar"
+                  :showTagBar="showTagBar"
                   :timerLoading="timerButtonLoading === element.id"
                   @edit="openEditModal"
                   @start-timing="startTiming"
@@ -146,6 +147,7 @@
               <TodoCard
                 :todo="element"
                 :showTimerBar="showTimerBar"
+                :showTagBar="showTagBar"
                 :timerLoading="timerButtonLoading === element.id"
                 @edit="openEditModal"
                 @start-timing="startTiming"
@@ -200,6 +202,7 @@
             <TodoCard
               :todo="element"
               :showTimerBar="showTimerBar"
+              :showTagBar="showTagBar"
               :timerLoading="timerButtonLoading === element.id"
               @edit="openEditModal"
               @start-timing="startTiming"
@@ -250,6 +253,7 @@
             <TodoCard
               :todo="element"
               :showTimerBar="showTimerBar"
+              :showTagBar="showTagBar"
               :timerLoading="timerButtonLoading === element.id"
               @edit="openEditModal"
               @start-timing="startTiming"
@@ -301,6 +305,7 @@
           <TodoCard
             :todo="element"
             :showTimerBar="showTimerBar"
+            :showTagBar="showTagBar"
             :timerLoading="timerButtonLoading === element.id"
             @edit="openEditModal"
             @start-timing="startTiming"
@@ -559,6 +564,7 @@ const {
   extractTotalTime,
 } = useTaskTimer();
 const showTimerBar = ref(true);
+const showTagBar = ref(true);
 const currentTimingTodo = ref<Todo | null>(null);
 
 // 時間入力フィールド
@@ -822,14 +828,24 @@ onMounted(() => {
     showTimerBar.value = event.detail.showTimer;
   };
 
+  // タグ表示切り替えイベントを監視する関数を定義
+  const handleTagVisibilityToggle = (event: any) => {
+    showTagBar.value = event.detail.showTagBar;
+  };
+
   // イベントリスナーを追加
   window.addEventListener("timerVisibilityToggle", handleTimerVisibilityToggle);
+  window.addEventListener("tagVisibilityToggle", handleTagVisibilityToggle);
 
   // コンポーネントがアンマウントされたときにイベントリスナーを削除
   onUnmounted(() => {
     window.removeEventListener(
       "timerVisibilityToggle",
       handleTimerVisibilityToggle
+    );
+    window.removeEventListener(
+      "tagVisibilityToggle",
+      handleTagVisibilityToggle
     );
 
     // タイマーを停止
@@ -842,6 +858,12 @@ onMounted(() => {
   const savedTimerState = localStorage.getItem("showTimer");
   if (savedTimerState !== null) {
     showTimerBar.value = savedTimerState === "true";
+  }
+
+  // 初期タグ表示状態を設定
+  const savedTagBarState = localStorage.getItem("showTagBar");
+  if (savedTagBarState !== null) {
+    showTagBar.value = savedTagBarState === "true";
   }
 
   // 初期データの取得
