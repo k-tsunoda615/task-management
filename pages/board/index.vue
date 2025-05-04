@@ -9,29 +9,35 @@
             class="text-gray-600 hover:text-gray-900 flex items-center"
           >
             <UIcon name="i-heroicons-home" class="mr-1 h-5 w-5" />
-            ホーム
+            <span class="md:inline hidden">ホーム</span>
           </NuxtLink>
-          <span class="text-gray-400">/</span>
-          <span class="font-medium text-gray-900">Task Board</span>
+          <span class="text-gray-400 md:inline hidden">/</span>
+          <span class="font-medium text-gray-900 md:inline hidden"
+            >Task Board</span
+          >
         </div>
 
         <div class="flex items-center space-x-3">
-          <UButton
-            @click="showHelpModal = true"
-            color="gray"
-            variant="ghost"
-            icon="i-heroicons-question-mark-circle"
-          >
-            ヘルプ
-          </UButton>
-          <UButton
-            @click="logout"
-            color="gray"
-            variant="ghost"
-            icon="i-heroicons-arrow-right-on-rectangle"
-          >
-            ログアウト
-          </UButton>
+          <UTooltip text="ヘルプ" :ui="{ popper: { strategy: 'fixed' } }">
+            <UButton
+              @click="showHelpModal = true"
+              color="gray"
+              variant="ghost"
+              icon="i-heroicons-question-mark-circle"
+            >
+              <span class="md:hidden hidden">ヘルプ</span>
+            </UButton>
+          </UTooltip>
+          <UTooltip text="ログアウト" :ui="{ popper: { strategy: 'fixed' } }">
+            <UButton
+              @click="logout"
+              color="gray"
+              variant="ghost"
+              icon="i-heroicons-arrow-right-on-rectangle"
+            >
+              <span class="md:hidden hidden">ログアウト</span>
+            </UButton>
+          </UTooltip>
         </div>
       </nav>
     </div>
@@ -357,7 +363,7 @@
 <script setup lang="ts">
 import KanbanBoard from "../../components/kanban/KanbanBoard.vue";
 import { useInitialSampleData } from "../../composables/useInitialSampleData";
-import { onMounted } from "vue";
+import { onMounted, ref } from "vue";
 
 definePageMeta({
   layout: "board",
