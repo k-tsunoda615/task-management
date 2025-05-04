@@ -19,7 +19,7 @@
         <!-- 新規タグ追加フォーム -->
         <div
           v-if="isCreatingNewTag"
-          class="flex gap-2 items-center bg-gray-50 p-3 rounded-lg shadow-sm border border-gray-100 transition-all duration-200"
+          class="flex gap-2 items-center bg-gray-50 p-3 rounded-lg shadow-sm border border-gray-100"
         >
           <div class="relative">
             <UPopover :popper="{ placement: 'bottom-start' }">
@@ -36,7 +36,7 @@
                       :key="color"
                       class="w-5 h-5 rounded-full cursor-pointer hover:scale-110 transition-transform duration-150"
                       :style="{ backgroundColor: color }"
-                      @click="selectColor(color)"
+                      @click="localColor = color"
                     ></div>
                   </div>
                   <input
@@ -68,7 +68,7 @@
               icon="i-heroicons-x-mark"
               color="gray"
               variant="soft"
-              @click="isCreatingNewTag = false"
+              @click="cancelNewTag"
             />
           </div>
         </div>
@@ -76,7 +76,7 @@
         <!-- タグ編集フォーム -->
         <div
           v-if="isEditing"
-          class="flex gap-2 items-center bg-gray-50 p-3 rounded-lg shadow-sm border border-gray-100 transition-all duration-200"
+          class="flex gap-2 items-center bg-gray-50 p-3 rounded-lg shadow-sm border border-gray-100"
         >
           <div class="relative">
             <UPopover :popper="{ placement: 'bottom-start' }">
@@ -182,7 +182,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch, computed } from "vue";
+import { useDebounceFn } from "@vueuse/core";
 import type { Tag } from "../../types/todo";
 
 const props = defineProps({
@@ -203,8 +203,8 @@ const emit = defineEmits([
 ]);
 
 const isOpen = ref(props.show);
-const localName = ref(props.newTagName || "");
-const localColor = ref(props.newTagColor || "#3b82f6");
+const localName = ref("");
+const localColor = ref("#3b82f6");
 const isCreatingNewTag = ref(false);
 
 // 編集モード用の状態
@@ -213,7 +213,7 @@ const editingTagId = ref<string | null>(null);
 const editName = ref("");
 const editColor = ref("#3b82f6");
 
-// あらかじめ定義された色のリスト
+// メモ化した配列 (頻繁に変更されないデータ)
 const predefinedColors = [
   "#3b82f6", // blue
   "#ef4444", // red
@@ -227,64 +227,82 @@ const predefinedColors = [
   "#64748b", // slate
 ];
 
-// タグを名前でソート
+// 最適化: ソートは変更があったときのみ実行
 const sortedTags = computed(() => {
-  if (!props.tagStore?.tags) return [];
+  if (!props.tagStore?.tags || props.tagStore.tags.length === 0) return [];
   return [...props.tagStore.tags].sort((a, b) => a.name.localeCompare(b.name));
 });
 
+// モーダルの表示/非表示の処理
 watch(
   () => props.show,
   (newVal) => {
     isOpen.value = newVal;
-  }
+    if (newVal) {
+      // モーダルが開いたときにローカル変数を初期化
+      localName.value = props.newTagName || "";
+      localColor.value = props.newTagColor || "#3b82f6";
+    }
+  },
+  { immediate: true }
 );
 
+// モーダルが閉じられたときの処理
 watch(isOpen, (newVal) => {
   emit("update:show", newVal);
   if (!newVal) {
+    // クリーンアップ
     emit("close");
     cancelEditing();
     isCreatingNewTag.value = false;
   }
 });
 
-watch(
-  () => props.newTagName,
-  (newVal) => {
-    localName.value = newVal || "";
-  }
-);
+// 入力値の変更をプロパゲート (デバウンス処理を追加)
+const updateNewTagValues = useDebounceFn(() => {
+  emit("updateNewTagName", localName.value);
+  emit("updateNewTagColor", localColor.value);
+}, 200);
 
-watch(
-  () => props.newTagColor,
-  (newVal) => {
-    localColor.value = newVal || "#3b82f6";
-  }
-);
+// ローカル名前/色の変更を監視して親コンポーネントに通知
+watch([localName, localColor], updateNewTagValues);
 
-watch(localName, (newVal) => {
-  emit("updateNewTagName", newVal);
-});
-
-watch(localColor, (newVal) => {
-  emit("updateNewTagColor", newVal);
-});
-
-const handleAddTag = () => {
+// 新しいタグを追加
+const handleAddTag = async () => {
   if (localName.value.trim() === "") return;
+
   emit("addTag");
+
+  // 状態をリセット
+  await nextTick();
   isCreatingNewTag.value = false;
+  localName.value = "";
+  localColor.value = "#3b82f6";
 };
 
+// 新規タグ追加をキャンセル
+const cancelNewTag = () => {
+  isCreatingNewTag.value = false;
+  localName.value = "";
+  localColor.value = "#3b82f6";
+};
+
+// タグ編集開始
 const startEditing = (tag: Tag) => {
+  // 既存の編集をキャンセル
+  cancelEditing();
+
+  // 新しいタグの作成をキャンセル
+  isCreatingNewTag.value = false;
+
+  // 編集モードを開始
   isEditing.value = true;
   editingTagId.value = tag.id;
   editName.value = tag.name;
   editColor.value = tag.color || "#3b82f6";
-  isCreatingNewTag.value = false;
 };
 
+// 編集をキャンセル
 const cancelEditing = () => {
   isEditing.value = false;
   editingTagId.value = null;
@@ -292,25 +310,28 @@ const cancelEditing = () => {
   editColor.value = "#3b82f6";
 };
 
-const handleUpdateTag = () => {
-  if (editingTagId.value && editName.value.trim() !== "") {
-    emit("updateTag", {
-      id: editingTagId.value,
-      name: editName.value,
-      color: editColor.value,
-    });
-    cancelEditing();
-  }
+// タグ更新を処理
+const handleUpdateTag = async () => {
+  if (!editingTagId.value || !editName.value.trim()) return;
+
+  // 親コンポーネントに通知
+  emit("updateTag", {
+    id: editingTagId.value,
+    name: editName.value,
+    color: editColor.value,
+  });
+
+  // 編集モードを終了
+  await nextTick();
+  cancelEditing();
 };
 
-const selectColor = (color: string) => {
-  localColor.value = color;
-};
-
+// タグ削除の確認
 const confirmDeleteTag = (tagId: string) => {
   emit("deleteTag", tagId);
 };
 
+// モーダルを閉じる
 const closeModal = () => {
   isOpen.value = false;
 };
