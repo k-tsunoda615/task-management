@@ -515,6 +515,23 @@
       @close="showDeleteConfirmModal = false"
       @delete="deleteCurrentTodo"
     />
+
+    <div
+      :class="[
+        'fixed bottom-6 right-4 z-50 md:hidden',
+        isMobile ? 'block' : 'hidden',
+      ]"
+    >
+      <UButton
+        color="primary"
+        variant="solid"
+        size="lg"
+        class="rounded-full shadow"
+        @click="openNewTaskModal"
+      >
+        <UIcon name="i-heroicons-plus-circle" class="w-8 h-8" />
+      </UButton>
+    </div>
   </div>
 </template>
 
@@ -538,6 +555,7 @@ import {
   TASK_STATUS_LABELS,
 } from "../../utils/constants";
 import type { TaskStatus } from "../../utils/constants";
+import { ref, onMounted, onUnmounted } from "vue";
 
 const todoStore = useTodoStore();
 const tagStore = useTagStore();
@@ -815,6 +833,17 @@ watch(
   },
   { deep: true }
 );
+
+const isMobile = ref(false);
+const checkMobile = () => {
+  isMobile.value = window.matchMedia("(max-width: 767px)").matches;
+};
+checkMobile();
+window.addEventListener("resize", checkMobile);
+onUnmounted(() => {
+  window.removeEventListener("resize", checkMobile);
+});
+defineExpose({ isMobile });
 
 // コンポーネントがマウントされたときの処理
 onMounted(() => {
@@ -1543,5 +1572,15 @@ const statusOptions = computed(() => {
 .chosen-item {
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
   z-index: 10;
+}
+
+.fixed-bottom-fab {
+  position: fixed;
+  bottom: 1rem;
+  left: 0;
+  width: 100vw;
+  display: flex;
+  justify-content: center;
+  z-index: 50;
 }
 </style>
