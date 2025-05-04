@@ -79,6 +79,17 @@
             'mt-14': isMobile,
           }"
         >
+          <!-- 匿名ユーåザー向け注意バナー -->
+          <div
+            v-if="showAnonymousBanner && user?.is_anonymous"
+            class="anonymous-warning"
+          >
+            <span class="close-btn" @click="showAnonymousBanner = false"
+              >&times;</span
+            >
+            ゲスト（匿名）ユーザーとして利用中です。データは一定期間で自動削除されます。<br />
+            データを永続的に保存したい場合は、アカウント登録をご検討ください。
+          </div>
           <slot />
         </main>
       </div>
@@ -95,8 +106,9 @@
 
 <script setup lang="ts">
 import TheSidebar from "../components/sidebar/TheSidebar.vue";
+import { useAuth } from "../composables/useAuth";
 
-const user = useSupabaseUser();
+const { user } = useAuth();
 const loading = useState("auth-loading", () => true);
 const initialized = ref(false);
 
@@ -107,16 +119,13 @@ const isMobileMenuOpen = ref(false);
 // モバイル判定
 const isMobile = ref(false);
 
-onMounted(() => {
-  // クライアントサイドでのみ実行
-  const checkAuth = async () => {
-    const client = useSupabaseClient();
-    const { data } = await client.auth.getSession();
-    loading.value = false;
-    initialized.value = true;
-  };
+// 匿名ユーザー向けバナーの表示状態
+const showAnonymousBanner = ref(true);
 
-  checkAuth();
+onMounted(() => {
+  // 初期化完了を通知
+  loading.value = false;
+  initialized.value = true;
 
   // サイドバーの状態を初期化
   const savedState = localStorage.getItem("sidebarOpen");
@@ -138,3 +147,24 @@ onMounted(() => {
   window.addEventListener("resize", checkMobile);
 });
 </script>
+
+<style>
+.anonymous-warning {
+  background: #fff3cd;
+  color: #856404;
+  padding: 1em 2em 1em 1em;
+  border: 1px solid #ffeeba;
+  border-radius: 4px;
+  margin: 1em 0;
+  text-align: center;
+  position: relative;
+}
+.close-btn {
+  position: absolute;
+  right: 1em;
+  top: 0.7em;
+  font-size: 1.2em;
+  cursor: pointer;
+  color: #856404;
+}
+</style>

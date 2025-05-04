@@ -27,12 +27,5 @@ export default defineNuxtConfig({
     },
   },
 
-  runtimeConfig: {
-    public: {
-      supabaseUrl: process.env.NUXT_SUPABASE_URL,
-      supabaseKey: process.env.NUXT_SUPABASE_ANON_KEY,
-    },
-  },
-
   compatibilityDate: "2025-04-12",
 });
