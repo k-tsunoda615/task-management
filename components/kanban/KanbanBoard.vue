@@ -54,23 +54,31 @@
       <div :class="getPriorityClass()">
         <div
           class="rounded-lg bg-gray-50/50 border border-gray-100 p-4 h-full flex flex-col"
+          :class="{
+            [STATUS_COLORS[TASK_STATUS.PRIORITY].bg]: true,
+            [STATUS_COLORS[TASK_STATUS.PRIORITY].border]: true,
+          }"
         >
           <h2 class="mb-4 font-medium text-gray-900 flex items-center gap-2">
-            <UIcon name="i-heroicons-inbox" class="w-5 h-5 text-gray-500" />
-            Priority
+            <UIcon
+              :name="STATUS_COLORS[TASK_STATUS.PRIORITY].iconName"
+              class="w-5 h-5"
+              :class="STATUS_COLORS[TASK_STATUS.PRIORITY].icon"
+            />
+            {{ TASK_STATUS_LABELS[TASK_STATUS.PRIORITY] }}
           </h2>
           <div class="flex-1 min-h-[300px]">
             <draggable
-              v-model="todosByStatus.todo"
+              v-model="todosByStatus[TASK_STATUS.PRIORITY]"
               :group="{ name: 'todos' }"
               item-key="id"
               class="h-full min-h-[inherit] space-y-3"
-              data-status="todo"
+              :data-status="TASK_STATUS.PRIORITY"
               :animation="200"
               ghost-class="opacity-50"
               :class="{
                 'border-2 border-dashed border-gray-200 rounded-lg p-4':
-                  todosByStatus.todo.length === 0,
+                  todosByStatus[TASK_STATUS.PRIORITY].length === 0,
               }"
               @change="handleDragChange"
               @start="handleDragStart"
@@ -88,7 +96,7 @@
               </template>
               <template #footer>
                 <div
-                  v-if="todosByStatus.todo.length === 0"
+                  v-if="todosByStatus[TASK_STATUS.PRIORITY].length === 0"
                   class="text-gray-500 text-sm text-center"
                 >
                   タスクがありません
@@ -101,17 +109,27 @@
 
       <!-- Next Up -->
       <div :class="getNextUpClass()">
-        <div class="rounded-lg bg-blue-50/50 border border-blue-100 p-4 h-full">
+        <div
+          class="rounded-lg p-4 h-full"
+          :class="{
+            [STATUS_COLORS[TASK_STATUS.NEXT].bg]: true,
+            [STATUS_COLORS[TASK_STATUS.NEXT].border]: true,
+          }"
+        >
           <h2 class="mb-4 font-medium text-gray-900 flex items-center gap-2">
-            <UIcon name="i-heroicons-clock" class="w-5 h-5 text-blue-500" />
-            Next Up
+            <UIcon
+              :name="STATUS_COLORS[TASK_STATUS.NEXT].iconName"
+              class="w-5 h-5"
+              :class="STATUS_COLORS[TASK_STATUS.NEXT].icon"
+            />
+            {{ TASK_STATUS_LABELS[TASK_STATUS.NEXT] }}
           </h2>
           <draggable
-            v-model="todosByStatus.inProgress"
+            v-model="todosByStatus[TASK_STATUS.NEXT]"
             :group="{ name: 'todos' }"
             item-key="id"
             class="space-y-3"
-            data-status="inProgress"
+            :data-status="TASK_STATUS.NEXT"
             :animation="200"
             ghost-class="opacity-50"
             @change="handleDragChange"
@@ -128,7 +146,7 @@
             </template>
           </draggable>
           <div
-            v-if="todosByStatus.inProgress.length === 0"
+            v-if="todosByStatus[TASK_STATUS.NEXT].length === 0"
             class="text-gray-500 text-sm text-center mt-2"
           >
             タスクがありません
@@ -140,17 +158,27 @@
     <!-- モバイル表示: 1カラムレイアウト -->
     <div class="block md:hidden space-y-4">
       <!-- Priority -->
-      <div class="rounded-lg bg-gray-50/50 border border-gray-100 p-4">
+      <div
+        class="rounded-lg p-4"
+        :class="{
+          [STATUS_COLORS[TASK_STATUS.PRIORITY].bg]: true,
+          [STATUS_COLORS[TASK_STATUS.PRIORITY].border]: true,
+        }"
+      >
         <h2 class="mb-4 font-medium text-gray-900 flex items-center gap-2">
-          <UIcon name="i-heroicons-inbox" class="w-5 h-5 text-gray-500" />
-          Priority
+          <UIcon
+            :name="STATUS_COLORS[TASK_STATUS.PRIORITY].iconName"
+            class="w-5 h-5"
+            :class="STATUS_COLORS[TASK_STATUS.PRIORITY].icon"
+          />
+          {{ TASK_STATUS_LABELS[TASK_STATUS.PRIORITY] }}
         </h2>
         <draggable
-          v-model="todosByStatus.todo"
+          v-model="todosByStatus[TASK_STATUS.PRIORITY]"
           :group="{ name: 'todos' }"
           item-key="id"
           class="space-y-3"
-          data-status="todo"
+          :data-status="TASK_STATUS.PRIORITY"
           :animation="200"
           ghost-class="opacity-50"
           @change="handleDragChange"
@@ -169,7 +197,7 @@
           </template>
         </draggable>
         <div
-          v-if="todosByStatus.todo.length === 0"
+          v-if="todosByStatus[TASK_STATUS.PRIORITY].length === 0"
           class="text-gray-500 text-sm text-center mt-2"
         >
           タスクがありません
@@ -177,17 +205,27 @@
       </div>
 
       <!-- Next Up -->
-      <div class="rounded-lg bg-blue-50/50 border border-blue-100 p-4">
+      <div
+        class="rounded-lg p-4"
+        :class="{
+          [STATUS_COLORS[TASK_STATUS.NEXT].bg]: true,
+          [STATUS_COLORS[TASK_STATUS.NEXT].border]: true,
+        }"
+      >
         <h2 class="mb-4 font-medium text-gray-900 flex items-center gap-2">
-          <UIcon name="i-heroicons-clock" class="w-5 h-5 text-blue-500" />
-          Next Up
+          <UIcon
+            :name="STATUS_COLORS[TASK_STATUS.NEXT].iconName"
+            class="w-5 h-5"
+            :class="STATUS_COLORS[TASK_STATUS.NEXT].icon"
+          />
+          {{ TASK_STATUS_LABELS[TASK_STATUS.NEXT] }}
         </h2>
         <draggable
-          v-model="todosByStatus.inProgress"
+          v-model="todosByStatus[TASK_STATUS.NEXT]"
           :group="{ name: 'todos' }"
           item-key="id"
           class="space-y-3"
-          data-status="inProgress"
+          :data-status="TASK_STATUS.NEXT"
           :animation="200"
           ghost-class="opacity-50"
           @change="handleDragChange"
@@ -204,7 +242,7 @@
           </template>
         </draggable>
         <div
-          v-if="todosByStatus.inProgress.length === 0"
+          v-if="todosByStatus[TASK_STATUS.NEXT].length === 0"
           class="text-gray-500 text-sm text-center mt-2"
         >
           タスクがありません
@@ -213,17 +251,27 @@
     </div>
 
     <!-- PC/モバイル共通: 下段：Archived -->
-    <div class="rounded-lg bg-green-50/50 border border-green-100 p-4 mt-4">
+    <div
+      class="rounded-lg p-4 mt-4"
+      :class="{
+        [STATUS_COLORS[TASK_STATUS.ARCHIVED].bg]: true,
+        [STATUS_COLORS[TASK_STATUS.ARCHIVED].border]: true,
+      }"
+    >
       <h2 class="mb-4 font-medium text-gray-900 flex items-center gap-2">
-        <UIcon name="i-heroicons-check-circle" class="w-5 h-5 text-green-500" />
-        Archived
+        <UIcon
+          :name="STATUS_COLORS[TASK_STATUS.ARCHIVED].iconName"
+          class="w-5 h-5"
+          :class="STATUS_COLORS[TASK_STATUS.ARCHIVED].icon"
+        />
+        {{ TASK_STATUS_LABELS[TASK_STATUS.ARCHIVED] }}
       </h2>
       <draggable
-        v-model="todosByStatus.done"
+        v-model="todosByStatus[TASK_STATUS.ARCHIVED]"
         :group="{ name: 'todos' }"
         item-key="id"
         class="space-y-3"
-        data-status="done"
+        :data-status="TASK_STATUS.ARCHIVED"
         :animation="200"
         ghost-class="opacity-50"
         @change="handleDragChange"
@@ -240,7 +288,7 @@
         </template>
       </draggable>
       <div
-        v-if="todosByStatus.done.length === 0"
+        v-if="todosByStatus[TASK_STATUS.ARCHIVED].length === 0"
         class="text-gray-500 text-sm text-center mt-2"
       >
         タスクがありません
@@ -318,14 +366,7 @@
           </UFormGroup>
           <div class="flex gap-4">
             <UFormGroup label="ステータス" class="flex-1">
-              <USelect
-                v-model="editingTodo.status"
-                :options="[
-                  { label: 'Priority', value: '未対応' },
-                  { label: 'Next', value: '対応中' },
-                  { label: 'Archived', value: '完了' },
-                ]"
-              />
+              <USelect v-model="editingTodo.status" :options="statusOptions" />
             </UFormGroup>
             <UFormGroup class="flex-1">
               <UCheckbox v-model="editingTodo.is_private" label="Private" />
@@ -466,14 +507,15 @@ import type { Todo, Tag } from "../../types/todo";
 import TheSidebar from "../../components/sidebar/TheSidebar.vue";
 import TaskCreateModal from "../modals/TaskCreateModal.vue";
 import DeleteConfirmModal from "../modals/DeleteConfirmModal.vue";
-import {
-  // formatTime,
-  // parseTimeToSeconds,
-  validateTimeInput as validateTimeInputUtil,
-} from "../../utils/time";
-// import { darkenColor } from "../../utils/color";
+import { validateTimeInput as validateTimeInputUtil } from "../../utils/time";
 import { useTaskTimer } from "../../composables/useTaskTimer";
-// import TodoCard from "./TodoCard.vue";
+import {
+  TASK_STATUS,
+  STATUS_COLORS,
+  STATUS_ORDER,
+  TASK_STATUS_LABELS,
+} from "../../utils/constants";
+import type { TaskStatus } from "../../utils/constants";
 
 const todoStore = useTodoStore();
 const tagStore = useTagStore();
@@ -512,7 +554,7 @@ const openNewTaskModal = () => {
 const newTodo = ref({
   title: "",
   memo: "",
-  status: "未対応",
+  status: TASK_STATUS.PRIORITY,
   is_private: false,
   total_time: 0,
   is_timing: false,
@@ -523,7 +565,7 @@ const editingTodo = ref({
   id: "",
   title: "",
   memo: "",
-  status: "未対応",
+  status: TASK_STATUS.PRIORITY,
   is_private: false,
   total_time: 0,
   is_timing: false,
@@ -615,11 +657,11 @@ const reverseStatusMap = {
   done: "完了",
 };
 
-// ステータス別のTodoを管理するreactiveな状態
+// ステータス別のTodoを管理するreactiveな状態（新構造）
 const todosByStatus = reactive({
-  todo: [] as Todo[],
-  inProgress: [] as Todo[],
-  done: [] as Todo[],
+  [TASK_STATUS.PRIORITY]: [] as Todo[],
+  [TASK_STATUS.NEXT]: [] as Todo[],
+  [TASK_STATUS.ARCHIVED]: [] as Todo[],
 });
 
 // 更新中フラグ
@@ -655,33 +697,33 @@ const updateTodosByStatus = () => {
   if (isDragging.value) return;
 
   // 一旦クリア
-  todosByStatus.todo = [];
-  todosByStatus.inProgress = [];
-  todosByStatus.done = [];
+  todosByStatus[TASK_STATUS.PRIORITY] = [];
+  todosByStatus[TASK_STATUS.NEXT] = [];
+  todosByStatus[TASK_STATUS.ARCHIVED] = [];
 
   // 再分類
   todoStore.filteredTodos.forEach((todo: Todo) => {
-    if (todo.status === "未対応") {
-      todosByStatus.todo.push(todo);
-    } else if (todo.status === "対応中") {
-      todosByStatus.inProgress.push(todo);
-    } else if (todo.status === "完了") {
-      todosByStatus.done.push(todo);
+    if (todo.status === TASK_STATUS.PRIORITY) {
+      todosByStatus[TASK_STATUS.PRIORITY].push(todo);
+    } else if (todo.status === TASK_STATUS.NEXT) {
+      todosByStatus[TASK_STATUS.NEXT].push(todo);
+    } else if (todo.status === TASK_STATUS.ARCHIVED) {
+      todosByStatus[TASK_STATUS.ARCHIVED].push(todo);
     } else {
-      // デフォルトは未対応に入れる
+      // デフォルトはPriorityに入れる
       console.log(`不明なステータス "${todo.status}" のTodoがあります:`, todo);
-      todosByStatus.todo.push(todo);
+      todosByStatus[TASK_STATUS.PRIORITY].push(todo);
     }
   });
 
   // 各リストをsort_orderでソート
-  todosByStatus.todo.sort(
+  todosByStatus[TASK_STATUS.PRIORITY].sort(
     (a: Todo, b: Todo) => (a.sort_order || 0) - (b.sort_order || 0)
   );
-  todosByStatus.inProgress.sort(
+  todosByStatus[TASK_STATUS.NEXT].sort(
     (a: Todo, b: Todo) => (a.sort_order || 0) - (b.sort_order || 0)
   );
-  todosByStatus.done.sort(
+  todosByStatus[TASK_STATUS.ARCHIVED].sort(
     (a: Todo, b: Todo) => (a.sort_order || 0) - (b.sort_order || 0)
   );
 
@@ -781,7 +823,10 @@ onMounted(() => {
     { id: "1", title: "テストタスク", status: "未対応", tags: [] },
   ];
   updateTodosByStatus();
-  console.log("[テスト] todosByStatus.todo:", todosByStatus.todo);
+  console.log(
+    "[テスト] todosByStatus.todo:",
+    todosByStatus[TASK_STATUS.PRIORITY]
+  );
 
   // ゴミ箱へのドロップイベントを監視
   trashEventBus.on((todoId) => {
@@ -844,7 +889,7 @@ const createTodo = async () => {
     newTodo.value = {
       title: "",
       memo: "",
-      status: "未対応",
+      status: TASK_STATUS.PRIORITY,
       is_private: false,
       total_time: 0,
       is_timing: false,
@@ -890,7 +935,7 @@ const updateTodo = async () => {
   }
 };
 
-// ドラッグ&ドロップ時の処理
+// ドラッグ&ドロップ時の処理を更新
 const handleDragChange = async (evt: any) => {
   console.log("ドラッグイベント:", evt); // デバッグ用
 
@@ -905,45 +950,35 @@ const handleDragChange = async (evt: any) => {
   const newIndex = evt[dragType].newIndex;
 
   // 移動先のリストを特定
-  let newStatus = "todo"; // デフォルト値
-  let targetList = todosByStatus.todo;
+  let newStatus = TASK_STATUS.PRIORITY; // デフォルト値
+  let targetList = todosByStatus[TASK_STATUS.PRIORITY];
 
   if (evt.added) {
     // 追加された場合は、追加先のインデックスから判断
-    if (todosByStatus.inProgress.find((t: Todo) => t.id === todo.id)) {
-      newStatus = "inProgress";
-      targetList = todosByStatus.inProgress;
-    } else if (todosByStatus.done.find((t: Todo) => t.id === todo.id)) {
-      newStatus = "done";
-      targetList = todosByStatus.done;
+    if (todosByStatus[TASK_STATUS.NEXT].find((t: Todo) => t.id === todo.id)) {
+      newStatus = TASK_STATUS.NEXT;
+      targetList = todosByStatus[TASK_STATUS.NEXT];
+    } else if (
+      todosByStatus[TASK_STATUS.ARCHIVED].find((t: Todo) => t.id === todo.id)
+    ) {
+      newStatus = TASK_STATUS.ARCHIVED;
+      targetList = todosByStatus[TASK_STATUS.ARCHIVED];
     }
   } else if (evt.moved) {
     // 移動の場合は、移動先のリストから判断
-    if (todosByStatus.inProgress.find((t: Todo) => t.id === todo.id)) {
-      newStatus = "inProgress";
-      targetList = todosByStatus.inProgress;
-    } else if (todosByStatus.done.find((t: Todo) => t.id === todo.id)) {
-      newStatus = "done";
-      targetList = todosByStatus.done;
+    if (todosByStatus[TASK_STATUS.NEXT].find((t: Todo) => t.id === todo.id)) {
+      newStatus = TASK_STATUS.NEXT;
+      targetList = todosByStatus[TASK_STATUS.NEXT];
+    } else if (
+      todosByStatus[TASK_STATUS.ARCHIVED].find((t: Todo) => t.id === todo.id)
+    ) {
+      newStatus = TASK_STATUS.ARCHIVED;
+      targetList = todosByStatus[TASK_STATUS.ARCHIVED];
     }
   }
 
   if (!todo || !newStatus) {
     console.error("必要な情報が見つかりません", { todo, newStatus, evt });
-    isDragging.value = false;
-    return;
-  }
-
-  // ステータスマッピング
-  const statusMapping = {
-    todo: "未対応",
-    inProgress: "対応中",
-    done: "完了",
-  };
-
-  const mappedStatus = statusMapping[newStatus as keyof typeof statusMapping];
-  if (!mappedStatus) {
-    console.error("不正なステータス:", newStatus);
     isDragging.value = false;
     return;
   }
@@ -960,8 +995,8 @@ const handleDragChange = async (evt: any) => {
   });
 
   // 対象のTodoのステータスと順序を更新
-  if (todo.status !== mappedStatus) {
-    todo.status = mappedStatus;
+  if (todo.status !== newStatus) {
+    todo.status = newStatus;
   }
 
   // 現在のTodoの順序を設定
@@ -993,7 +1028,7 @@ const handleDragChange = async (evt: any) => {
       id: todo.id,
       title: todo.title,
       memo: todo.memo,
-      status: mappedStatus,
+      status: newStatus,
       sort_order: currentSortOrder,
     });
 
@@ -1139,9 +1174,9 @@ const updateTimingTodoInLists = (
     }
   };
 
-  updateInList(todosByStatus.todo);
-  updateInList(todosByStatus.inProgress);
-  updateInList(todosByStatus.done);
+  updateInList(todosByStatus[TASK_STATUS.PRIORITY]);
+  updateInList(todosByStatus[TASK_STATUS.NEXT]);
+  updateInList(todosByStatus[TASK_STATUS.ARCHIVED]);
 };
 
 // バックグラウンドでタイマー情報を更新
@@ -1320,6 +1355,14 @@ const toggleTagOnNewTodo = (tag: Tag) => {
     newTodo.value.tags.push(tag);
   }
 };
+
+// ステータス選択肢のコンピューティッドプロパティを追加
+const statusOptions = computed(() => {
+  return Object.entries(TASK_STATUS_LABELS).map(([value, label]) => ({
+    value,
+    label,
+  }));
+});
 </script>
 
 <style scoped>

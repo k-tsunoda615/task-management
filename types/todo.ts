@@ -1,3 +1,5 @@
+import type { TaskStatus } from "../utils/constants";
+
 export type Tag = {
   id: string;
   name: string;
@@ -7,7 +9,7 @@ export type Tag = {
 export type Todo = {
   id: string;
   title: string;
-  status: string;
+  status: TaskStatus;
   task_id?: string;
   memo?: string;
   sort_order?: number;

@@ -100,13 +100,14 @@
 import { useTodoStore } from "../../stores/todo";
 import { marked } from "marked";
 import type { PropType } from "vue";
+import type { TaskStatus } from "../../utils/constants";
 
 const props = defineProps({
   todo: {
     type: Object as PropType<{
       id: string;
       title: string;
-      status: string;
+      status: TaskStatus;
       memo?: string;
       task_id?: string;
       is_private?: boolean;

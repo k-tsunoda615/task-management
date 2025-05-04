@@ -25,11 +25,7 @@
           <USelect
             :model-value="newTodo?.status"
             @update:model-value="$emit('update:newTodoStatus', $event)"
-            :options="[
-              { label: 'Priority', value: '未対応' },
-              { label: 'Next Up', value: '対応中' },
-              { label: 'Archived', value: '完了' },
-            ]"
+            :options="statusOptions"
           />
         </UFormGroup>
         <UFormGroup>
@@ -113,6 +109,8 @@
 
 <script setup lang="ts">
 import type { Tag } from "../../types/todo";
+import { TASK_STATUS_LABELS } from "../../utils/constants";
+import { computed } from "vue";
 
 defineProps({
   show: Boolean,
@@ -136,4 +134,12 @@ defineEmits([
   "update:newTodoStatus",
   "update:newTodoIsPrivate",
 ]);
+
+// ステータス選択用のオプション
+const statusOptions = computed(() => {
+  return Object.entries(TASK_STATUS_LABELS).map(([value, label]) => ({
+    value,
+    label,
+  }));
+});
 </script>
