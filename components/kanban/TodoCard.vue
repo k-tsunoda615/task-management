@@ -2,6 +2,8 @@
   <div
     class="group bg-white border border-gray-200 rounded-lg p-4 hover:shadow-md transition-all duration-200 relative"
     draggable="true"
+    :data-status="todo.status"
+    :data-todo-id="todo.id"
     @dragstart="handleDragStart"
   >
     <div class="flex items-start">

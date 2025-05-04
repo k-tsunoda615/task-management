@@ -70,12 +70,15 @@
           <div class="flex-1 min-h-[300px]">
             <draggable
               v-model="todosByStatus[TASK_STATUS.PRIORITY]"
-              :group="{ name: 'todos' }"
+              :group="{ name: 'todos', pull: true, put: true }"
               item-key="id"
               class="h-full min-h-[inherit] space-y-3"
-              :data-status="TASK_STATUS.PRIORITY"
+              data-status="priority"
               :animation="200"
               ghost-class="ghost-card"
+              drag-class="drag-item"
+              chosen-class="chosen-item"
+              :key="'priority-container'"
               :class="{
                 'border-2 border-dashed border-gray-200 rounded-lg p-4':
                   todosByStatus[TASK_STATUS.PRIORITY].length === 0,
@@ -126,12 +129,15 @@
           </h2>
           <draggable
             v-model="todosByStatus[TASK_STATUS.NEXT]"
-            :group="{ name: 'todos' }"
+            :group="{ name: 'todos', pull: true, put: true }"
             item-key="id"
             class="space-y-3"
-            :data-status="TASK_STATUS.NEXT"
+            data-status="next"
             :animation="200"
             ghost-class="ghost-card"
+            drag-class="drag-item"
+            chosen-class="chosen-item"
+            :key="'next-container'"
             @change="handleDragChange"
             @start="handleDragStart"
             @end="handleDragEnd"
@@ -177,12 +183,15 @@
         </h2>
         <draggable
           v-model="todosByStatus[TASK_STATUS.PRIORITY]"
-          :group="{ name: 'todos' }"
+          :group="{ name: 'todos', pull: true, put: true }"
           item-key="id"
           class="space-y-3"
-          :data-status="TASK_STATUS.PRIORITY"
+          data-status="priority"
           :animation="200"
           ghost-class="ghost-card"
+          drag-class="drag-item"
+          chosen-class="chosen-item"
+          :key="'priority-container'"
           @change="handleDragChange"
           @start="handleDragStart"
           @end="handleDragEnd"
@@ -224,12 +233,15 @@
         </h2>
         <draggable
           v-model="todosByStatus[TASK_STATUS.NEXT]"
-          :group="{ name: 'todos' }"
+          :group="{ name: 'todos', pull: true, put: true }"
           item-key="id"
           class="space-y-3"
-          :data-status="TASK_STATUS.NEXT"
+          data-status="next"
           :animation="200"
           ghost-class="ghost-card"
+          drag-class="drag-item"
+          chosen-class="chosen-item"
+          :key="'next-container'"
           @change="handleDragChange"
           @start="handleDragStart"
           @end="handleDragEnd"
@@ -272,12 +284,15 @@
       </h2>
       <draggable
         v-model="todosByStatus[TASK_STATUS.ARCHIVED]"
-        :group="{ name: 'todos' }"
+        :group="{ name: 'todos', pull: true, put: true }"
         item-key="id"
         class="space-y-3"
-        :data-status="TASK_STATUS.ARCHIVED"
+        data-status="archived"
         :animation="200"
         ghost-class="ghost-card"
+        drag-class="drag-item"
+        chosen-class="chosen-item"
+        :key="'archived-container'"
         @change="handleDragChange"
         @start="handleDragStart"
         @end="handleDragEnd"
@@ -983,32 +998,65 @@ const handleDragChange = async (evt: any) => {
   const newIndex = evt[dragType].newIndex;
 
   // 移動先のリストを特定
-  let newStatus: string = "";
+  let newStatus: TaskStatus = TASK_STATUS.PRIORITY; // デフォルト値
   let targetList: Todo[] = [];
 
   try {
-    // 移動先のリストを特定するロジックを修正
+    // 複数の方法を組み合わせてステータスを特定する
     if (evt.added) {
       // 異なるリストへの移動の場合
-      const toElement = evt.to;
-      newStatus = toElement.getAttribute("data-status") || TASK_STATUS.PRIORITY;
-      console.log("移動先の要素:", toElement, "ステータス属性:", newStatus);
 
-      if (newStatus) {
-        targetList = todosByStatus[newStatus as keyof typeof todosByStatus];
-        console.log(`ステータス変更: ${todo.status} -> ${newStatus}`);
+      // 方法1: コンポーネント階層からステータスを特定
+      const toComponent = evt.to?.__vueParentComponent?.parent;
+      if (toComponent) {
+        const containerName = toComponent.vnode?.key || "";
 
-        // ステータスを更新
-        todo.status = newStatus as TaskStatus;
+        // コンテナ名からステータスを特定
+        if (containerName.includes("priority")) {
+          newStatus = TASK_STATUS.PRIORITY;
+        } else if (containerName.includes("next")) {
+          newStatus = TASK_STATUS.NEXT;
+        } else if (containerName.includes("archived")) {
+          newStatus = TASK_STATUS.ARCHIVED;
+        }
       }
-    } else if (evt.moved) {
-      // 同じリスト内の移動の場合
-      const fromElement = evt.from;
-      newStatus =
-        fromElement.getAttribute("data-status") || TASK_STATUS.PRIORITY;
-      console.log("移動元の要素:", fromElement, "ステータス属性:", newStatus);
 
-      targetList = todosByStatus[newStatus as keyof typeof todosByStatus];
+      // 方法2: data-status属性からステータスを特定 (フォールバック)
+      if (newStatus === TASK_STATUS.PRIORITY && evt.to) {
+        const dataStatus = evt.to.getAttribute("data-status");
+        if (dataStatus === "priority") {
+          newStatus = TASK_STATUS.PRIORITY;
+        } else if (dataStatus === "next") {
+          newStatus = TASK_STATUS.NEXT;
+        } else if (dataStatus === "archived") {
+          newStatus = TASK_STATUS.ARCHIVED;
+        }
+      }
+
+      // 方法3: リスト内のアイテム位置からステータスを特定 (さらなるフォールバック)
+      if (newStatus === TASK_STATUS.PRIORITY) {
+        if (todosByStatus[TASK_STATUS.PRIORITY].find((t) => t.id === todo.id)) {
+          newStatus = TASK_STATUS.PRIORITY;
+        } else if (
+          todosByStatus[TASK_STATUS.NEXT].find((t) => t.id === todo.id)
+        ) {
+          newStatus = TASK_STATUS.NEXT;
+        } else if (
+          todosByStatus[TASK_STATUS.ARCHIVED].find((t) => t.id === todo.id)
+        ) {
+          newStatus = TASK_STATUS.ARCHIVED;
+        }
+      }
+
+      console.log(`ステータス変更: ${todo.status} -> ${newStatus}`);
+
+      // 常にステータスを更新
+      todo.status = newStatus;
+      targetList = todosByStatus[newStatus];
+    } else if (evt.moved) {
+      // 同じリスト内の移動の場合は現在のステータスを使用
+      newStatus = todo.status;
+      targetList = todosByStatus[newStatus];
     }
 
     console.log(
@@ -1018,7 +1066,7 @@ const handleDragChange = async (evt: any) => {
       targetList
     );
 
-    if (!todo || !newStatus || !targetList) {
+    if (!todo || !targetList) {
       console.error("必要な情報が見つかりません", {
         todo,
         newStatus,
@@ -1054,18 +1102,17 @@ const handleDragChange = async (evt: any) => {
 
     // バックグラウンドで更新処理を実行
     try {
-      // 変更されたTodoの順序とステータスを更新
-      console.log("Todoを更新:", {
+      // 変更されたTodoのステータスと順序を更新
+      const updateData = {
         id: todo.id,
-        status: newStatus,
+        status: todo.status,
         sort_order: currentSortOrder,
-      });
+      };
 
-      await todoStore.updateTodo({
-        id: todo.id,
-        status: newStatus as TaskStatus,
-        sort_order: currentSortOrder,
-      });
+      console.log("Todoを更新:", updateData);
+
+      // 確実にステータスが更新されるようにする
+      await todoStore.updateTodo(updateData);
 
       // 他のTodoの順序を一括更新
       console.log(`${updatedTodos.length - 1}個のTodoの順序を更新`);
@@ -1127,6 +1174,28 @@ const handleDragChange = async (evt: any) => {
     isUpdatingRef.value = false;
     isDragging.value = false;
   }
+};
+
+// コンテナからステータスを抽出するヘルパー関数
+const extractStatusFromContainer = (container: any): TaskStatus => {
+  // コンテナのクラスやデータ属性などから判断
+  if (!container) return TASK_STATUS.PRIORITY;
+
+  const dataStatus = container.getAttribute?.("data-status");
+  if (dataStatus === "priority") return TASK_STATUS.PRIORITY;
+  if (dataStatus === "next") return TASK_STATUS.NEXT;
+  if (dataStatus === "archived") return TASK_STATUS.ARCHIVED;
+
+  // その他のプロパティからの判断
+  const classList = container.classList || [];
+  const classString = Array.from(classList).join(" ");
+
+  if (classString.includes("priority")) return TASK_STATUS.PRIORITY;
+  if (classString.includes("next")) return TASK_STATUS.NEXT;
+  if (classString.includes("archived")) return TASK_STATUS.ARCHIVED;
+
+  // デフォルト値
+  return TASK_STATUS.PRIORITY;
 };
 
 // タイミング開始
@@ -1441,10 +1510,21 @@ const statusOptions = computed(() => {
   overflow: hidden;
 }
 
-/* ドラッグゴースト用のスタイル */
+/* ドラッグ＆ドロップ関連のスタイル */
 .ghost-card {
   background-color: #f3f4f6;
   border: 1px dashed #d1d5db;
   opacity: 0.6;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+}
+
+.drag-item {
+  opacity: 0.8;
+  transform: rotate(2deg);
+}
+
+.chosen-item {
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  z-index: 10;
 }
 </style>

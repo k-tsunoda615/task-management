@@ -134,13 +134,35 @@ export const useTodoStore = defineStore("todo", {
 
       console.log("[updateTodo] 更新前のデータ:", todo);
 
+      // ステータスの検証と正規化
+      if (todo.status) {
+        // ステータスが有効か確認
+        const isValidStatus = Object.values(TASK_STATUS).includes(
+          todo.status as TaskStatus
+        );
+        if (!isValidStatus) {
+          console.warn(
+            `[updateTodo] 無効なステータス: ${todo.status}, デフォルト値に置き換えます`
+          );
+          todo.status = TASK_STATUS.PRIORITY;
+        }
+      }
+
       // データベースに保存する形式に変換
       let updateData = { ...todo };
       if (todo.status) {
         const { tags, ...rest } = updateData;
+
+        // ステータスの変換確認のログを追加
+        const originalStatus = todo.status;
+        const dbStatus = DB_STATUS_MAPPING[todo.status as TaskStatus];
+        console.log(
+          `[updateTodo] ステータス変換: ${originalStatus} -> ${dbStatus}`
+        );
+
         updateData = {
           ...rest,
-          status: DB_STATUS_MAPPING[todo.status as TaskStatus],
+          status: dbStatus,
         };
       } else {
         const { tags, ...rest } = updateData;
@@ -149,51 +171,74 @@ export const useTodoStore = defineStore("todo", {
 
       console.log("[updateTodo] データベースに送信するデータ:", updateData);
 
-      const { data, error } = await useSupabaseClient()
-        .from("todos")
-        .update(updateData)
-        .eq("id", todo.id)
-        .select();
-      if (error) {
-        console.error("[updateTodo] エラー:", error);
+      // データベースの更新処理
+      try {
+        const { data, error } = await useSupabaseClient()
+          .from("todos")
+          .update(updateData)
+          .eq("id", todo.id)
+          .select();
+
+        if (error) {
+          console.error("[updateTodo] エラー:", error);
+          throw error;
+        }
+
+        console.log("[updateTodo] 更新成功:", data);
+
+        // タグの更新処理
+        if (todo.tags) {
+          const client = useSupabaseClient();
+          await client.from("todo_tags").delete().eq("todo_id", todo.id);
+          if (todo.tags.length > 0) {
+            const todoTags = todo.tags.map((tag) => ({
+              todo_id: todo.id,
+              tag_id: tag.id,
+            }));
+            await client.from("todo_tags").insert(todoTags);
+          }
+        }
+
+        // ローカルストアの更新処理
+        // ステータス変更の場合は常に対象のTodoを更新
+        if (todo.status || todo.sort_order !== undefined) {
+          // ローカルのtodosも更新して一貫性を保つ
+          const index = this.todos.findIndex((t) => t.id === todo.id);
+          if (index !== -1) {
+            // 既存のTodoを更新
+            this.todos[index] = {
+              ...this.todos[index],
+              ...todo, // todoの値で上書き
+            };
+            console.log("[updateTodo] ローカルデータ更新:", this.todos[index]);
+            return data;
+          }
+        }
+        // 部分的なデータだけを更新する場合は、ローカルのtodosも更新
+        else if (!todo.tags && Object.keys(updateData).length < 5) {
+          // ローカルでのTodo更新（fetchTodosを呼ばずに）
+          const index = this.todos.findIndex((t) => t.id === todo.id);
+          if (index !== -1) {
+            // 既存のTodoを更新
+            this.todos[index] = {
+              ...this.todos[index],
+              ...todo,
+            };
+            console.log(
+              "[updateTodo] ローカルデータ更新（部分更新）:",
+              this.todos[index]
+            );
+            return data;
+          }
+        }
+
+        // 大規模な更新の場合は全データを再取得
+        await this.fetchTodos();
+        return data;
+      } catch (error) {
+        console.error("[updateTodo] 処理エラー:", error);
         throw error;
       }
-
-      console.log("[updateTodo] 更新成功:", data);
-
-      if (todo.tags) {
-        const client = useSupabaseClient();
-        await client.from("todo_tags").delete().eq("todo_id", todo.id);
-        if (todo.tags.length > 0) {
-          const todoTags = todo.tags.map((tag) => ({
-            todo_id: todo.id,
-            tag_id: tag.id,
-          }));
-          await client.from("todo_tags").insert(todoTags);
-        }
-      }
-
-      // 部分的なデータだけを更新する場合は、ローカルのtodosも更新
-      if (!todo.tags && Object.keys(updateData).length < 5) {
-        // ローカルでのTodo更新（fetchTodosを呼ばずに）
-        const index = this.todos.findIndex((t) => t.id === todo.id);
-        if (index !== -1) {
-          // 既存のTodoを更新
-          this.todos[index] = {
-            ...this.todos[index],
-            ...todo,
-          };
-          console.log(
-            "[updateTodo] ローカルデータ更新（部分更新）:",
-            this.todos[index]
-          );
-          return data;
-        }
-      }
-
-      // 大規模な更新の場合は全データを再取得
-      await this.fetchTodos();
-      return data;
     },
 
     async deleteTodo(id: string) {
