@@ -14,7 +14,9 @@
                 name="i-heroicons-plus-circle"
                 class="mr-2 text-blue-500 flex-shrink-0 mt-1"
               />
-              <span>「新しいタスク」ボタンからタスクを作成できます</span>
+              <span
+                >「新しいタスク」ボタンやサイドバーの「＋」からタスクを作成できます</span
+              >
             </li>
             <li class="flex items-start">
               <UIcon
@@ -29,7 +31,7 @@
                 class="mr-2 text-blue-500 flex-shrink-0 mt-1"
               />
               <span
-                >タスクをドラッグ＆ドロップで別のステータスに移動できます</span
+                >タスクをドラッグ＆ドロップで別のカラムやゴミ箱に移動できます</span
               >
             </li>
             <li class="flex items-start">
@@ -39,6 +41,83 @@
               />
               <span
                 >タスクをサイドバーのゴミ箱にドラッグすると削除できます（削除は元に戻せません）</span
+              >
+            </li>
+          </ul>
+        </div>
+
+        <!-- タイマー機能 -->
+        <div>
+          <h4 class="text-base font-medium border-b pb-1 mb-2">タイマー機能</h4>
+          <ul class="space-y-2 text-gray-600">
+            <li class="flex items-start">
+              <UIcon
+                name="i-heroicons-clock"
+                class="mr-2 text-blue-600 flex-shrink-0 mt-1"
+              />
+              <span
+                >タスクごとに作業時間を計測できます。タイマーは一時停止・再開が可能です。</span
+              >
+            </li>
+            <li class="flex items-start">
+              <UIcon
+                name="i-heroicons-eye"
+                class="mr-2 text-gray-500 flex-shrink-0 mt-1"
+              />
+              <span
+                >サイドバーの「タイマー表示」ボタンでタイマーの表示/非表示を切り替えられます。</span
+              >
+            </li>
+          </ul>
+        </div>
+
+        <!-- タグ管理・フィルタ -->
+        <div>
+          <h4 class="text-base font-medium border-b pb-1 mb-2">
+            タグ管理・フィルタ
+          </h4>
+          <ul class="space-y-2 text-gray-600">
+            <li class="flex items-start">
+              <UIcon
+                name="i-heroicons-tag"
+                class="mr-2 text-purple-500 flex-shrink-0 mt-1"
+              />
+              <span
+                >サイドバーの「タグ編集」からタグの追加・編集・削除ができます</span
+              >
+            </li>
+            <li class="flex items-start">
+              <UIcon
+                name="i-heroicons-filter"
+                class="mr-2 text-green-500 flex-shrink-0 mt-1"
+              />
+              <span
+                >サイドバーのフィルターボタンで「全て」「パブリック」「プライベート」タスクを切り替えられます</span
+              >
+            </li>
+            <li class="flex items-start">
+              <UIcon
+                name="i-heroicons-eye"
+                class="mr-2 text-gray-500 flex-shrink-0 mt-1"
+              />
+              <span>タグバーの表示/非表示もサイドバーから切り替え可能です</span>
+            </li>
+          </ul>
+        </div>
+
+        <!-- レイアウト切り替え -->
+        <div>
+          <h4 class="text-base font-medium border-b pb-1 mb-2">
+            レイアウト切り替え
+          </h4>
+          <ul class="space-y-2 text-gray-600">
+            <li class="flex items-start">
+              <UIcon
+                name="i-heroicons-view-columns"
+                class="mr-2 text-blue-500 flex-shrink-0 mt-1"
+              />
+              <span
+                >サイドバーの「レイアウト切り替え」ボタンでカンバンのカラム構成を変更できます</span
               >
             </li>
           </ul>
@@ -89,7 +168,6 @@
                     <h2 class="text-sm">見出し2</h2>
                   </td>
                 </tr>
-                <tr></tr>
                 <tr>
                   <td
                     class="py-2 pr-4 font-mono text-gray-600 border-b border-gray-200"
@@ -173,7 +251,9 @@
 
         <!-- 優先度管理 -->
         <div>
-          <h4 class="text-base font-medium border-b pb-1 mb-2">優先度管理</h4>
+          <h4 class="text-base font-medium border-b pb-1 mb-2">
+            優先度・カンバン管理
+          </h4>
           <ul class="space-y-2 text-gray-600">
             <li class="flex items-start">
               <UIcon
@@ -217,37 +297,10 @@
           </ul>
         </div>
 
-        <!-- プライベートタスク -->
-        <div>
-          <h4 class="text-base font-medium border-b pb-1 mb-2">
-            プライベートタスク
-          </h4>
-          <ul class="space-y-2 text-gray-600">
-            <li class="flex items-start">
-              <UIcon
-                name="i-heroicons-lock-closed"
-                class="mr-2 text-gray-700 flex-shrink-0 mt-1"
-              />
-              <div>
-                プライベートタスクは、タスク作成・編集時に「Private」チェックボックスをオンにすることで設定できます。
-              </div>
-            </li>
-            <li class="flex items-start">
-              <UIcon
-                name="i-heroicons-eye-slash"
-                class="mr-2 text-gray-700 flex-shrink-0 mt-1"
-              />
-              <div>
-                プライベートタスクはサイドバーのフィルターボタンで表示/非表示を切り替えられます。
-              </div>
-            </li>
-          </ul>
-        </div>
-
-        <!-- データ管理 -->
+        <!-- データ管理・注意事項 -->
         <div>
           <h4 class="text-base font-medium border-b pb-1 mb-2 text-red-600">
-            注意事項
+            注意事項・データ管理
           </h4>
           <ul class="space-y-2 text-gray-600">
             <li class="flex items-start">
@@ -268,6 +321,13 @@
               <div>
                 タスクの変更はリアルタイムで保存されます。ページを離れても作業内容は保持されます。
               </div>
+            </li>
+            <li class="flex items-start">
+              <UIcon
+                name="i-heroicons-information-circle"
+                class="mr-2 text-gray-500 flex-shrink-0 mt-1"
+              />
+              <div>タスク・タグの合計は最大100件までです。</div>
             </li>
           </ul>
         </div>
