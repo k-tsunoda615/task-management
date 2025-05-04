@@ -46,27 +46,6 @@
     <div v-if="user">
       <KanbanBoard />
     </div>
-    <div v-else>
-      <UAlert
-        title="ログインが必要です"
-        description="Task Boardを利用するにはログインしてください"
-        color="amber"
-      >
-        <template #icon>
-          <UIcon name="i-heroicons-exclamation-triangle" />
-        </template>
-        <template #description>
-          <p class="mt-2">
-            <NuxtLink
-              to="/auth"
-              class="text-amber-700 hover:text-amber-900 underline"
-            >
-              ログインページへ移動
-            </NuxtLink>
-          </p>
-        </template>
-      </UAlert>
-    </div>
 
     <!-- ヘルプモーダル -->
     <UModal v-model="showHelpModal">
