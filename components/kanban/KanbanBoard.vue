@@ -75,7 +75,7 @@
               class="h-full min-h-[inherit] space-y-3"
               :data-status="TASK_STATUS.PRIORITY"
               :animation="200"
-              ghost-class="opacity-50"
+              ghost-class="ghost-card opacity-50"
               :class="{
                 'border-2 border-dashed border-gray-200 rounded-lg p-4':
                   todosByStatus[TASK_STATUS.PRIORITY].length === 0,
@@ -131,7 +131,7 @@
             class="space-y-3"
             :data-status="TASK_STATUS.NEXT"
             :animation="200"
-            ghost-class="opacity-50"
+            ghost-class="ghost-card opacity-50"
             @change="handleDragChange"
           >
             <template #item="{ element }">
@@ -180,7 +180,7 @@
           class="space-y-3"
           :data-status="TASK_STATUS.PRIORITY"
           :animation="200"
-          ghost-class="opacity-50"
+          ghost-class="ghost-card opacity-50"
           @change="handleDragChange"
           @start="handleDragStart"
           @end="handleDragEnd"
@@ -227,7 +227,7 @@
           class="space-y-3"
           :data-status="TASK_STATUS.NEXT"
           :animation="200"
-          ghost-class="opacity-50"
+          ghost-class="ghost-card opacity-50"
           @change="handleDragChange"
         >
           <template #item="{ element }">
@@ -273,7 +273,7 @@
         class="space-y-3"
         :data-status="TASK_STATUS.ARCHIVED"
         :animation="200"
-        ghost-class="opacity-50"
+        ghost-class="ghost-card opacity-50"
         @change="handleDragChange"
       >
         <template #item="{ element }">
@@ -551,17 +551,38 @@ const openNewTaskModal = () => {
   showNewTaskModal.value = true;
 };
 
-const newTodo = ref({
+interface NewTodo {
+  title: string;
+  memo: string;
+  status: TaskStatus;
+  is_private: boolean;
+  total_time: number;
+  is_timing: boolean;
+  tags: Tag[];
+}
+
+interface EditingTodo {
+  id: string;
+  title: string;
+  memo: string;
+  status: TaskStatus;
+  is_private: boolean;
+  total_time: number;
+  is_timing: boolean;
+  tags: Tag[];
+}
+
+const newTodo = ref<NewTodo>({
   title: "",
   memo: "",
   status: TASK_STATUS.PRIORITY,
   is_private: false,
   total_time: 0,
   is_timing: false,
-  tags: [] as { id: string; name: string; color?: string }[],
+  tags: [] as Tag[],
 });
 
-const editingTodo = ref({
+const editingTodo = ref<EditingTodo>({
   id: "",
   title: "",
   memo: "",
@@ -569,7 +590,7 @@ const editingTodo = ref({
   is_private: false,
   total_time: 0,
   is_timing: false,
-  tags: [] as { id: string; name: string; color?: string }[],
+  tags: [] as Tag[],
 });
 
 // プレビュー用のマークダウンパース
@@ -662,7 +683,7 @@ const todosByStatus = reactive({
   [TASK_STATUS.PRIORITY]: [] as Todo[],
   [TASK_STATUS.NEXT]: [] as Todo[],
   [TASK_STATUS.ARCHIVED]: [] as Todo[],
-});
+} as Record<TaskStatus, Todo[]>);
 
 // 更新中フラグ
 const isUpdatingRef = ref(false);
@@ -818,9 +839,9 @@ onMounted(() => {
   fetchInitialData();
   updateTodosByStatus();
 
-  // テスト用ダミーデータを追加
+  // テスト用ダミーデータを追加（ステータスを新しい形式に合わせる）
   todoStore.todos = [
-    { id: "1", title: "テストタスク", status: "未対応", tags: [] },
+    { id: "1", title: "テストタスク", status: TASK_STATUS.PRIORITY, tags: [] },
   ];
   updateTodosByStatus();
   console.log(
@@ -852,9 +873,9 @@ const openEditModal = (todo: Todo) => {
     is_private: todo.is_private || false,
     total_time: extractTotalTime(todo.total_time),
     is_timing: todo.is_timing || false,
-    tags: todo.tags ? [...todo.tags] : [],
+    tags: todo.tags || [],
   };
-  editTimeInput.value = formatTime(extractTotalTime(todo.total_time));
+  editTimeInput.value = formatTime(editingTodo.value.total_time);
   showEditModal.value = true;
 };
 
@@ -862,16 +883,18 @@ const openEditModal = (todo: Todo) => {
 const createTodo = async () => {
   if (!newTodo.value.title) return;
   let minSortOrder = 0;
-  const statusKey =
-    statusMap[newTodo.value.status as keyof typeof statusMap] || "todo";
-  if (todosByStatus[statusKey as keyof typeof todosByStatus].length > 0) {
+
+  // 修正: statusMapを使わず、直接TASK_STATUSを使用する
+  const currentStatus = newTodo.value.status as TaskStatus;
+
+  // todosByStatus[currentStatus]が存在するかチェック
+  if (todosByStatus[currentStatus] && todosByStatus[currentStatus].length > 0) {
     minSortOrder =
       Math.min(
-        ...todosByStatus[statusKey as keyof typeof todosByStatus].map(
-          (t: Todo) => t.sort_order || 0
-        )
+        ...todosByStatus[currentStatus].map((t: Todo) => t.sort_order || 0)
       ) - 100;
   }
+
   const totalTimeSeconds = parseTimeToSeconds(timeInput.value);
   isCreating.value = true;
   try {
@@ -950,8 +973,9 @@ const handleDragChange = async (evt: any) => {
   const newIndex = evt[dragType].newIndex;
 
   // 移動先のリストを特定
-  let newStatus = TASK_STATUS.PRIORITY; // デフォルト値
-  let targetList = todosByStatus[TASK_STATUS.PRIORITY];
+  // string型のキーとして使用するため文字列リテラルとして扱う
+  let newStatus: string = TASK_STATUS.PRIORITY;
+  let targetList = todosByStatus[newStatus as keyof typeof todosByStatus];
 
   if (evt.added) {
     // 追加された場合は、追加先のインデックスから判断
@@ -996,7 +1020,7 @@ const handleDragChange = async (evt: any) => {
 
   // 対象のTodoのステータスと順序を更新
   if (todo.status !== newStatus) {
-    todo.status = newStatus;
+    todo.status = newStatus as TaskStatus;
   }
 
   // 現在のTodoの順序を設定
@@ -1028,7 +1052,7 @@ const handleDragChange = async (evt: any) => {
       id: todo.id,
       title: todo.title,
       memo: todo.memo,
-      status: newStatus,
+      status: newStatus as TaskStatus,
       sort_order: currentSortOrder,
     });
 
@@ -1385,5 +1409,12 @@ const statusOptions = computed(() => {
   opacity: 0;
   margin-bottom: 0;
   overflow: hidden;
+}
+
+/* ドラッグゴースト用のスタイル */
+.ghost-card {
+  background-color: #f3f4f6;
+  border: 1px dashed #d1d5db;
+  opacity: 0.6 !important;
 }
 </style>
