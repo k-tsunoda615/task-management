@@ -141,6 +141,40 @@ onMounted(async () => {
       if (isAnonymousUpgrade.value) {
         confirmationMessage.value =
           "メールアドレスが確認されました。パスワードを設定して本登録を完了してください。";
+
+        // 匿名ユーザーからのアップグレードの場合、自動的にメール確認
+        try {
+          const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || "";
+          if (supabaseUrl && user?.id) {
+            // セッションを取得
+            const { data: sessionData } = await client.auth.getSession();
+            const accessToken = sessionData?.session?.access_token;
+
+            // Edge Functionを呼び出してメールを自動確認
+            const response = await fetch(
+              `${supabaseUrl}/functions/v1/auto-confirm-email`,
+              {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                  Authorization: `Bearer ${accessToken}`,
+                },
+                body: JSON.stringify({ user_id: user.id }),
+              }
+            );
+
+            if (!response.ok) {
+              console.warn(
+                "メールの自動確認に失敗しました - ユーザーはメール確認が必要です"
+              );
+            } else {
+              console.log("メールが自動的に確認されました");
+            }
+          }
+        } catch (autoConfirmError) {
+          console.error("メール自動確認エラー:", autoConfirmError);
+          // 自動確認に失敗してもユーザー体験を中断しない
+        }
       }
     } else {
       error.value = "不明な確認タイプです。";
