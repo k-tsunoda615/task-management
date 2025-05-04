@@ -897,11 +897,8 @@ onMounted(() => {
       await todoStore.fetchTodos();
       await tagStore.fetchTags();
 
-      // サンプルデータが必要な場合は専用のcomposableを利用
-      const { useInitialSampleData } = await import(
-        "../../composables/useInitialSampleData"
-      );
-      await useInitialSampleData();
+      // サンプルデータの初期化はメインページで行うため、ここでは行わない
+      // 重複呼び出しを防止するため削除
     } catch (error) {
       console.error("Todoの取得に失敗しました:", error);
       useToast().add({
@@ -915,28 +912,12 @@ onMounted(() => {
   fetchInitialData();
   updateTodosByStatus();
 
-  // テスト用ダミーデータを追加（ステータスを新しい形式に合わせる）
-  todoStore.todos = [
-    { id: "1", title: "テストタスク", status: TASK_STATUS.PRIORITY, tags: [] },
-  ];
-  updateTodosByStatus();
-  console.log(
-    "[テスト] todosByStatus.todo:",
-    todosByStatus[TASK_STATUS.PRIORITY]
-  );
-
   // ゴミ箱へのドロップイベントを監視
   trashEventBus.on((todoId) => {
     if (confirm("このタスクを削除しますか？")) {
       deleteTodo(todoId as string);
     }
   });
-
-  // レイアウトを読み込む
-  // const savedLayout = localStorage.getItem("todoLayout") as LayoutType;
-  // if (savedLayout) {
-  //   currentLayout.value = savedLayout;
-  // }
 });
 
 // 編集モーダルを開く

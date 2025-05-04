@@ -338,8 +338,6 @@ const handleGuestLogin = async () => {
     const { error } = await client.auth.signInAnonymously();
     if (error) {
       errorMessage.value = getAuthErrorMessage(error);
-    } else {
-      router.push("/board");
     }
   } catch (e) {
     errorMessage.value = "ゲストログイン中にエラーが発生しました。";
