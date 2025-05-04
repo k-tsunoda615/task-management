@@ -556,6 +556,7 @@ import {
 } from "../../utils/constants";
 import type { TaskStatus } from "../../utils/constants";
 import { ref, onMounted, onUnmounted } from "vue";
+// import { useSupabaseUser, useSupabaseClient } from "../../composables/supabase";
 
 const todoStore = useTodoStore();
 const tagStore = useTagStore();
@@ -894,6 +895,13 @@ onMounted(() => {
   const fetchInitialData = async () => {
     try {
       await todoStore.fetchTodos();
+      await tagStore.fetchTags();
+
+      // サンプルデータが必要な場合は専用のcomposableを利用
+      const { useInitialSampleData } = await import(
+        "../../composables/useInitialSampleData"
+      );
+      await useInitialSampleData();
     } catch (error) {
       console.error("Todoの取得に失敗しました:", error);
       useToast().add({

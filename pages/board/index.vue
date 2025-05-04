@@ -355,7 +355,9 @@
 </template>
 
 <script setup lang="ts">
-import KanbanBoard from "~/components/kanban/KanbanBoard.vue";
+import KanbanBoard from "../../components/kanban/KanbanBoard.vue";
+import { useInitialSampleData } from "../../composables/useInitialSampleData";
+import { onMounted } from "vue";
 
 definePageMeta({
   layout: "board",
@@ -377,4 +379,8 @@ const logout = async () => {
   await client.auth.signOut();
   router.push("/auth");
 };
+
+onMounted(async () => {
+  await useInitialSampleData();
+});
 </script>

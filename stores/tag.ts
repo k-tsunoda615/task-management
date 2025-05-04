@@ -25,14 +25,23 @@ export const useTagStore = defineStore("tag", {
         throw error;
       }
     },
-    async createTag(tag: { name: string; color?: string }) {
+    async createTag(tag: { name: string; color?: string; user_id?: string }) {
       const client = useSupabaseClient();
       const user = useSupabaseUser();
+
+      // まず同じ名前のタグが存在するか確認
+      const existingTag = this.tags.find((t) => t.name === tag.name);
+      if (existingTag) {
+        // 既存のタグが見つかった場合はそれを返す
+        return { data: existingTag, error: null };
+      }
+
+      // 存在しない場合は新規作成
       const { data, error } = await client
         .from("tags")
         .insert({
           name: tag.name,
-          user_id: user.value?.id,
+          user_id: tag.user_id || user.value?.id,
           color: tag.color || "#3b82f6",
         })
         .select()
