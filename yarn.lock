@@ -2007,7 +2007,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@supabase/supabase-js@npm:^2.49.1":
+"@supabase/supabase-js@npm:^2.49.1, @supabase/supabase-js@npm:^2.49.4":
   version: 2.49.4
   resolution: "@supabase/supabase-js@npm:2.49.4"
   dependencies:
@@ -10184,6 +10184,7 @@ __metadata:
     "@nuxtjs/tailwindcss": "npm:^6.11.4"
     "@pinia/nuxt": "npm:^0.5.1"
     "@supabase/mcp-server-supabase": "npm:^0.4.0"
+    "@supabase/supabase-js": "npm:^2.49.4"
     "@tailwindcss/typography": "npm:^0.5.16"
     "@typescript-eslint/parser": "npm:^7.3.1"
     "@vueuse/core": "npm:^10.9.0"
