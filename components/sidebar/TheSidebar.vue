@@ -135,6 +135,27 @@
           :class="{ 'text-center': !isOpen && !isMobile }"
         >
           <UTooltip
+            :text="!isOpen ? '新しいタスク' : ''"
+            :ui="{ popper: { strategy: 'fixed' } }"
+            class="w-full"
+          >
+            <UButton
+              :block="isOpen || isMobile"
+              color="primary"
+              variant="soft"
+              icon="i-heroicons-plus"
+              @click="$emit('open-new-task-modal')"
+              class="justify-start hover:bg-primary-50"
+            >
+              <span v-if="isOpen || isMobile" class="ml-2">新しいタスク</span>
+            </UButton>
+          </UTooltip>
+        </div>
+        <div
+          class="px-3 py-1.5"
+          :class="{ 'text-center': !isOpen && !isMobile }"
+        >
+          <UTooltip
             :text="!isOpen ? 'タグ編集' : ''"
             :ui="{ popper: { strategy: 'fixed' } }"
             class="w-full"
@@ -275,7 +296,11 @@ const props = defineProps({
   },
 });
 
-const emit = defineEmits(["close-mobile-menu", "toggle-layout"]);
+const emit = defineEmits([
+  "close-mobile-menu",
+  "toggle-layout",
+  "open-new-task-modal",
+]);
 
 const projectStore = useProjectStore();
 const todoStore = useTodoStore();

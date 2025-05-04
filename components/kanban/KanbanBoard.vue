@@ -35,18 +35,13 @@
 
     <div class="mb-6 flex items-center justify-between">
       <h1 class="text-2xl font-semibold text-gray-900">Task Board</h1>
-      <UButton
-        @click="openNewTaskModal"
-        icon="i-heroicons-plus"
-        color="primary"
-        variant="soft"
-      >
-        新しいタスク
-      </UButton>
     </div>
 
     <!-- サイドバーコンポーネントにイベントを追加 -->
-    <TheSidebar @toggle-layout="toggleLayout" />
+    <TheSidebar
+      @toggle-layout="toggleLayout"
+      @open-new-task-modal="openNewTaskModal"
+    />
 
     <!-- PC表示: 上段：PriorityとNext Up（3:2の比率） -->
     <div class="hidden md:grid gap-4 mb-4" :class="getLayoutClass()">
