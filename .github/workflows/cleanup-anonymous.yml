@@ -1,0 +1,14 @@
+name: Cleanup Anonymous Users
+
+on:
+  schedule:
+    - cron: "0 15 * * *" # 毎日(UTCの15時 = 日本時間の0時)に実行
+  workflow_dispatch: # 手動実行を可能にする
+
+jobs:
+  cleanup:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Call Cleanup Function
+        run: |
+          curl -X POST ${{ secrets.CLEANUP_FUNCTION_URL }}
