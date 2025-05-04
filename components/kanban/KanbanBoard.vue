@@ -75,7 +75,7 @@
               class="h-full min-h-[inherit] space-y-3"
               :data-status="TASK_STATUS.PRIORITY"
               :animation="200"
-              ghost-class="ghost-card opacity-50"
+              ghost-class="ghost-card"
               :class="{
                 'border-2 border-dashed border-gray-200 rounded-lg p-4':
                   todosByStatus[TASK_STATUS.PRIORITY].length === 0,
@@ -85,7 +85,7 @@
               @end="handleDragEnd"
             >
               <template #item="{ element }">
-                <KanbanTodoCard
+                <TodoCard
                   :todo="element"
                   :showTimerBar="showTimerBar"
                   :timerLoading="timerButtonLoading === element.id"
@@ -131,11 +131,13 @@
             class="space-y-3"
             :data-status="TASK_STATUS.NEXT"
             :animation="200"
-            ghost-class="ghost-card opacity-50"
+            ghost-class="ghost-card"
             @change="handleDragChange"
+            @start="handleDragStart"
+            @end="handleDragEnd"
           >
             <template #item="{ element }">
-              <KanbanTodoCard
+              <TodoCard
                 :todo="element"
                 :showTimerBar="showTimerBar"
                 :timerLoading="timerButtonLoading === element.id"
@@ -180,13 +182,13 @@
           class="space-y-3"
           :data-status="TASK_STATUS.PRIORITY"
           :animation="200"
-          ghost-class="ghost-card opacity-50"
+          ghost-class="ghost-card"
           @change="handleDragChange"
           @start="handleDragStart"
           @end="handleDragEnd"
         >
           <template #item="{ element }">
-            <KanbanTodoCard
+            <TodoCard
               :todo="element"
               :showTimerBar="showTimerBar"
               :timerLoading="timerButtonLoading === element.id"
@@ -227,11 +229,13 @@
           class="space-y-3"
           :data-status="TASK_STATUS.NEXT"
           :animation="200"
-          ghost-class="ghost-card opacity-50"
+          ghost-class="ghost-card"
           @change="handleDragChange"
+          @start="handleDragStart"
+          @end="handleDragEnd"
         >
           <template #item="{ element }">
-            <KanbanTodoCard
+            <TodoCard
               :todo="element"
               :showTimerBar="showTimerBar"
               :timerLoading="timerButtonLoading === element.id"
@@ -273,11 +277,13 @@
         class="space-y-3"
         :data-status="TASK_STATUS.ARCHIVED"
         :animation="200"
-        ghost-class="ghost-card opacity-50"
+        ghost-class="ghost-card"
         @change="handleDragChange"
+        @start="handleDragStart"
+        @end="handleDragEnd"
       >
         <template #item="{ element }">
-          <KanbanTodoCard
+          <TodoCard
             :todo="element"
             :showTimerBar="showTimerBar"
             :timerLoading="timerButtonLoading === element.id"
@@ -507,6 +513,7 @@ import type { Todo, Tag } from "../../types/todo";
 import TheSidebar from "../../components/sidebar/TheSidebar.vue";
 import TaskCreateModal from "../modals/TaskCreateModal.vue";
 import DeleteConfirmModal from "../modals/DeleteConfirmModal.vue";
+import TodoCard from "../kanban/TodoCard.vue";
 import { validateTimeInput as validateTimeInputUtil } from "../../utils/time";
 import { useTaskTimer } from "../../composables/useTaskTimer";
 import {
@@ -962,101 +969,110 @@ const updateTodo = async () => {
 const handleDragChange = async (evt: any) => {
   console.log("ドラッグイベント:", evt); // デバッグ用
 
-  // ドラッグ開始時のフラグ設定
+  // ドラッグを正しく処理するためのフラグをセット
   isDragging.value = true;
 
   // ドラッグ&ドロップの種類を特定
   const dragType = evt.added ? "added" : evt.moved ? "moved" : null;
-  if (!dragType) return;
+  if (!dragType) {
+    isDragging.value = false;
+    return;
+  }
 
   const todo = evt[dragType].element;
   const newIndex = evt[dragType].newIndex;
 
   // 移動先のリストを特定
-  // string型のキーとして使用するため文字列リテラルとして扱う
-  let newStatus: string = TASK_STATUS.PRIORITY;
-  let targetList = todosByStatus[newStatus as keyof typeof todosByStatus];
+  let newStatus: string = "";
+  let targetList: Todo[] = [];
 
-  if (evt.added) {
-    // 追加された場合は、追加先のインデックスから判断
-    if (todosByStatus[TASK_STATUS.NEXT].find((t: Todo) => t.id === todo.id)) {
-      newStatus = TASK_STATUS.NEXT;
-      targetList = todosByStatus[TASK_STATUS.NEXT];
-    } else if (
-      todosByStatus[TASK_STATUS.ARCHIVED].find((t: Todo) => t.id === todo.id)
-    ) {
-      newStatus = TASK_STATUS.ARCHIVED;
-      targetList = todosByStatus[TASK_STATUS.ARCHIVED];
-    }
-  } else if (evt.moved) {
-    // 移動の場合は、移動先のリストから判断
-    if (todosByStatus[TASK_STATUS.NEXT].find((t: Todo) => t.id === todo.id)) {
-      newStatus = TASK_STATUS.NEXT;
-      targetList = todosByStatus[TASK_STATUS.NEXT];
-    } else if (
-      todosByStatus[TASK_STATUS.ARCHIVED].find((t: Todo) => t.id === todo.id)
-    ) {
-      newStatus = TASK_STATUS.ARCHIVED;
-      targetList = todosByStatus[TASK_STATUS.ARCHIVED];
-    }
-  }
-
-  if (!todo || !newStatus) {
-    console.error("必要な情報が見つかりません", { todo, newStatus, evt });
-    isDragging.value = false;
-    return;
-  }
-
-  // 更新中フラグをセット
-  isUpdatingRef.value = true;
-
-  // 直接リストの順序を使用（すでにドラッグ後の順序になっている）
-  const updatedTodos = targetList.map((t: Todo, index: number) => {
-    return {
-      ...t,
-      sort_order: index * 100, // 大きな間隔で設定（0, 100, 200, ...）
-    };
-  });
-
-  // 対象のTodoのステータスと順序を更新
-  if (todo.status !== newStatus) {
-    todo.status = newStatus as TaskStatus;
-  }
-
-  // 現在のTodoの順序を設定
-  const currentSortOrder =
-    updatedTodos.find((t: Todo) => t.id === todo.id)?.sort_order || 0;
-  todo.sort_order = currentSortOrder;
-
-  // 他のTodoの順序も更新
-  updatedTodos.forEach((t: Todo) => {
-    if (t.id !== todo.id) {
-      const originalTodo = targetList.find(
-        (original: Todo) => original.id === t.id
-      );
-      if (originalTodo) {
-        originalTodo.sort_order = t.sort_order;
-      }
-    }
-  });
-
-  // ドラッグ終了フラグを設定
-  setTimeout(() => {
-    isDragging.value = false;
-  }, 50);
-
-  // バックグラウンドで更新処理を実行
   try {
-    // まず現在のTodoのステータスと順序を更新
+    // 移動先のリストを特定するロジックを修正
+    if (evt.added) {
+      // 異なるリストへの移動の場合
+      const toElement = evt.to;
+      newStatus = toElement.getAttribute("data-status") || TASK_STATUS.PRIORITY;
+      console.log("移動先の要素:", toElement, "ステータス属性:", newStatus);
+
+      if (newStatus) {
+        targetList = todosByStatus[newStatus as keyof typeof todosByStatus];
+        console.log(`ステータス変更: ${todo.status} -> ${newStatus}`);
+
+        // ステータスを更新
+        todo.status = newStatus as TaskStatus;
+      }
+    } else if (evt.moved) {
+      // 同じリスト内の移動の場合
+      const fromElement = evt.from;
+      newStatus =
+        fromElement.getAttribute("data-status") || TASK_STATUS.PRIORITY;
+      console.log("移動元の要素:", fromElement, "ステータス属性:", newStatus);
+
+      targetList = todosByStatus[newStatus as keyof typeof todosByStatus];
+    }
+
+    console.log(
+      "新しいステータス:",
+      newStatus,
+      "ターゲットリスト:",
+      targetList
+    );
+
+    if (!todo || !newStatus || !targetList) {
+      console.error("必要な情報が見つかりません", {
+        todo,
+        newStatus,
+        targetList,
+        evt,
+      });
+      isDragging.value = false;
+      return;
+    }
+
+    // 更新中フラグをセット
+    isUpdatingRef.value = true;
+
+    // sort_orderを再計算（直接リストの順序を使用）
+    const updatedTodos = targetList.map((t: Todo, index: number) => {
+      return {
+        ...t,
+        sort_order: index * 100, // 大きな間隔で設定（0, 100, 200, ...）
+      };
+    });
+
+    // 現在のTodoの順序を設定
+    const currentSortOrder =
+      updatedTodos.find((t: Todo) => t.id === todo.id)?.sort_order || 0;
+    todo.sort_order = currentSortOrder;
+
+    // 他のTodoの順序も更新
+    updatedTodos.forEach((t: Todo) => {
+      if (t.id !== todo.id) {
+        const originalTodo = targetList.find(
+          (original: Todo) => original.id === t.id
+        );
+        if (originalTodo) {
+          originalTodo.sort_order = t.sort_order;
+        }
+      }
+    });
+
+    // バックグラウンドで更新処理を実行
+    console.log("Todoを更新:", {
+      id: todo.id,
+      status: newStatus,
+      sort_order: currentSortOrder,
+    });
+
     await todoStore.updateTodo({
       id: todo.id,
-      title: todo.title,
-      memo: todo.memo,
       status: newStatus as TaskStatus,
       sort_order: currentSortOrder,
     });
 
     // 他のTodoの順序を一括更新
+    console.log("他のTodoの順序を更新:", updatedTodos.length);
+
     const updatePromises = updatedTodos
       .filter((t: Todo) => t.id !== todo.id)
       .map((t: Todo) =>
@@ -1068,22 +1084,30 @@ const handleDragChange = async (evt: any) => {
 
     await Promise.all(updatePromises);
 
-    // 5秒後に静かに再同期（オプション）
-    setTimeout(() => {
-      todoStore.fetchTodos().catch((error: any) => {
-        console.error("Todo再取得エラー:", error);
-      });
-      // 更新フラグを解除（遅延して）
-      isUpdatingRef.value = false;
-    }, 5000);
+    // 更新の成功メッセージ
+    useToast().add({
+      title: "更新完了",
+      description: "タスクを移動しました",
+      color: "green",
+    });
 
-    if (evt.added) {
-      useToast().add({
-        title: "更新完了",
-        description: "タスクを移動しました",
-        color: "green",
-      });
-    }
+    // 操作完了後にフラグをリセット
+    setTimeout(() => {
+      isDragging.value = false;
+      console.log("ドラッグ操作終了");
+
+      // 変更を適用するためデータを再取得
+      todoStore
+        .fetchTodos()
+        .then(() => {
+          // 更新フラグを解除
+          isUpdatingRef.value = false;
+        })
+        .catch((error: any) => {
+          console.error("Todo再取得エラー:", error);
+          isUpdatingRef.value = false;
+        });
+    }, 300);
   } catch (error) {
     console.error("Todo更新エラー:", error);
     useToast().add({
@@ -1415,6 +1439,6 @@ const statusOptions = computed(() => {
 .ghost-card {
   background-color: #f3f4f6;
   border: 1px dashed #d1d5db;
-  opacity: 0.6 !important;
+  opacity: 0.6;
 }
 </style>
