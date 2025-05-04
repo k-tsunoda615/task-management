@@ -82,12 +82,16 @@
           >
             <UButton
               :block="isOpen || isMobile"
-              :color="showTimer ? 'blue' : 'gray'"
+              :color="showTimer ? 'green' : 'gray'"
               :variant="'ghost'"
               @click="toggleTimerVisibility"
-              icon="i-heroicons-clock"
               class="justify-start hover:bg-gray-100"
             >
+              <UIcon
+                name="i-heroicons-clock"
+                :class="showTimer ? 'text-green-500' : 'text-gray-400'"
+                class="w-5 h-5"
+              />
               <span v-if="isOpen || isMobile" class="ml-2">
                 {{ showTimer ? "タイマー表示中" : "タイマー非表示" }}
               </span>
@@ -105,12 +109,16 @@
           >
             <UButton
               :block="isOpen || isMobile"
-              :color="showTagBar ? 'blue' : 'gray'"
+              :color="showTagBar ? 'green' : 'gray'"
               :variant="'ghost'"
               @click="toggleTagVisibility"
-              icon="i-heroicons-tag"
               class="justify-start hover:bg-gray-100"
             >
+              <UIcon
+                name="i-heroicons-tag"
+                class="w-5 h-5"
+                :class="showTagBar ? 'text-green-500' : 'text-gray-400'"
+              />
               <span v-if="isOpen || isMobile" class="ml-2">
                 {{ showTagBar ? "タグ表示中" : "タグ非表示" }}
               </span>
