@@ -183,16 +183,16 @@
         <!-- タスク数表示 -->
         <div class="px-4 py-3 text-center border-t border-gray-200 bg-gray-50">
           <UTooltip
-            :text="!isOpen ? `タスク数: ${todoStore.totalTodoCount}/100` : ''"
+            :text="!isOpen ? `アイテム数: ${totalItemCount}/100` : ''"
             :ui="{ popper: { strategy: 'fixed' } }"
             class="w-full"
           >
             <div class="flex items-center justify-center">
               <span class="text-xs text-gray-600" v-if="!isOpen && !isMobile">
-                {{ todoStore.totalTodoCount }}%
+                {{ totalItemCount }}%
               </span>
               <span v-else class="text-xs text-gray-600">
-                タスク数: {{ todoStore.totalTodoCount }} / 100
+                アイテム数: {{ totalItemCount }} / 100
               </span>
             </div>
           </UTooltip>
@@ -250,6 +250,18 @@ const isOpen = ref(true); // サイドバーの開閉状態
 const showTimer = ref(true); // タイマー表示状態
 const showTagModal = ref(false);
 
+// tagStoreを直接インポート
+const directTagStore = useTagStore();
+
+// コンピューテッドプロパティを追加 - アイテム数(todo + tag)を計算
+const totalItemCount = computed(() => {
+  const todoCount = todoStore.totalTodoCount || 0;
+  // useTags()から取得したtagStoreではなく、直接インポートしたものを使用
+  const tagCount = directTagStore.totalTagCount || 0;
+  console.log("todoCount:", todoCount, "tagCount:", tagCount);
+  return todoCount + tagCount;
+});
+
 // サイドバーの開閉を切り替える
 const toggleSidebar = () => {
   isOpen.value = !isOpen.value;
@@ -292,7 +304,7 @@ onMounted(async () => {
   }
 
   // プロジェクトとタグを取得
-  await Promise.all([projectStore.fetchProjects(), tagStore.fetchTags()]);
+  await Promise.all([projectStore.fetchProjects(), directTagStore.fetchTags()]);
 });
 
 // フィルターに応じたラベルを取得

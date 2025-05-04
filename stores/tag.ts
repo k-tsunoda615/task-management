@@ -6,6 +6,11 @@ export const useTagStore = defineStore("tag", {
     tags: [] as Tag[],
     isLoaded: false,
   }),
+  getters: {
+    totalTagCount(): number {
+      return this.tags.length;
+    },
+  },
   actions: {
     async fetchTags() {
       this.isLoaded = false;
