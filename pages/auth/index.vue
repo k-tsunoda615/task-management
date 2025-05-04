@@ -67,6 +67,45 @@
               />
             </UFormGroup>
 
+            <div v-if="isSignUp" class="flex items-center gap-2">
+              <input
+                id="agreeTerms"
+                type="checkbox"
+                v-model="agreeTerms"
+                class="w-4 h-4"
+              />
+              <label for="agreeTerms" class="text-sm text-gray-700 select-none">
+                <a
+                  href="#"
+                  class="text-primary-600 hover:text-primary-700 underline"
+                  >利用規約</a
+                >
+                <span>と</span>
+                <a
+                  href="#"
+                  class="text-primary-600 hover:text-primary-700 underline"
+                  >プライバシーポリシー</a
+                >
+                <span>に同意します</span>
+              </label>
+            </div>
+            <div
+              v-else
+              class="mt-8 text-center text-sm text-gray-500 text-left"
+            >
+              <p>
+                続行で
+                <a href="#" class="text-primary-600 hover:text-primary-700"
+                  >利用規約</a
+                >
+                と
+                <a href="#" class="text-primary-600 hover:text-primary-700"
+                  >プライバシーポリシー</a
+                >
+                に同意します。
+              </p>
+            </div>
+
             <UButton
               type="submit"
               :loading="loading"
@@ -85,19 +124,67 @@
           </form>
         </UCard>
 
-        <div class="mt-8 text-center text-sm text-gray-500">
-          <p>
-            続行することで、
-            <a href="#" class="text-primary-600 hover:text-primary-700"
-              >利用規約</a
-            >
-            と
-            <a href="#" class="text-primary-600 hover:text-primary-700"
-              >プライバシーポリシー</a
-            >
-            に同意したことになります。
-          </p>
+        <div class="mt-4 text-center">
+          <button
+            type="button"
+            class="text-primary-600 hover:underline text-sm"
+            @click="showResetModal = true"
+            v-if="!isSignUp"
+          >
+            パスワードをお忘れですか？
+          </button>
         </div>
+
+        <div v-if="errorMessage" class="mb-4 text-center">
+          <div class="bg-red-100 text-red-700 px-4 py-2 rounded">
+            {{ errorMessage }}
+          </div>
+        </div>
+
+        <!-- パスワードリセットモーダル -->
+        <UModal v-model="showResetModal">
+          <UCard>
+            <template #header>
+              <div class="text-lg font-bold">パスワードリセット</div>
+            </template>
+            <form @submit.prevent="handleResetPassword" class="space-y-4">
+              <UFormGroup label="メールアドレス">
+                <UInput
+                  v-model="resetEmail"
+                  type="email"
+                  placeholder="your@email.com"
+                  required
+                />
+              </UFormGroup>
+              <UButton
+                type="submit"
+                :loading="resetLoading"
+                block
+                color="primary"
+              >
+                リセットメールを送信
+              </UButton>
+              <div
+                v-if="resetMessage"
+                class="mt-2 text-center text-sm"
+                :class="
+                  resetMessage.includes('送信しました')
+                    ? 'text-green-600'
+                    : 'text-red-600'
+                "
+              >
+                {{ resetMessage }}
+              </div>
+            </form>
+            <template #footer>
+              <div class="flex justify-end">
+                <UButton variant="ghost" @click="showResetModal = false"
+                  >閉じる</UButton
+                >
+              </div>
+            </template>
+          </UCard>
+        </UModal>
       </div>
     </div>
   </div>
@@ -116,6 +203,12 @@ const email = ref("");
 const password = ref("");
 const loading = ref(false);
 const isSignUp = ref(false);
+const errorMessage = ref("");
+const showResetModal = ref(false);
+const resetEmail = ref("");
+const resetMessage = ref("");
+const resetLoading = ref(false);
+const agreeTerms = ref(false);
 
 // 認証状態の変更を監視
 onMounted(() => {
@@ -131,10 +224,55 @@ onMounted(() => {
   });
 });
 
+// エラーメッセージ日本語化関数
+function getAuthErrorMessage(error: any): string {
+  if (!error || !error.message) return "認証に失敗しました";
+  const msg = error.message;
+  if (msg.includes("Invalid login credentials")) {
+    return "メールアドレスまたはパスワードが正しくありません";
+  }
+  if (msg.includes("Email not confirmed")) {
+    return "メールアドレスの確認が完了していません。メールボックスをご確認ください。";
+  }
+  if (
+    msg.includes("User already registered") ||
+    msg.includes("User already exists")
+  ) {
+    return "このメールアドレスは既に登録されています";
+  }
+  if (msg.match(/Password should be at least (\d+) characters/)) {
+    return "パスワードが短すぎます。8文字以上で入力してください。";
+  }
+  if (msg.includes("Password should contain at least one special character")) {
+    return "パスワードには記号を1つ以上含めてください。";
+  }
+  if (msg.includes("Password should contain at least one number")) {
+    return "パスワードには数字を1つ以上含めてください。";
+  }
+  if (msg.includes("Password should contain at least one uppercase letter")) {
+    return "パスワードには大文字を1つ以上含めてください。";
+  }
+  if (msg.includes("Email is invalid") || msg.includes("Invalid email")) {
+    return "メールアドレスの形式が正しくありません";
+  }
+  if (msg.includes("Rate limit exceeded")) {
+    return "リクエストが多すぎます。しばらくしてから再度お試しください。";
+  }
+  if (msg.includes("network error")) {
+    return "ネットワークエラーが発生しました。接続環境をご確認ください。";
+  }
+  return msg; // その他は原文表示
+}
+
 async function handleSubmit() {
   if (!email.value || !password.value) return;
   loading.value = true;
-
+  errorMessage.value = "";
+  if (isSignUp.value && !agreeTerms.value) {
+    errorMessage.value = "利用規約とプライバシーポリシーに同意してください。";
+    loading.value = false;
+    return;
+  }
   try {
     if (isSignUp.value) {
       // 新規登録処理
@@ -145,11 +283,9 @@ async function handleSubmit() {
 
       if (error) throw error;
 
-      useToast().add({
-        title: "確認メールを送信しました",
-        description: "メールボックスをご確認ください",
-        color: "green",
-      });
+      errorMessage.value =
+        "確認メールを送信しました。メールボックスをご確認ください。";
+      agreeTerms.value = false;
     } else {
       // ログイン処理
       const { data, error } = await client.auth.signInWithPassword({
@@ -158,30 +294,39 @@ async function handleSubmit() {
       });
 
       if (error) {
-        if (error.message.includes("Invalid login credentials")) {
-          useToast().add({
-            title: "ログインエラー",
-            description: "メールアドレスまたはパスワードが正しくありません",
-            color: "red",
-          });
-        } else {
-          throw error;
-        }
+        errorMessage.value = getAuthErrorMessage(error);
       } else {
         // ログイン成功時に明示的にリダイレクト
         router.push("/board");
       }
     }
-  } catch (error) {
+  } catch (error: any) {
     console.error("認証エラー:", error);
-    useToast().add({
-      title: "エラーが発生しました",
-      description:
-        error instanceof Error ? error.message : "認証に失敗しました",
-      color: "red",
-    });
+    errorMessage.value = getAuthErrorMessage(error);
   } finally {
     loading.value = false;
+  }
+}
+
+async function handleResetPassword() {
+  resetMessage.value = "";
+  if (!resetEmail.value) {
+    resetMessage.value = "メールアドレスを入力してください。";
+    return;
+  }
+  resetLoading.value = true;
+  try {
+    const { error } = await client.auth.resetPasswordForEmail(resetEmail.value);
+    if (error) {
+      resetMessage.value = getAuthErrorMessage(error);
+    } else {
+      resetMessage.value =
+        "パスワードリセット用のメールを送信しました。メールボックスをご確認ください。";
+    }
+  } catch (e) {
+    resetMessage.value = "リセット処理中にエラーが発生しました。";
+  } finally {
+    resetLoading.value = false;
   }
 }
 </script>
