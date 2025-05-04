@@ -45,90 +45,6 @@
 
       <!-- ボタン類 -->
       <div class="flex-1 overflow-y-auto py-2">
-        <!-- 表示切り替え系ボタン群 -->
-        <div
-          class="px-3 py-1.5"
-          :class="{ 'text-center': !isOpen && !isMobile }"
-        >
-          <UTooltip
-            :text="!isOpen ? getFilterLabel() : ''"
-            :ui="{ popper: { strategy: 'fixed' } }"
-            class="w-full"
-          >
-            <UButton
-              :block="isOpen || isMobile"
-              :color="getFilterButtonColor()"
-              :variant="'ghost'"
-              @click="toggleTaskFilter"
-              :icon="getFilterIcon()"
-              class="justify-start hover:bg-gray-100"
-            >
-              <span v-if="isOpen || isMobile" class="ml-2">{{
-                getFilterLabel()
-              }}</span>
-            </UButton>
-          </UTooltip>
-        </div>
-        <div
-          class="px-3 py-1.5"
-          :class="{ 'text-center': !isOpen && !isMobile }"
-        >
-          <UTooltip
-            :text="
-              !isOpen ? (showTimer ? 'タイマー非表示' : 'タイマー表示') : ''
-            "
-            :ui="{ popper: { strategy: 'fixed' } }"
-            class="w-full"
-          >
-            <UButton
-              :block="isOpen || isMobile"
-              :color="showTimer ? 'green' : 'gray'"
-              :variant="'ghost'"
-              @click="toggleTimerVisibility"
-              class="justify-start hover:bg-gray-100"
-            >
-              <UIcon
-                name="i-heroicons-clock"
-                :class="showTimer ? 'text-green-500' : 'text-gray-400'"
-                class="w-5 h-5"
-              />
-              <span v-if="isOpen || isMobile" class="ml-2">
-                {{ showTimer ? "タイマー表示中" : "タイマー非表示" }}
-              </span>
-            </UButton>
-          </UTooltip>
-        </div>
-        <div
-          class="px-3 py-1.5"
-          :class="{ 'text-center': !isOpen && !isMobile }"
-        >
-          <UTooltip
-            :text="!isOpen ? (showTagBar ? 'タグ非表示' : 'タグ表示') : ''"
-            :ui="{ popper: { strategy: 'fixed' } }"
-            class="w-full"
-          >
-            <UButton
-              :block="isOpen || isMobile"
-              :color="showTagBar ? 'green' : 'gray'"
-              :variant="'ghost'"
-              @click="toggleTagVisibility"
-              class="justify-start hover:bg-gray-100"
-            >
-              <UIcon
-                name="i-heroicons-tag"
-                class="w-5 h-5"
-                :class="showTagBar ? 'text-green-500' : 'text-gray-400'"
-              />
-              <span v-if="isOpen || isMobile" class="ml-2">
-                {{ showTagBar ? "タグ表示中" : "タグ非表示" }}
-              </span>
-            </UButton>
-          </UTooltip>
-        </div>
-
-        <!-- 区切り線 -->
-        <div class="my-2 border-t border-gray-200" />
-
         <!-- 機能系ボタン群 -->
         <div
           class="px-3 py-1.5"
@@ -175,6 +91,89 @@
                 />
               </span>
               <span v-if="isOpen || isMobile" class="ml-2">タグ編集</span>
+            </UButton>
+          </UTooltip>
+        </div>
+
+        <!-- 区切り線 -->
+        <div class="my-2 border-t border-gray-200" />
+        <!-- 表示切り替え系ボタン群 -->
+        <div
+          class="px-3 py-1.5"
+          :class="{ 'text-center': !isOpen && !isMobile }"
+        >
+          <UTooltip
+            :text="!isOpen ? getFilterLabel() : ''"
+            :ui="{ popper: { strategy: 'fixed' } }"
+            class="w-full"
+          >
+            <UButton
+              :block="isOpen || isMobile"
+              :color="getFilterButtonColor()"
+              :variant="'ghost'"
+              @click="toggleTaskFilter"
+              :icon="getFilterIcon()"
+              class="justify-start hover:bg-gray-100"
+            >
+              <span v-if="isOpen || isMobile" class="ml-2">{{
+                getFilterLabel()
+              }}</span>
+            </UButton>
+          </UTooltip>
+        </div>
+        <div
+          class="px-3 py-1.5"
+          :class="{ 'text-center': !isOpen && !isMobile }"
+        >
+          <UTooltip
+            :text="!isOpen ? (showTagBar ? 'タグ非表示' : 'タグ表示') : ''"
+            :ui="{ popper: { strategy: 'fixed' } }"
+            class="w-full"
+          >
+            <UButton
+              :block="isOpen || isMobile"
+              :color="showTagBar ? 'green' : 'gray'"
+              :variant="'ghost'"
+              @click="toggleTagVisibility"
+              class="justify-start hover:bg-gray-100"
+            >
+              <UIcon
+                name="i-heroicons-tag"
+                class="w-5 h-5"
+                :class="showTagBar ? 'text-green-500' : 'text-gray-400'"
+              />
+              <span v-if="isOpen || isMobile" class="ml-2">
+                {{ showTagBar ? "タグ表示中" : "タグ非表示" }}
+              </span>
+            </UButton>
+          </UTooltip>
+        </div>
+        <div
+          class="px-3 py-1.5"
+          :class="{ 'text-center': !isOpen && !isMobile }"
+        >
+          <UTooltip
+            :text="
+              !isOpen ? (showTimer ? 'タイマー非表示' : 'タイマー表示') : ''
+            "
+            :ui="{ popper: { strategy: 'fixed' } }"
+            class="w-full"
+          >
+            <UButton
+              :block="isOpen || isMobile"
+              :color="showTimer ? 'green' : 'gray'"
+              :variant="'ghost'"
+              @click="toggleTimerVisibility"
+              class="justify-start hover:bg-gray-100"
+            >
+              <UIcon
+                name="i-heroicons-clock"
+                :class="showTimer ? 'text-green-500' : 'text-gray-400'"
+                class="w-5 h-5"
+              />
+              <span v-if="isOpen || isMobile" class="ml-2">
+                {{ showTimer ? "タイマー表示中" : "タイマー非表示" }}
+              </span>
             </UButton>
           </UTooltip>
         </div>
