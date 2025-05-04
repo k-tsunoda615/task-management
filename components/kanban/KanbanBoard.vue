@@ -1032,6 +1032,13 @@ const handleDragChange = async (evt: any) => {
     // 更新中フラグをセット
     isUpdatingRef.value = true;
 
+    // 現在のUIの順序を保持するためにディープコピーを作成
+    const originalState = {
+      [TASK_STATUS.PRIORITY]: [...todosByStatus[TASK_STATUS.PRIORITY]],
+      [TASK_STATUS.NEXT]: [...todosByStatus[TASK_STATUS.NEXT]],
+      [TASK_STATUS.ARCHIVED]: [...todosByStatus[TASK_STATUS.ARCHIVED]],
+    };
+
     // sort_orderを再計算（直接リストの順序を使用）
     const updatedTodos = targetList.map((t: Todo, index: number) => {
       return {
@@ -1045,81 +1052,80 @@ const handleDragChange = async (evt: any) => {
       updatedTodos.find((t: Todo) => t.id === todo.id)?.sort_order || 0;
     todo.sort_order = currentSortOrder;
 
-    // 他のTodoの順序も更新
-    updatedTodos.forEach((t: Todo) => {
-      if (t.id !== todo.id) {
-        const originalTodo = targetList.find(
-          (original: Todo) => original.id === t.id
-        );
-        if (originalTodo) {
-          originalTodo.sort_order = t.sort_order;
-        }
-      }
-    });
-
     // バックグラウンドで更新処理を実行
-    console.log("Todoを更新:", {
-      id: todo.id,
-      status: newStatus,
-      sort_order: currentSortOrder,
-    });
+    try {
+      // 変更されたTodoの順序とステータスを更新
+      console.log("Todoを更新:", {
+        id: todo.id,
+        status: newStatus,
+        sort_order: currentSortOrder,
+      });
 
-    await todoStore.updateTodo({
-      id: todo.id,
-      status: newStatus as TaskStatus,
-      sort_order: currentSortOrder,
-    });
+      await todoStore.updateTodo({
+        id: todo.id,
+        status: newStatus as TaskStatus,
+        sort_order: currentSortOrder,
+      });
 
-    // 他のTodoの順序を一括更新
-    console.log("他のTodoの順序を更新:", updatedTodos.length);
+      // 他のTodoの順序を一括更新
+      console.log(`${updatedTodos.length - 1}個のTodoの順序を更新`);
 
-    const updatePromises = updatedTodos
-      .filter((t: Todo) => t.id !== todo.id)
-      .map((t: Todo) =>
-        todoStore.updateTodoOrder({
-          id: t.id,
-          sort_order: t.sort_order ?? 0,
-        })
-      );
+      const otherTodos = updatedTodos.filter((t: Todo) => t.id !== todo.id);
 
-    await Promise.all(updatePromises);
+      if (otherTodos.length > 0) {
+        const updatePromises = otherTodos.map((t: Todo) =>
+          todoStore.updateTodoOrder({
+            id: t.id,
+            sort_order: t.sort_order ?? 0,
+          })
+        );
 
-    // 更新の成功メッセージ
-    useToast().add({
-      title: "更新完了",
-      description: "タスクを移動しました",
-      color: "green",
-    });
+        await Promise.all(updatePromises);
+      }
 
-    // 操作完了後にフラグをリセット
-    setTimeout(() => {
+      // 更新の成功メッセージ
+      useToast().add({
+        title: "更新完了",
+        description: "タスクを移動しました",
+        color: "green",
+      });
+
+      // すぐにドラッグフラグを解除（保存は成功したため）
       isDragging.value = false;
-      console.log("ドラッグ操作終了");
 
-      // 変更を適用するためデータを再取得
-      todoStore
-        .fetchTodos()
-        .then(() => {
-          // 更新フラグを解除
-          isUpdatingRef.value = false;
-        })
-        .catch((error: any) => {
-          console.error("Todo再取得エラー:", error);
-          isUpdatingRef.value = false;
-        });
-    }, 300);
+      // 少し時間を空けてから更新フラグを解除
+      setTimeout(() => {
+        // fetchTodosをスキップしてローカルの状態を優先
+        isUpdatingRef.value = false;
+      }, 300);
+    } catch (error) {
+      console.error("Todo更新エラー:", error);
+
+      // エラー時は元の状態に戻す
+      todosByStatus[TASK_STATUS.PRIORITY] = originalState[TASK_STATUS.PRIORITY];
+      todosByStatus[TASK_STATUS.NEXT] = originalState[TASK_STATUS.NEXT];
+      todosByStatus[TASK_STATUS.ARCHIVED] = originalState[TASK_STATUS.ARCHIVED];
+
+      useToast().add({
+        title: "エラー",
+        description: "タスクの移動に失敗しました",
+        color: "red",
+      });
+
+      // フラグを解除
+      isUpdatingRef.value = false;
+      isDragging.value = false;
+    }
   } catch (error) {
-    console.error("Todo更新エラー:", error);
+    console.error("ドラッグ処理エラー:", error);
     useToast().add({
       title: "エラー",
-      description: "タスクの移動に失敗しました",
+      description: "タスクの移動処理に失敗しました",
       color: "red",
     });
     // 更新フラグを解除
     isUpdatingRef.value = false;
     isDragging.value = false;
-    // エラー時は状態を再同期
-    updateTodosByStatus();
   }
 };
 

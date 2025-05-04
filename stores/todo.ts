@@ -132,6 +132,8 @@ export const useTodoStore = defineStore("todo", {
         todo.total_time = [todo.total_time];
       }
 
+      console.log("[updateTodo] 更新前のデータ:", todo);
+
       // データベースに保存する形式に変換
       let updateData = { ...todo };
       if (todo.status) {
@@ -145,12 +147,19 @@ export const useTodoStore = defineStore("todo", {
         updateData = rest;
       }
 
+      console.log("[updateTodo] データベースに送信するデータ:", updateData);
+
       const { data, error } = await useSupabaseClient()
         .from("todos")
         .update(updateData)
         .eq("id", todo.id)
         .select();
-      if (error) throw error;
+      if (error) {
+        console.error("[updateTodo] エラー:", error);
+        throw error;
+      }
+
+      console.log("[updateTodo] 更新成功:", data);
 
       if (todo.tags) {
         const client = useSupabaseClient();
@@ -163,6 +172,26 @@ export const useTodoStore = defineStore("todo", {
           await client.from("todo_tags").insert(todoTags);
         }
       }
+
+      // 部分的なデータだけを更新する場合は、ローカルのtodosも更新
+      if (!todo.tags && Object.keys(updateData).length < 5) {
+        // ローカルでのTodo更新（fetchTodosを呼ばずに）
+        const index = this.todos.findIndex((t) => t.id === todo.id);
+        if (index !== -1) {
+          // 既存のTodoを更新
+          this.todos[index] = {
+            ...this.todos[index],
+            ...todo,
+          };
+          console.log(
+            "[updateTodo] ローカルデータ更新（部分更新）:",
+            this.todos[index]
+          );
+          return data;
+        }
+      }
+
+      // 大規模な更新の場合は全データを再取得
       await this.fetchTodos();
       return data;
     },
@@ -180,14 +209,35 @@ export const useTodoStore = defineStore("todo", {
 
     async updateTodoOrder(todo: { id: string; sort_order: number }) {
       const client = useSupabaseClient();
-      const { error } = await client
-        .from("todos")
-        .update({ sort_order: todo.sort_order })
-        .eq("id", todo.id);
-      if (error) throw error;
-      const index = this.todos.findIndex((t) => t.id === todo.id);
-      if (index !== -1) {
-        this.todos[index].sort_order = todo.sort_order;
+      console.log("[updateTodoOrder] 順序更新:", todo);
+
+      try {
+        const { error } = await client
+          .from("todos")
+          .update({ sort_order: todo.sort_order })
+          .eq("id", todo.id);
+
+        if (error) throw error;
+
+        // ローカルのtodosも更新
+        const index = this.todos.findIndex((t) => t.id === todo.id);
+        if (index !== -1) {
+          this.todos[index].sort_order = todo.sort_order;
+          console.log(
+            "[updateTodoOrder] ローカルデータ更新成功:",
+            this.todos[index]
+          );
+        } else {
+          console.warn(
+            "[updateTodoOrder] ローカルでTodoが見つかりません:",
+            todo.id
+          );
+        }
+
+        return true;
+      } catch (error) {
+        console.error("[updateTodoOrder] 更新エラー:", error);
+        throw error;
       }
     },
   },
