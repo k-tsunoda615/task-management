@@ -53,6 +53,7 @@
           <UTooltip
             :text="!isOpen ? getFilterLabel() : ''"
             :ui="{ popper: { strategy: 'fixed' } }"
+            class="w-full"
           >
             <UButton
               :block="isOpen || isMobile"
@@ -77,6 +78,7 @@
           <UTooltip
             :text="!isOpen ? 'タグ管理' : ''"
             :ui="{ popper: { strategy: 'fixed' } }"
+            class="w-full"
           >
             <UButton
               :block="isOpen || isMobile"
@@ -101,6 +103,7 @@
               !isOpen ? (showTimer ? 'タイマー非表示' : 'タイマー表示') : ''
             "
             :ui="{ popper: { strategy: 'fixed' } }"
+            class="w-full"
           >
             <UButton
               :block="isOpen || isMobile"
@@ -125,6 +128,7 @@
           <UTooltip
             :text="!isOpen ? 'レイアウト切り替え' : ''"
             :ui="{ popper: { strategy: 'fixed' } }"
+            class="w-full"
           >
             <UButton
               :block="isOpen || isMobile"
@@ -148,9 +152,10 @@
         <UTooltip
           :text="!isOpen ? 'タスクをドラッグして削除' : ''"
           :ui="{ popper: { strategy: 'fixed' } }"
+          class="w-full"
         >
           <div
-            class="p-4 flex items-center justify-center transition-all duration-200 hover:bg-red-50"
+            class="p-4 flex items-center justify-center transition-all duration-200 hover:bg-red-50 w-full"
             :class="{ 'flex-col': !isOpen && !isMobile }"
             @dragover.prevent
             @dragenter="isDragOver = true"
@@ -167,7 +172,7 @@
             />
             <span
               v-if="isOpen || isMobile"
-              class="transition-colors duration-200"
+              class="transition-colors duration-200 w-full"
               :class="isDragOver ? 'text-red-700' : 'text-gray-600'"
             >
               ドラッグで削除
@@ -180,6 +185,7 @@
           <UTooltip
             :text="!isOpen ? `タスク数: ${todoStore.totalTodoCount}/100` : ''"
             :ui="{ popper: { strategy: 'fixed' } }"
+            class="w-full"
           >
             <div class="flex items-center justify-center">
               <span class="text-xs text-gray-600" v-if="!isOpen && !isMobile">
