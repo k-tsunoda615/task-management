@@ -191,6 +191,8 @@
 </template>
 
 <script setup lang="ts">
+import { useRoute } from "vue-router";
+
 definePageMeta({
   middleware: ["auth"],
 });
@@ -198,6 +200,7 @@ definePageMeta({
 const client = useSupabaseClient();
 const user = useSupabaseUser();
 const router = useRouter();
+const route = useRoute();
 
 const email = ref("");
 const password = ref("");
@@ -210,15 +213,18 @@ const resetMessage = ref("");
 const resetLoading = ref(false);
 const agreeTerms = ref(false);
 
-// 認証状態の変更を監視
 onMounted(() => {
+  // signup=1 で新規登録タブを自動で開く
+  if (route.query.signup === "1") {
+    isSignUp.value = true;
+  }
+
   const unsubscribe = client.auth.onAuthStateChange((event, session) => {
     if (event === "SIGNED_IN" && session?.user) {
       router.push("/board");
     }
   });
 
-  // コンポーネントのアンマウント時にリスナーを解除
   onUnmounted(() => {
     unsubscribe.data.subscription.unsubscribe();
   });
@@ -275,28 +281,44 @@ async function handleSubmit() {
   }
   try {
     if (isSignUp.value) {
-      // 新規登録処理
-      const { data, error } = await client.auth.signUp({
-        email: email.value,
-        password: password.value,
-      });
+      // 匿名ユーザーから永続的なユーザーへの変換
+      if (user.value?.is_anonymous) {
+        // 1. まずメールアドレスのみ更新（パスワードはまだ設定しない）
+        const { data: updateData, error: updateError } =
+          await client.auth.updateUser({
+            email: email.value,
+          });
 
-      if (error) throw error;
+        if (updateError) {
+          // メール更新でエラーが発生した場合（すでに登録済みのメールなど）
+          throw updateError;
+        }
 
-      errorMessage.value =
-        "確認メールを送信しました。メールボックスをご確認ください。";
-      agreeTerms.value = false;
+        // 成功メッセージを表示（メール確認が必要）
+        errorMessage.value =
+          "確認メールを送信しました。メールボックスを確認して確認リンクをクリックしてください。確認後にパスワードが設定されます。";
+        // 注意: この時点ではメール確認されていないのでパスワードは設定されていない
+        agreeTerms.value = false;
+      } else {
+        // 通常の新規登録
+        const { data, error } = await client.auth.signUp({
+          email: email.value,
+          password: password.value,
+        });
+        if (error) throw error;
+        errorMessage.value =
+          "確認メールを送信しました。メールボックスをご確認ください。";
+        agreeTerms.value = false;
+      }
     } else {
-      // ログイン処理
+      // 通常のログイン処理
       const { data, error } = await client.auth.signInWithPassword({
         email: email.value,
         password: password.value,
       });
-
       if (error) {
         errorMessage.value = getAuthErrorMessage(error);
       } else {
-        // ログイン成功時に明示的にリダイレクト
         router.push("/board");
       }
     }

@@ -92,6 +92,11 @@
               >【重要】ゲストのままログアウトすると、同じアカウントで再ログインすることはできません。</strong
             ><br />
             作成したタスクやタグを残したい場合は、アカウント登録（メールアドレスとパスワードの設定）を行うことで、現在のデータをそのまま引き継ぐことができます。
+            <div class="mt-3">
+              <UButton color="primary" @click="goToSignUp" size="sm">
+                アカウント登録へ進む
+              </UButton>
+            </div>
           </div>
           <slot />
         </main>
@@ -110,8 +115,10 @@
 <script setup lang="ts">
 import TheSidebar from "../components/sidebar/TheSidebar.vue";
 import { useAuth } from "../composables/useAuth";
+import { useRouter } from "vue-router";
 
 const { user } = useAuth();
+const router = useRouter();
 const loading = useState("auth-loading", () => true);
 const initialized = ref(false);
 
@@ -149,6 +156,10 @@ onMounted(() => {
   checkMobile();
   window.addEventListener("resize", checkMobile);
 });
+
+const goToSignUp = () => {
+  router.push({ path: "/auth", query: { signup: "1" } });
+};
 </script>
 
 <style>
