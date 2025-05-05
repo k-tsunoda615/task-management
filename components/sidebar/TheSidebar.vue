@@ -183,6 +183,7 @@
         <div
           class="px-3 py-1.5"
           :class="{ 'text-center': !isOpen && !isMobile }"
+          v-if="!isMobile"
         >
           <UTooltip
             :text="!isOpen ? 'レイアウト切り替え' : ''"
@@ -208,36 +209,38 @@
       <!-- ゴミ箱エリア -->
       <div class="mt-auto border-t border-gray-200">
         <!-- ゴミ箱 -->
-        <UTooltip
-          :text="!isOpen ? 'タスクをドラッグして削除' : ''"
-          :ui="{ popper: { strategy: 'fixed' } }"
-          class="w-full"
-        >
-          <div
-            class="p-4 flex items-center justify-center transition-all duration-200 hover:bg-red-50 w-full"
-            :class="{ 'flex-col': !isOpen && !isMobile }"
-            @dragover.prevent
-            @dragenter="isDragOver = true"
-            @dragleave="isDragOver = false"
-            @drop="handleTrashDrop"
+        <div v-if="!isMobile">
+          <UTooltip
+            :text="!isOpen ? 'タスクをドラッグして削除' : ''"
+            :ui="{ popper: { strategy: 'fixed' } }"
+            class="w-full"
           >
-            <UIcon
-              name="i-heroicons-trash"
-              class="transition-colors duration-200"
-              :class="[
-                isDragOver ? 'text-red-500' : 'text-gray-500',
-                isOpen || isMobile ? 'mr-2' : 'mb-1',
-              ]"
-            />
-            <span
-              v-if="isOpen || isMobile"
-              class="transition-colors duration-200 w-full"
-              :class="isDragOver ? 'text-red-700' : 'text-gray-600'"
+            <div
+              class="p-4 flex items-center justify-center transition-all duration-200 hover:bg-red-50 w-full"
+              :class="{ 'flex-col': !isOpen && !isMobile }"
+              @dragover.prevent
+              @dragenter="isDragOver = true"
+              @dragleave="isDragOver = false"
+              @drop="handleTrashDrop"
             >
-              ドラッグで削除
-            </span>
-          </div>
-        </UTooltip>
+              <UIcon
+                name="i-heroicons-trash"
+                class="transition-colors duration-200"
+                :class="[
+                  isDragOver ? 'text-red-500' : 'text-gray-500',
+                  isOpen || isMobile ? 'mr-2' : 'mb-1',
+                ]"
+              />
+              <span
+                v-if="isOpen || isMobile"
+                class="transition-colors duration-200 w-full"
+                :class="isDragOver ? 'text-red-700' : 'text-gray-600'"
+              >
+                ドラッグで削除
+              </span>
+            </div>
+          </UTooltip>
+        </div>
 
         <!-- タスク数表示 -->
         <div class="px-4 py-3 text-center border-t border-gray-200 bg-gray-50">
