@@ -125,14 +125,7 @@
         </UCard>
 
         <div v-if="!isSignUp" class="mt-4 text-center">
-          <UButton
-            block
-            color="gray"
-            class="h-12 text-base mt-2"
-            @click="handleGuestLogin"
-          >
-            ゲストとして始める
-          </UButton>
+          <AuthGuestLogin @error="handleGuestLoginError" />
         </div>
 
         <div v-if="errorMessage" class="mb-4 text-center">
@@ -352,19 +345,8 @@ async function handleResetPassword() {
   }
 }
 
-// ゲストログイン処理
-const handleGuestLogin = async () => {
-  loading.value = true;
-  errorMessage.value = "";
-  try {
-    const { error } = await client.auth.signInAnonymously();
-    if (error) {
-      errorMessage.value = getAuthErrorMessage(error);
-    }
-  } catch (e) {
-    errorMessage.value = "ゲストログイン中にエラーが発生しました。";
-  } finally {
-    loading.value = false;
-  }
-};
+// ゲストログインのエラーハンドリング
+function handleGuestLoginError(message: string) {
+  errorMessage.value = message;
+}
 </script>
