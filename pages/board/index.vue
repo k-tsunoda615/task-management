@@ -44,19 +44,16 @@
 
     <!-- メインコンテンツ -->
     <div v-if="user">
-      <KanbanBoard />
+      <KanbanTaskBoard />
     </div>
 
     <!-- ヘルプモーダル -->
-    <HelpModal v-model="showHelpModal" />
+    <ModalsHelpModal v-model="showHelpModal" />
   </div>
 </template>
 
 <script setup lang="ts">
-import KanbanBoard from "../../components/kanban/KanbanBoard.vue";
-import HelpModal from "../../components/modals/HelpModal.vue";
 import { useInitialSampleData } from "../../composables/useInitialSampleData";
-import { onMounted, ref } from "vue";
 
 definePageMeta({
   layout: "board",
