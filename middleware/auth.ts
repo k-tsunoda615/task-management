@@ -10,10 +10,10 @@ export default defineNuxtRouteMiddleware(async (to) => {
   }
 
   // 認証済みユーザーの認証ページへのアクセス時
-  // アノニマスアカウントのサインアップのため一時的にコメントアウト
-  // if (to.path === "/auth" && user.value) {
-  //   return navigateTo("/board");
-  // }
+  // 匿名ユーザーは除外して、通常のログインユーザーのみリダイレクト
+  if (to.path === "/auth" && user.value && !user.value.is_anonymous) {
+    return navigateTo("/board");
+  }
 
   // トップページへのアクセス時
   if (to.path === "/" && user.value) {
