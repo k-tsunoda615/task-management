@@ -52,13 +52,54 @@
             <div
               class="absolute -z-10 inset-0 bg-gradient-to-r from-primary-100 to-blue-100 rounded-[30px] blur-3xl opacity-40"
             ></div>
-            <img
-              src="https://placehold.jp/550x450.png"
-              alt="カンバンボードのスクリーンショット"
-              class="rounded-[30px] shadow-2xl border border-gray-100"
-            />
             <div
-              class="absolute -bottom-6 -left-6 bg-white p-5 rounded-2xl shadow-xl border border-gray-50"
+              class="bg-white rounded-[30px] shadow-xl border border-gray-100 p-6 relative overflow-hidden"
+            >
+              <div
+                class="absolute top-0 right-0 w-40 h-40 bg-gradient-to-b from-primary-100 to-transparent rounded-bl-[100px] -z-0"
+              ></div>
+              <div
+                class="absolute bottom-0 left-0 w-32 h-32 bg-gradient-to-t from-blue-100 to-transparent rounded-tr-[120px] -z-0"
+              ></div>
+              <div class="relative z-10">
+                <div class="mb-4">
+                  <h3 class="text-xl font-bold text-gray-900 mb-1">
+                    今すぐ始めましょう
+                  </h3>
+                  <p class="text-sm text-gray-600">
+                    インストール不要ですぐに始められます
+                  </p>
+                </div>
+                <div class="space-y-4">
+                  <AuthSignupCard
+                    class="bg-transparent"
+                    cardClass="bg-transparent shadow-none border-0 p-0"
+                    :showTitle="false"
+                    :showSubtitle="false"
+                  />
+                  <div class="relative my-6">
+                    <div
+                      class="absolute inset-x-0 top-1/2 h-px bg-gray-200 transform -translate-y-1/2"
+                    ></div>
+                    <div class="relative flex justify-center">
+                      <span class="bg-white px-4 text-sm text-gray-500"
+                        >または</span
+                      >
+                    </div>
+                  </div>
+                  <AuthGuestLogin
+                    redirectTo="/board"
+                    class="transform hover:scale-105 transition-transform duration-200"
+                    buttonText="ゲストモードで試してみる"
+                  />
+                  <div class="text-center text-xs text-gray-500 mt-3">
+                    アカウント登録なしで機能を体験できます
+                  </div>
+                </div>
+              </div>
+            </div>
+            <!-- <div
+              class="absolute -top-5 right-5 bg-white p-4 rounded-2xl shadow-xl border border-gray-50 hidden md:block"
             >
               <div class="flex items-center gap-3">
                 <UIcon
@@ -67,7 +108,7 @@
                 />
                 <p class="font-medium">インストール不要、すぐに始められる</p>
               </div>
-            </div>
+            </div> -->
           </div>
         </div>
 
@@ -109,7 +150,7 @@
             成果を出すために必要な機能だけを
           </h2>
           <p class="mt-4 text-xl text-gray-600 max-w-2xl mx-auto">
-            本当に重要なことに集中できるように設計された、シンプルで効果的なツール
+            本当に重要なことに集中できるように設計された、<br />シンプルで効果的なツール
           </p>
         </div>
 

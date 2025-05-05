@@ -1,13 +1,15 @@
 <template>
-  <div class="signup-card-container">
+  <div :class="['signup-card-container', props.class]">
     <div class="text-center mb-8">
-      <h1 class="text-2xl font-bold text-gray-900">新規アカウントの作成</h1>
-      <p class="mt-2 text-gray-600">
+      <h1 v-if="showTitle" class="text-2xl font-bold text-gray-900">
+        新規アカウントの作成
+      </h1>
+      <p v-if="showSubtitle" class="mt-2 text-gray-600">
         メールアドレスとパスワードを入力してください
       </p>
     </div>
 
-    <UCard>
+    <UCard :class="cardClass">
       <form @submit.prevent="handleSubmit" class="space-y-4">
         <UFormGroup label="メールアドレス">
           <UInput
@@ -81,6 +83,22 @@ const props = defineProps({
   redirectUrl: {
     type: String,
     default: "/board",
+  },
+  class: {
+    type: String,
+    default: "",
+  },
+  cardClass: {
+    type: String,
+    default: "",
+  },
+  showTitle: {
+    type: Boolean,
+    default: true,
+  },
+  showSubtitle: {
+    type: Boolean,
+    default: true,
   },
 });
 

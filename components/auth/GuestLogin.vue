@@ -2,11 +2,11 @@
   <UButton
     block
     color="gray"
-    class="h-12 text-base"
+    :class="['h-12 text-base', props.class]"
     :loading="loading"
     @click="handleGuestLogin"
   >
-    {{ loading ? "処理中..." : "ゲストとして始める" }}
+    {{ loading ? "処理中..." : buttonText }}
   </UButton>
   <div v-if="errorMessage" class="mt-2 text-center">
     <div class="bg-red-100 text-red-700 px-4 py-2 rounded">
@@ -31,6 +31,14 @@ const props = defineProps({
   redirectTo: {
     type: String,
     default: "/board",
+  },
+  class: {
+    type: String,
+    default: "",
+  },
+  buttonText: {
+    type: String,
+    default: "ゲストとして始める",
   },
 });
 
