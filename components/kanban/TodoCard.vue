@@ -9,13 +9,13 @@
     <div class="flex items-start">
       <div class="flex-1 min-w-0">
         <!-- タイトル -->
-        <div class="flex items-center gap-2 mb-2">
-          <h3 class="font-medium text-gray-900 truncate">{{ todo.title }}</h3>
+        <div class="flex items-center mb-2">
           <UIcon
             v-if="todo.is_private"
             name="i-heroicons-lock-closed"
-            class="text-gray-400 w-4 h-4"
+            class="text-gray-400 w-4 h-4 flex-shrink-0 mr-1.5"
           />
+          <h3 class="font-medium text-gray-900 truncate">{{ todo.title }}</h3>
         </div>
 
         <!-- タグ -->
