@@ -155,20 +155,14 @@ async function handleSubmit() {
   try {
     // 匿名ユーザーから永続的なユーザーへの変換
     if (user.value?.is_anonymous) {
-      // メールアドレスのみ更新
       const { data: updateData, error: updateError } =
-        await client.auth.updateUser({
-          email: email.value,
-        });
+        await client.auth.updateUser({ email: email.value });
 
-      if (updateError) {
-        throw updateError;
-      }
+      if (updateError) throw updateError;
 
-      errorMessage.value =
-        "確認メールを送信しました。メールボックスを確認して確認リンクをクリックしてください。確認後にパスワードが設定されます。";
       agreeTerms.value = false;
       emit("signup-success");
+      router.push(props.redirectUrl || "/board");
     } else {
       // 通常の新規登録
       const { data, error } = await client.auth.signUp({
@@ -176,10 +170,10 @@ async function handleSubmit() {
         password: password.value,
       });
       if (error) throw error;
-      errorMessage.value =
-        "確認メールを送信しました。メールボックスをご確認ください。";
+
       agreeTerms.value = false;
       emit("signup-success");
+      router.push(props.redirectUrl || "/board");
     }
   } catch (error: any) {
     console.error("認証エラー:", error);
