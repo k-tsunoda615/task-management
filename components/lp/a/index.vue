@@ -8,7 +8,7 @@
             <div
               class="inline-block mb-3 px-4 py-1.5 bg-primary-100 text-primary-700 rounded-full text-sm font-medium"
             >
-              プライオリティ志向タスク管理「プラタス」
+              プライオリティ志向タスク管理
             </div>
             <h1
               class="text-4xl md:text-5xl font-bold text-gray-900 !leading-[1.15]"
@@ -18,7 +18,7 @@
               効率的に
             </h1>
             <p class="mt-6 text-xl text-gray-600 leading-relaxed">
-              プラタスは、タスク管理アプリで終わらせない。<br />
+              pritoxは、タスク管理アプリで終わらせない。<br />
               優先順位で動き、成果を最大化する新しいワークスタイルをあなたに。
             </p>
             <div class="mt-10 flex flex-col sm:flex-row gap-4">
