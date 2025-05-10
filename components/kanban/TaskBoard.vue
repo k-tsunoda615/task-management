@@ -1,5 +1,21 @@
 <template>
   <div>
+    <!-- 検索ボックスとタグプルダウンを横並びで配置 -->
+    <div class="mb-4 flex items-center gap-2">
+      <UInput
+        v-model="searchQuery"
+        placeholder="タスクを検索... (タイトル・メモ)"
+        class="w-full max-w-md"
+        clearable
+      />
+      <USelect
+        v-model="selectedTagId"
+        :options="tagOptions"
+        placeholder="タグで絞り込み"
+        class="w-48"
+        clearable
+      />
+    </div>
     <!-- 現在計測中のタスク表示 -->
     <Transition name="slide">
       <div
@@ -556,7 +572,7 @@ import {
 } from "../../utils/constants";
 import type { TaskStatus } from "../../utils/constants";
 import { ref, onMounted, onUnmounted } from "vue";
-// import { useSupabaseUser, useSupabaseClient } from "../../composables/supabase";
+import { useTodoSearch } from "../../composables/useTodoSearch";
 
 const todoStore = useTodoStore();
 const tagStore = useTagStore();
@@ -752,20 +768,31 @@ const addTag = async () => {
   }
 };
 
-// Todoの状態が変更されたときに再分類する
-const updateTodosByStatus = () => {
-  console.log("現在のTodos:", todoStore.todosByVisibility);
+const searchQuery = ref("");
+const selectedTagId = ref<string>("");
 
+// タグ選択肢を生成
+const tagOptions = computed(() => [
+  { value: "", label: "すべてのタグ" },
+  ...tagStore.tags.map((tag) => ({ value: tag.id, label: tag.name })),
+]);
+
+const { searchedTodos } = useTodoSearch(
+  computed(() => todoStore.todosByVisibility),
+  searchQuery,
+  computed(() => selectedTagId.value || null)
+);
+
+// updateTodosByStatusを検索結果で分類するよう修正
+const updateTodosByStatus = () => {
   // ドラッグ中は再分類をスキップ
   if (isDragging.value) return;
-
   // 一旦クリア
   todosByStatus[TASK_STATUS.PRIORITY] = [];
   todosByStatus[TASK_STATUS.NEXT] = [];
   todosByStatus[TASK_STATUS.ARCHIVED] = [];
-
-  // 再分類
-  todoStore.todosByVisibility.forEach((todo: Todo) => {
+  // 検索結果で再分類
+  searchedTodos.value.forEach((todo: Todo) => {
     if (todo.status === TASK_STATUS.PRIORITY) {
       todosByStatus[TASK_STATUS.PRIORITY].push(todo);
     } else if (todo.status === TASK_STATUS.NEXT) {
@@ -773,12 +800,9 @@ const updateTodosByStatus = () => {
     } else if (todo.status === TASK_STATUS.ARCHIVED) {
       todosByStatus[TASK_STATUS.ARCHIVED].push(todo);
     } else {
-      // デフォルトはPriorityに入れる
-      console.log(`不明なステータス "${todo.status}" のTodoがあります:`, todo);
       todosByStatus[TASK_STATUS.PRIORITY].push(todo);
     }
   });
-
   // 各リストをsort_orderでソート
   todosByStatus[TASK_STATUS.PRIORITY].sort(
     (a: Todo, b: Todo) => (a.sort_order || 0) - (b.sort_order || 0)
@@ -789,41 +813,27 @@ const updateTodosByStatus = () => {
   todosByStatus[TASK_STATUS.ARCHIVED].sort(
     (a: Todo, b: Todo) => (a.sort_order || 0) - (b.sort_order || 0)
   );
-
   // 計測中のタスクを確認
-  const timingTodo = todoStore.todosByVisibility.find(
-    (todo: Todo) => todo.is_timing
-  );
-
+  const timingTodo = searchedTodos.value.find((todo: Todo) => todo.is_timing);
   if (timingTodo) {
-    console.log("計測中のタスクを検出:", timingTodo);
     currentTimingTodo.value = timingTodo;
-
-    // タイマーが動いていない場合は開始
     if (!timerInterval.value) {
-      console.log("タイマーを再開します");
       startTimerForTodo(timingTodo, () => {});
     }
   } else if (currentTimingTodo.value && !timingTodo) {
-    // 計測中のタスクがなくなった場合はタイマーを停止
-    console.log("計測中のタスクがなくなったのでタイマーを停止します");
     stopTimer(currentTimingTodo.value);
     currentTimingTodo.value = null;
   }
 };
 
-// todoStoreのtodosが変更されたときに再分類を実行
+// 検索クエリが変わったら再分類
 watch(
-  () => [todoStore.todosByVisibility, todoStore.taskFilter],
+  () => [searchedTodos.value, todoStore.taskFilter],
   () => {
-    // 更新中は再分類をスキップ
     if (isUpdatingRef.value) return;
     updateTodosByStatus();
-
     // 計測中のタスクを確認
-    const timingTodo = todoStore.todosByVisibility.find(
-      (todo: Todo) => todo.is_timing
-    );
+    const timingTodo = searchedTodos.value.find((todo: Todo) => todo.is_timing);
     if (timingTodo) {
       currentTimingTodo.value = timingTodo;
       currentTotalTime.value = extractTotalTime(timingTodo.total_time);
