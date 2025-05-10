@@ -8,7 +8,7 @@
             <div
               class="inline-block mb-3 px-4 py-1.5 bg-primary-100 text-primary-700 rounded-full text-sm font-medium"
             >
-              プライオリティ志向タスク管理
+              プライオリティ志向のタスク管理
             </div>
             <h1
               class="text-4xl md:text-5xl font-bold text-gray-900 !leading-[1.15]"
@@ -189,15 +189,17 @@
         <div class="grid md:grid-cols-3 gap-8">
           <!-- 追加機能1 -->
           <div class="bg-white p-6 rounded-lg border border-gray-200">
-            <div
-              class="w-10 h-10 rounded-full bg-purple-100 flex items-center justify-center mb-4"
-            >
-              <UIcon
-                name="i-heroicons-eye-slash"
-                class="w-5 h-5 text-purple-500"
-              />
+            <div class="flex items-center mb-4">
+              <div
+                class="w-10 h-10 rounded-full bg-purple-100 flex items-center justify-center mr-3"
+              >
+                <UIcon
+                  name="i-heroicons-eye-slash"
+                  class="w-5 h-5 text-purple-500"
+                />
+              </div>
+              <h3 class="text-lg font-semibold">安心のプライバシー</h3>
             </div>
-            <h3 class="text-lg font-semibold mb-2">安心のプライバシー</h3>
             <p class="text-gray-600">
               プライベートタスクは非表示化できるので、同僚や上司と画面を共有する際も安心です。
             </p>
@@ -205,12 +207,17 @@
 
           <!-- 追加機能2 -->
           <div class="bg-white p-6 rounded-lg border border-gray-200">
-            <div
-              class="w-10 h-10 rounded-full bg-yellow-100 flex items-center justify-center mb-4"
-            >
-              <UIcon name="i-heroicons-bolt" class="w-5 h-5 text-yellow-500" />
+            <div class="flex items-center mb-4">
+              <div
+                class="w-10 h-10 rounded-full bg-yellow-100 flex items-center justify-center mr-3"
+              >
+                <UIcon
+                  name="i-heroicons-bolt"
+                  class="w-5 h-5 text-yellow-500"
+                />
+              </div>
+              <h3 class="text-lg font-semibold">生産性分析</h3>
             </div>
-            <h3 class="text-lg font-semibold mb-2">生産性分析</h3>
             <p class="text-gray-600">
               タスク完了パターンを分析し、あなたの生産性向上のためのパーソナライズされた提案を行います。
             </p>
@@ -218,15 +225,17 @@
 
           <!-- 追加機能3 -->
           <div class="bg-white p-6 rounded-lg border border-gray-200">
-            <div
-              class="w-10 h-10 rounded-full bg-teal-100 flex items-center justify-center mb-4"
-            >
-              <UIcon
-                name="i-heroicons-chart-bar"
-                class="w-5 h-5 text-teal-500"
-              />
+            <div class="flex items-center mb-4">
+              <div
+                class="w-10 h-10 rounded-full bg-teal-100 flex items-center justify-center mr-3"
+              >
+                <UIcon
+                  name="i-heroicons-chart-bar"
+                  class="w-5 h-5 text-teal-500"
+                />
+              </div>
+              <h3 class="text-lg font-semibold">進捗可視化</h3>
             </div>
-            <h3 class="text-lg font-semibold mb-2">進捗可視化</h3>
             <p class="text-gray-600">
               プロジェクトの進捗状況をリアルタイムで可視化し、いつでもステータスを確認できます。
             </p>

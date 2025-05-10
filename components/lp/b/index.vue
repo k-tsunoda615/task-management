@@ -10,7 +10,7 @@
             <div
               class="inline-block mb-3 px-4 py-1.5 bg-primary-100 text-primary-700 rounded-full text-sm font-medium"
             >
-              プライオリティ志向タスク管理
+              プライオリティ志向のタスク管理
             </div>
             <h1
               class="text-5xl md:text-6xl font-bold text-gray-900 !leading-[1.15]"
