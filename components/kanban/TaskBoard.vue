@@ -1,21 +1,5 @@
 <template>
   <div>
-    <!-- 検索ボックスとタグプルダウンを横並びで配置 -->
-    <div class="mb-4 flex items-center gap-2">
-      <UInput
-        v-model="searchQuery"
-        placeholder="タスクを検索... (タイトル・メモ)"
-        class="w-full max-w-md"
-        clearable
-      />
-      <USelect
-        v-model="selectedTagId"
-        :options="tagOptions"
-        placeholder="タグで絞り込み"
-        class="w-48"
-        clearable
-      />
-    </div>
     <!-- 現在計測中のタスク表示 -->
     <Transition name="slide">
       <div
@@ -51,6 +35,24 @@
 
     <div class="mb-6 flex items-center justify-between">
       <h1 class="text-2xl font-semibold text-gray-900">Task Board</h1>
+    </div>
+    <!-- 検索ボックスとタグプルダウンを横並びで配置 -->
+    <div
+      class="mb-4 flex flex-col md:flex-row items-end md:items-center justify-end gap-2"
+    >
+      <UInput
+        v-model="searchQuery"
+        placeholder="タスクを検索... (タイトル・メモ)"
+        class="w-full md:max-w-md"
+        clearable
+      />
+      <USelect
+        v-model="selectedTagId"
+        :options="tagOptions"
+        placeholder="タグで絞り込み"
+        class="w-full md:w-48"
+        clearable
+      />
     </div>
 
     <!-- サイドバーコンポーネントにイベントを追加 -->
