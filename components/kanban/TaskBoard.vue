@@ -754,7 +754,7 @@ const addTag = async () => {
 
 // Todoの状態が変更されたときに再分類する
 const updateTodosByStatus = () => {
-  console.log("現在のTodos:", todoStore.filteredTodos);
+  console.log("現在のTodos:", todoStore.todosByVisibility);
 
   // ドラッグ中は再分類をスキップ
   if (isDragging.value) return;
@@ -765,7 +765,7 @@ const updateTodosByStatus = () => {
   todosByStatus[TASK_STATUS.ARCHIVED] = [];
 
   // 再分類
-  todoStore.filteredTodos.forEach((todo: Todo) => {
+  todoStore.todosByVisibility.forEach((todo: Todo) => {
     if (todo.status === TASK_STATUS.PRIORITY) {
       todosByStatus[TASK_STATUS.PRIORITY].push(todo);
     } else if (todo.status === TASK_STATUS.NEXT) {
@@ -791,7 +791,7 @@ const updateTodosByStatus = () => {
   );
 
   // 計測中のタスクを確認
-  const timingTodo = todoStore.filteredTodos.find(
+  const timingTodo = todoStore.todosByVisibility.find(
     (todo: Todo) => todo.is_timing
   );
 
@@ -814,14 +814,14 @@ const updateTodosByStatus = () => {
 
 // todoStoreのtodosが変更されたときに再分類を実行
 watch(
-  () => [todoStore.filteredTodos, todoStore.taskFilter],
+  () => [todoStore.todosByVisibility, todoStore.taskFilter],
   () => {
     // 更新中は再分類をスキップ
     if (isUpdatingRef.value) return;
     updateTodosByStatus();
 
     // 計測中のタスクを確認
-    const timingTodo = todoStore.filteredTodos.find(
+    const timingTodo = todoStore.todosByVisibility.find(
       (todo: Todo) => todo.is_timing
     );
     if (timingTodo) {

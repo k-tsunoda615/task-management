@@ -12,7 +12,7 @@ export const useTodoStore = defineStore("todo", {
   }),
 
   getters: {
-    filteredTodos(): Todo[] {
+    todosByVisibility(): Todo[] {
       if (this.taskFilter === "all") {
         return this.todos;
       } else if (this.taskFilter === "private") {
