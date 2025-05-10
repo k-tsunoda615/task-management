@@ -174,35 +174,57 @@
         </div>
 
         <!-- タグリスト -->
-        <div
-          class="max-h-[240px] overflow-y-auto -mx-2 divide-y divide-gray-100"
-        >
-          <div v-for="tag in sortedTags" :key="tag.id" class="group relative">
-            <div
-              class="flex items-center gap-3 py-2.5 px-4 hover:bg-gray-50 transition-colors duration-200 cursor-pointer"
-              @click="startEditing(tag)"
-            >
-              <div class="flex items-center gap-3 flex-1">
-                <UIcon
-                  name="i-heroicons-bars-2"
-                  class="w-4 h-4 text-gray-400 opacity-0 group-hover:opacity-100 transition-opacity cursor-grab"
-                />
+        <div class="max-h-[240px] overflow-y-auto -mx-2">
+          <draggable
+            v-model="localTags"
+            :group="{ name: 'tags' }"
+            item-key="id"
+            :animation="200"
+            ghost-class="opacity-50"
+            drag-class="cursor-grabbing"
+            chosen-class="bg-gray-50"
+            @start="isDragging = true"
+            @end="handleDragEnd"
+            @change="handleDragChange"
+          >
+            <template #item="{ element: tag }">
+              <div class="group relative">
                 <div
-                  class="w-4 h-4 rounded-md flex-shrink-0 border border-gray-200"
-                  :style="{ backgroundColor: tag.color || '#3b82f6' }"
-                ></div>
-                <span class="text-sm text-gray-700">{{ tag.name }}</span>
+                  class="flex items-center gap-3 py-2.5 px-4 hover:bg-gray-50 transition-colors duration-200"
+                  :class="{
+                    'cursor-grab': !isEditing,
+                    'cursor-pointer': isEditing,
+                  }"
+                  @click="!isDragging && startEditing(tag)"
+                >
+                  <div class="flex items-center gap-3 flex-1">
+                    <UIcon
+                      name="i-heroicons-bars-2"
+                      class="w-4 h-4 text-gray-400 transition-opacity cursor-grab"
+                      :class="{
+                        'opacity-0 group-hover:opacity-100': !isDragging,
+                        'opacity-100': isDragging,
+                      }"
+                    />
+                    <div
+                      class="w-4 h-4 rounded-md flex-shrink-0 border border-gray-200"
+                      :style="{ backgroundColor: tag.color || '#3b82f6' }"
+                    ></div>
+                    <span class="text-sm text-gray-700">{{ tag.name }}</span>
+                  </div>
+                  <UButton
+                    v-if="!isDragging"
+                    icon="i-heroicons-x-mark"
+                    size="xs"
+                    color="gray"
+                    variant="ghost"
+                    class="opacity-0 group-hover:opacity-100 transition-opacity p-0.5 rounded-md"
+                    @click.stop="confirmDeleteTag(tag.id)"
+                  />
+                </div>
               </div>
-              <UButton
-                icon="i-heroicons-x-mark"
-                size="xs"
-                color="gray"
-                variant="ghost"
-                class="opacity-0 group-hover:opacity-100 transition-opacity p-0.5 rounded-md"
-                @click.stop="confirmDeleteTag(tag.id)"
-              />
-            </div>
-          </div>
+            </template>
+          </draggable>
         </div>
 
         <!-- タグがない場合のメッセージ -->
@@ -243,6 +265,7 @@
 <script setup lang="ts">
 import { useDebounceFn } from "@vueuse/core";
 import type { Tag } from "../../types/todo";
+import draggable from "vuedraggable";
 
 const props = defineProps({
   show: Boolean,
@@ -265,12 +288,17 @@ const isOpen = ref(props.show);
 const localName = ref("");
 const localColor = ref("#3b82f6");
 const isCreatingNewTag = ref(false);
+const isDragging = ref(false);
+const isUpdating = ref(false);
 
 // 編集モード用の状態
 const isEditing = ref(false);
 const editingTagId = ref<string | null>(null);
 const editName = ref("");
 const editColor = ref("#3b82f6");
+
+// ローカルのタグリスト
+const localTags = ref<Tag[]>([]);
 
 // メモ化した配列 (頻繁に変更されないデータ)
 const predefinedColors = [
@@ -286,11 +314,18 @@ const predefinedColors = [
   "#64748b", // slate
 ];
 
-// 最適化: ソートは変更があったときのみ実行
-const sortedTags = computed(() => {
-  if (!props.tagStore?.tags || props.tagStore.tags.length === 0) return [];
-  return props.tagStore.sortedTags;
-});
+// タグストアの変更を監視してローカルの状態を更新
+watch(
+  () => props.tagStore?.tags,
+  (newTags) => {
+    if (newTags) {
+      localTags.value = [...newTags].sort(
+        (a, b) => a.sort_order - b.sort_order
+      );
+    }
+  },
+  { immediate: true, deep: true }
+);
 
 // モーダルの表示/非表示の処理
 watch(
@@ -394,4 +429,68 @@ const confirmDeleteTag = (tagId: string) => {
 const closeModal = () => {
   isOpen.value = false;
 };
+
+// ドラッグ終了時の処理
+const handleDragEnd = () => {
+  isDragging.value = false;
+};
+
+// ドラッグ&ドロップの変更を処理
+const handleDragChange = async (evt: any) => {
+  if (!props.tagStore) return;
+
+  // ドラッグ中フラグをセット
+  isDragging.value = true;
+  isUpdating.value = true;
+
+  try {
+    // 新しい順序を計算
+    const updatedTags = localTags.value.map((tag, index) => ({
+      ...tag,
+      sort_order: index * 100,
+    }));
+
+    // 一括更新
+    const updatePromises = updatedTags.map((tag) =>
+      props.tagStore?.updateTagOrder(tag.id, tag.sort_order)
+    );
+
+    await Promise.all(updatePromises);
+
+    useToast().add({
+      title: "更新完了",
+      description: "タグの順序を更新しました",
+      color: "green",
+    });
+  } catch (error) {
+    console.error("タグの順序更新エラー:", error);
+    useToast().add({
+      title: "エラー",
+      description: "タグの順序更新に失敗しました",
+      color: "red",
+    });
+
+    // エラー時は元の順序に戻す
+    if (props.tagStore.tags) {
+      localTags.value = [...props.tagStore.tags].sort(
+        (a, b) => a.sort_order - b.sort_order
+      );
+    }
+  } finally {
+    isDragging.value = false;
+    isUpdating.value = false;
+  }
+};
 </script>
+
+<style scoped>
+.ghost-card {
+  opacity: 0.5;
+  background: #f3f4f6;
+  border: 1px dashed #d1d5db;
+}
+
+.cursor-grabbing {
+  cursor: grabbing;
+}
+</style>
