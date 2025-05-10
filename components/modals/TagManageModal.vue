@@ -289,7 +289,7 @@ const predefinedColors = [
 // 最適化: ソートは変更があったときのみ実行
 const sortedTags = computed(() => {
   if (!props.tagStore?.tags || props.tagStore.tags.length === 0) return [];
-  return [...props.tagStore.tags].sort((a, b) => a.name.localeCompare(b.name));
+  return props.tagStore.sortedTags;
 });
 
 // モーダルの表示/非表示の処理

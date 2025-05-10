@@ -10,13 +10,19 @@ export const useTagStore = defineStore("tag", {
     totalTagCount(): number {
       return this.tags.length;
     },
+    sortedTags(): Tag[] {
+      return [...this.tags].sort((a, b) => a.sort_order - b.sort_order);
+    },
   },
   actions: {
     async fetchTags() {
       this.isLoaded = false;
       const client = useSupabaseClient();
       try {
-        const { data: tags, error } = await client.from("tags").select("*");
+        const { data: tags, error } = await client
+          .from("tags")
+          .select("*")
+          .order("sort_order", { ascending: true });
         if (error) throw error;
         this.tags = tags || [];
         this.isLoaded = true;
@@ -36,6 +42,12 @@ export const useTagStore = defineStore("tag", {
         return { data: existingTag, error: null };
       }
 
+      // 最大のsort_orderを取得
+      const maxSortOrder = this.tags.reduce(
+        (max, t) => Math.max(max, t.sort_order || 0),
+        0
+      );
+
       // 存在しない場合は新規作成
       const { data, error } = await client
         .from("tags")
@@ -43,6 +55,7 @@ export const useTagStore = defineStore("tag", {
           name: tag.name,
           user_id: tag.user_id || user.value?.id,
           color: tag.color || "#3b82f6",
+          sort_order: maxSortOrder + 100, // 100ずつ増やして余裕を持たせる
         })
         .select()
         .single();
@@ -50,7 +63,10 @@ export const useTagStore = defineStore("tag", {
       await this.fetchTags();
       return { data, error };
     },
-    async updateTag(tagId: string, updates: { name?: string; color?: string }) {
+    async updateTag(
+      tagId: string,
+      updates: { name?: string; color?: string; sort_order?: number }
+    ) {
       const client = useSupabaseClient();
       const { data, error } = await client
         .from("tags")
@@ -61,6 +77,9 @@ export const useTagStore = defineStore("tag", {
       if (error) throw error;
       await this.fetchTags();
       return { data, error };
+    },
+    async updateTagOrder(tagId: string, newOrder: number) {
+      return this.updateTag(tagId, { sort_order: newOrder });
     },
     async deleteTag(tagId: string) {
       const client = useSupabaseClient();
