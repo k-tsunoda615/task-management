@@ -50,16 +50,16 @@ export function convertTodoForDB(todo: Partial<Todo>): Record<string, unknown> {
   const dbData = { ...todo };
 
   // tags属性を除外
-  const { tags, ...rest } = dbData;
+  delete dbData.tags;
 
   // ステータスをDB形式に変換
   if (todo.status) {
     const dbStatus = DB_STATUS_MAPPING[todo.status as TaskStatus];
     return {
-      ...rest,
+      ...dbData,
       status: dbStatus,
     };
   }
 
-  return rest;
+  return dbData;
 }
