@@ -1,8 +1,6 @@
 import { defineStore } from "pinia";
 import type { Todo } from "../types/todo";
 import { useTodoData } from "../composables/useTodoData";
-import { TASK_STATUS } from "../utils/constants";
-import type { TaskStatus } from "../utils/constants";
 
 export const useTodoStore = defineStore("todo", {
   state: () => ({

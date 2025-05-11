@@ -45,7 +45,7 @@ export function normalizeTodo(todo: any): Todo {
  * DBへの保存用にTodoデータを変換する関数
  */
 export function convertTodoForDB(todo: Partial<Todo>): any {
-  let dbData = { ...todo };
+  const dbData = { ...todo };
 
   // tags属性を除外
   const { tags, ...rest } = dbData;

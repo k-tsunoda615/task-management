@@ -1,3 +1,5 @@
+import type { AuthError } from "@supabase/supabase-js";
+
 export function useAuth() {
   const client = useSupabaseClient();
   const user = useSupabaseUser();
@@ -7,7 +9,7 @@ export function useAuth() {
   const errorMessage = ref("");
 
   // エラーメッセージ日本語化関数
-  function getAuthErrorMessage(error: any): string {
+  function getAuthErrorMessage(error: AuthError): string {
     if (!error || !error.message) return "認証に失敗しました";
     const msg = error.message;
     if (msg.includes("Invalid login credentials")) {
@@ -70,9 +72,9 @@ export function useAuth() {
         }
         return { success: true };
       }
-    } catch (error: any) {
+    } catch (error) {
       console.error("認証エラー:", error);
-      errorMessage.value = getAuthErrorMessage(error);
+      errorMessage.value = getAuthErrorMessage(error as AuthError);
       return { success: false, error: errorMessage.value };
     } finally {
       loading.value = false;
@@ -87,10 +89,9 @@ export function useAuth() {
       // 匿名ユーザーから永続的なユーザーへの変換
       if (user.value?.is_anonymous) {
         // メールアドレスのみ更新
-        const { data: updateData, error: updateError } =
-          await client.auth.updateUser({
-            email,
-          });
+        const { error: updateError } = await client.auth.updateUser({
+          email,
+        });
 
         if (updateError) {
           // メール更新でエラーが発生した場合
@@ -106,7 +107,7 @@ export function useAuth() {
         };
       } else {
         // 通常の新規登録
-        const { data, error } = await client.auth.signUp({
+        const { error } = await client.auth.signUp({
           email,
           password,
         });
@@ -119,9 +120,9 @@ export function useAuth() {
           requireConfirmation: true,
         };
       }
-    } catch (error: any) {
+    } catch (error) {
       console.error("認証エラー:", error);
-      errorMessage.value = getAuthErrorMessage(error);
+      errorMessage.value = getAuthErrorMessage(error as AuthError);
       return { success: false, error: errorMessage.value };
     } finally {
       loading.value = false;
@@ -143,7 +144,7 @@ export function useAuth() {
         }
         return { success: true };
       }
-    } catch (error: any) {
+    } catch (error: unknown) {
       errorMessage.value = "ゲストログイン中にエラーが発生しました。";
       return { success: false, error: errorMessage.value };
     } finally {
@@ -165,7 +166,7 @@ export function useAuth() {
             "パスワードリセット用のメールを送信しました。メールボックスをご確認ください。",
         };
       }
-    } catch (error: any) {
+    } catch (error) {
       return {
         success: false,
         error: "リセット処理中にエラーが発生しました。",
@@ -184,8 +185,8 @@ export function useAuth() {
         router.push(redirectUrl);
       }
       return { success: true };
-    } catch (error: any) {
-      return { success: false, error: getAuthErrorMessage(error) };
+    } catch (error: unknown) {
+      return { success: false, error: getAuthErrorMessage(error as AuthError) };
     }
   }
 
