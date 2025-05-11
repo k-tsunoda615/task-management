@@ -1,4 +1,4 @@
-import type { AuthError } from "@supabase/supabase-js";
+import type { AuthError, Session } from "@supabase/supabase-js";
 
 export function useAuth() {
   const client = useSupabaseClient();
@@ -144,7 +144,7 @@ export function useAuth() {
         }
         return { success: true };
       }
-    } catch (error: unknown) {
+    } catch {
       errorMessage.value = "ゲストログイン中にエラーが発生しました。";
       return { success: false, error: errorMessage.value };
     } finally {
@@ -166,7 +166,7 @@ export function useAuth() {
             "パスワードリセット用のメールを送信しました。メールボックスをご確認ください。",
         };
       }
-    } catch (error) {
+    } catch {
       return {
         success: false,
         error: "リセット処理中にエラーが発生しました。",
@@ -191,7 +191,9 @@ export function useAuth() {
   }
 
   // 認証状態変更を監視
-  function watchAuthState(callback: (event: string, session: any) => void) {
+  function watchAuthState(
+    callback: (event: string, session: Session | null) => void,
+  ) {
     const { data } = client.auth.onAuthStateChange(callback);
 
     // クリーンアップ関数を返す

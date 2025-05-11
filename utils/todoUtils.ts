@@ -20,31 +20,33 @@ export function normalizeStatus(status: string): TaskStatus {
 /**
  * Todoデータを正規化する関数
  */
-export function normalizeTodo(todo: any): Todo {
+export function normalizeTodo(todo: Record<string, unknown>): Todo {
   // ステータスを新しい形式に正規化
   if (!todo.status) {
     todo.status = TASK_STATUS.PRIORITY;
   } else {
     // レガシーステータスを新しい形式に変換
-    todo.status = normalizeStatus(todo.status);
+    todo.status = normalizeStatus(todo.status as string);
   }
 
   if (todo.total_time !== undefined) {
     todo.total_time = Array.isArray(todo.total_time)
-      ? todo.total_time[0]
+      ? (todo.total_time[0] as number)
       : todo.total_time;
   }
 
   // タグの正規化
-  todo.tags = (todo.todo_tags || []).map((tt: any) => tt.tag).filter(Boolean);
+  todo.tags = Array.isArray(todo.todo_tags)
+    ? todo.todo_tags.map((tt: { tag: unknown }) => tt.tag).filter(Boolean)
+    : [];
 
-  return todo;
+  return todo as Todo;
 }
 
 /**
  * DBへの保存用にTodoデータを変換する関数
  */
-export function convertTodoForDB(todo: Partial<Todo>): any {
+export function convertTodoForDB(todo: Partial<Todo>): Record<string, unknown> {
   const dbData = { ...todo };
 
   // tags属性を除外
