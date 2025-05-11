@@ -68,6 +68,38 @@
       </UButton>
     </div>
 
+    <!-- Googleサインインボタン追加 -->
+    <div class="mt-2 text-center">
+      <UButton
+        block
+        color="white"
+        class="h-12 text-base border border-gray-300 flex items-center justify-center gap-2"
+        @click="handleGoogleSignIn"
+      >
+        <svg class="w-5 h-5" viewBox="0 0 48 48">
+          <g>
+            <path
+              fill="#4285F4"
+              d="M44.5 20H24v8.5h11.7C34.7 33.1 30.1 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c2.6 0 5 .8 7 2.3l6.4-6.4C33.5 5.1 28.9 3 24 3 12.4 3 3 12.4 3 24s9.4 21 21 21c10.5 0 20-7.6 20-21 0-1.3-.1-2.7-.5-4z"
+            />
+            <path
+              fill="#34A853"
+              d="M6.3 14.7l7 5.1C15.5 16.1 19.4 13 24 13c2.6 0 5 .8 7 2.3l6.4-6.4C33.5 5.1 28.9 3 24 3 16.3 3 9.4 7.6 6.3 14.7z"
+            />
+            <path
+              fill="#FBBC05"
+              d="M24 45c6.1 0 11.2-2 14.9-5.4l-6.9-5.7C29.7 35.7 27 36.5 24 36.5c-6.1 0-11.2-4.1-13-9.6l-7 5.4C9.4 40.4 16.3 45 24 45z"
+            />
+            <path
+              fill="#EA4335"
+              d="M44.5 20H24v8.5h11.7c-1.2 3.2-4.7 7.5-11.7 7.5-6.6 0-12-5.4-12-12s5.4-12 12-12c2.6 0 5 .8 7 2.3l6.4-6.4C33.5 5.1 28.9 3 24 3 12.4 3 3 12.4 3 24s9.4 21 21 21c10.5 0 20-7.6 20-21 0-1.3-.1-2.7-.5-4z"
+            />
+          </g>
+        </svg>
+        Googleでログイン
+      </UButton>
+    </div>
+
     <div class="mt-4 text-center">
       <UButton
         variant="link"
@@ -231,6 +263,30 @@ async function handleGuestLogin() {
     }
   } catch (e) {
     errorMessage.value = "ゲストログイン中にエラーが発生しました。";
+  } finally {
+    loading.value = false;
+  }
+}
+
+// Googleサインイン関数
+async function handleGoogleSignIn() {
+  loading.value = true;
+  errorMessage.value = "";
+  try {
+    const config = useRuntimeConfig();
+    const { error } = await client.auth.signInWithOAuth({
+      provider: "google",
+      options: {
+        redirectTo:
+          String(config.public.NUXT_SUPABASE_CALLBACK_URL) || undefined,
+      },
+    });
+    if (error) {
+      errorMessage.value = getAuthErrorMessage(error);
+    }
+    // 通常、リダイレクトされるのでここでの処理は不要
+  } catch (e) {
+    errorMessage.value = "Googleログイン中にエラーが発生しました。";
   } finally {
     loading.value = false;
   }
