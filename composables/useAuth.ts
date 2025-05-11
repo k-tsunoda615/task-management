@@ -52,7 +52,7 @@ export function useAuth() {
   async function loginWithPassword(
     email: string,
     password: string,
-    redirectUrl: string = "/board"
+    redirectUrl: string = "/board",
   ) {
     loading.value = true;
     errorMessage.value = "";

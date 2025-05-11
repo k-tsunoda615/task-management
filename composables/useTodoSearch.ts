@@ -9,7 +9,7 @@ import type { Todo } from "../types/todo";
 export function useTodoSearch(
   todosRef: Ref<Todo[]>,
   queryRef: Ref<string>,
-  tagIdRef?: Ref<string | null>
+  tagIdRef?: Ref<string | null>,
 ) {
   const searchedTodos = computed(() => {
     const query = queryRef.value.trim().toLowerCase();

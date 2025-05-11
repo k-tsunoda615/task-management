@@ -320,11 +320,11 @@ watch(
   (newTags) => {
     if (newTags) {
       localTags.value = [...newTags].sort(
-        (a, b) => a.sort_order - b.sort_order
+        (a, b) => a.sort_order - b.sort_order,
       );
     }
   },
-  { immediate: true, deep: true }
+  { immediate: true, deep: true },
 );
 
 // モーダルの表示/非表示の処理
@@ -338,7 +338,7 @@ watch(
       localColor.value = props.newTagColor || "#3b82f6";
     }
   },
-  { immediate: true }
+  { immediate: true },
 );
 
 // モーダルが閉じられたときの処理
@@ -452,7 +452,7 @@ const handleDragChange = async (evt: any) => {
 
     // 一括更新
     const updatePromises = updatedTags.map((tag) =>
-      props.tagStore?.updateTagOrder(tag.id, tag.sort_order)
+      props.tagStore?.updateTagOrder(tag.id, tag.sort_order),
     );
 
     await Promise.all(updatePromises);
@@ -473,7 +473,7 @@ const handleDragChange = async (evt: any) => {
     // エラー時は元の順序に戻す
     if (props.tagStore.tags) {
       localTags.value = [...props.tagStore.tags].sort(
-        (a, b) => a.sort_order - b.sort_order
+        (a, b) => a.sort_order - b.sort_order,
       );
     }
   } finally {

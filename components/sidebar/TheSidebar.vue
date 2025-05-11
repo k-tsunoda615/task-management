@@ -341,7 +341,7 @@ const toggleSidebar = () => {
   window.dispatchEvent(
     new CustomEvent("sidebarToggle", {
       detail: { isOpen: isOpen.value },
-    })
+    }),
   );
 };
 
@@ -355,7 +355,7 @@ const toggleTimerVisibility = () => {
   window.dispatchEvent(
     new CustomEvent("timerVisibilityToggle", {
       detail: { showTimer: showTimer.value },
-    })
+    }),
   );
 };
 
@@ -366,7 +366,7 @@ const toggleTagVisibility = () => {
   window.dispatchEvent(
     new CustomEvent("tagVisibilityToggle", {
       detail: { showTagBar: showTagBar.value },
-    })
+    }),
   );
 };
 

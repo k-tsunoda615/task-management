@@ -39,9 +39,7 @@
               name="i-heroicons-envelope"
               class="mr-1 h-5 w-5 inline-block"
             />
-            メールの確認が完了していません。{{
-              email
-            }}
+            メールの確認が完了していません。{{ email }}
             に送信された確認メールを確認してください。
           </div>
           <div class="mt-4 text-sm text-gray-600">
