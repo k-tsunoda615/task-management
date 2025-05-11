@@ -2,6 +2,11 @@ export default defineNuxtRouteMiddleware(async (to) => {
   const user = useSupabaseUser();
   const loading = useState("auth-loading", () => true);
 
+  // Google認証後の?code=付きトップページアクセス時は/boardへリダイレクト
+  if (to.path === "/" && to.query.code) {
+    return navigateTo("/board");
+  }
+
   // 認証が必要なページへのアクセス時
   if (to.path === "/board") {
     if (!user.value) {
