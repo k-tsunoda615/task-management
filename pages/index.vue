@@ -1,5 +1,5 @@
 <template>
   <CommonHeader />
-  <LpB />
+  <Auth />
   <CommonFooter />
 </template>

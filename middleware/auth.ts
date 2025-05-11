@@ -1,8 +1,9 @@
-export default defineNuxtRouteMiddleware(async (to) => {
+export default defineNuxtRouteMiddleware((to) => {
   const user = useSupabaseUser();
   const loading = useState("auth-loading", () => true);
+  console.log("middleware:", to.path, to.query);
 
-  // Google認証後の?code=付きトップページアクセス時は/boardへリダイレクト
+  // クライアントサイドでのみwindowを使って?code=を検知
   if (to.path === "/" && to.query.code) {
     return navigateTo("/board");
   }

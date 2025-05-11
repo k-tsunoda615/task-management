@@ -7,15 +7,21 @@
 </template>
 
 <script setup lang="ts">
-const user = useSupabaseUser();
 const loading = useState("auth-loading", () => true);
 const initialized = ref(false);
+const router = useRouter();
+const route = useRoute();
 
 onMounted(() => {
+  // Google認証後の?code=がURLに含まれていたら/boardにリダイレクト
+  if (route.query.code) {
+    router.replace("/board");
+    return;
+  }
   // クライアントサイドでのみ実行
   const checkAuth = async () => {
     const client = useSupabaseClient();
-    const { data } = await client.auth.getSession();
+    await client.auth.getSession();
     loading.value = false;
     initialized.value = true;
   };
