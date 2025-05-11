@@ -455,7 +455,7 @@
                     () => {
                       if (editingTodo.tags.some((t) => t.id === tag.id)) {
                         editingTodo.tags = editingTodo.tags.filter(
-                          (t) => t.id !== tag.id,
+                          (t) => t.id !== tag.id
                         );
                       } else {
                         editingTodo.tags.push(tag);
@@ -560,7 +560,7 @@ import draggable from "vuedraggable";
 import { marked } from "marked";
 import { useEventBus } from "@vueuse/core";
 import type { Todo, Tag } from "../../types/todo";
-import TheSidebar from "../../components/sidebar/TheSidebar.vue";
+import TheSidebar from "../common/Sidebar.vue";
 import TaskCreateModal from "../modals/TaskCreateModal.vue";
 import DeleteConfirmModal from "../modals/DeleteConfirmModal.vue";
 import TodoCard from "../kanban/TodoCard.vue";
@@ -782,7 +782,7 @@ const tagOptions = computed(() => [
 const { searchedTodos } = useTodoSearch(
   computed(() => todoStore.todosByVisibility),
   searchQuery,
-  computed(() => selectedTagId.value || null),
+  computed(() => selectedTagId.value || null)
 );
 
 // updateTodosByStatusを検索結果で分類するよう修正
@@ -807,13 +807,13 @@ const updateTodosByStatus = () => {
   });
   // 各リストをsort_orderでソート
   todosByStatus[TASK_STATUS.PRIORITY].sort(
-    (a: Todo, b: Todo) => (a.sort_order || 0) - (b.sort_order || 0),
+    (a: Todo, b: Todo) => (a.sort_order || 0) - (b.sort_order || 0)
   );
   todosByStatus[TASK_STATUS.NEXT].sort(
-    (a: Todo, b: Todo) => (a.sort_order || 0) - (b.sort_order || 0),
+    (a: Todo, b: Todo) => (a.sort_order || 0) - (b.sort_order || 0)
   );
   todosByStatus[TASK_STATUS.ARCHIVED].sort(
-    (a: Todo, b: Todo) => (a.sort_order || 0) - (b.sort_order || 0),
+    (a: Todo, b: Todo) => (a.sort_order || 0) - (b.sort_order || 0)
   );
   // 計測中のタスクを確認
   const timingTodo = searchedTodos.value.find((todo: Todo) => todo.is_timing);
@@ -844,7 +844,7 @@ watch(
       }
     }
   },
-  { deep: true },
+  { deep: true }
 );
 
 const isMobile = ref(false);
@@ -878,11 +878,11 @@ onMounted(() => {
   onUnmounted(() => {
     window.removeEventListener(
       "timerVisibilityToggle",
-      handleTimerVisibilityToggle,
+      handleTimerVisibilityToggle
     );
     window.removeEventListener(
       "tagVisibilityToggle",
-      handleTagVisibilityToggle,
+      handleTagVisibilityToggle
     );
 
     // タイマーを停止
@@ -960,7 +960,7 @@ const createTodo = async () => {
   if (todosByStatus[currentStatus] && todosByStatus[currentStatus].length > 0) {
     minSortOrder =
       Math.min(
-        ...todosByStatus[currentStatus].map((t: Todo) => t.sort_order || 0),
+        ...todosByStatus[currentStatus].map((t: Todo) => t.sort_order || 0)
       ) - 100;
   }
 
@@ -1110,7 +1110,7 @@ const handleDragChange = async (evt: any) => {
       "新しいステータス:",
       newStatus,
       "ターゲットリスト:",
-      targetList,
+      targetList
     );
 
     if (!todo || !targetList) {
@@ -1171,7 +1171,7 @@ const handleDragChange = async (evt: any) => {
           todoStore.updateTodoOrder({
             id: t.id,
             sort_order: t.sort_order ?? 0,
-          }),
+          })
         );
 
         await Promise.all(updatePromises);
@@ -1329,7 +1329,7 @@ const stopTiming = async (todo: Todo) => {
 const updateTimingTodoInLists = (
   todoId: string,
   newTotalTime: number,
-  isTimingValue = true,
+  isTimingValue = true
 ) => {
   // 各リスト内のタスクを検索して更新
   const updateInList = (list: Todo[]) => {

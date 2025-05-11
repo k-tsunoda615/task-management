@@ -278,8 +278,8 @@
       @addTag="addTag"
       @deleteTag="deleteTag"
       @updateTag="updateTag"
-      @updateNewTagName="(val) => (newTagName = val)"
-      @updateNewTagColor="(val) => (newTagColor = val)"
+      @updateNewTagName="(val: string) => (newTagName = val)"
+      @updateNewTagColor="(val: string) => (newTagColor = val)"
     />
   </div>
 </template>
@@ -289,7 +289,7 @@ import { useProjectStore } from "../../stores/project";
 import { useTodoStore } from "../../stores/todo";
 import { useTagStore } from "../../stores/tag";
 import { useEventBus } from "@vueuse/core";
-import type { Tag } from "../../types/todo";
+// import type { Tag } from "../../types/todo";
 import TagManageModal from "../modals/TagManageModal.vue";
 import { useTags } from "../../composables/useTags";
 // import { darkenColor } from "@/utils/color";
@@ -341,7 +341,7 @@ const toggleSidebar = () => {
   window.dispatchEvent(
     new CustomEvent("sidebarToggle", {
       detail: { isOpen: isOpen.value },
-    }),
+    })
   );
 };
 
@@ -355,7 +355,7 @@ const toggleTimerVisibility = () => {
   window.dispatchEvent(
     new CustomEvent("timerVisibilityToggle", {
       detail: { showTimer: showTimer.value },
-    }),
+    })
   );
 };
 
@@ -366,7 +366,7 @@ const toggleTagVisibility = () => {
   window.dispatchEvent(
     new CustomEvent("tagVisibilityToggle", {
       detail: { showTagBar: showTagBar.value },
-    }),
+    })
   );
 };
 

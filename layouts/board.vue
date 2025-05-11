@@ -113,7 +113,7 @@
 </template>
 
 <script setup lang="ts">
-import TheSidebar from "../components/sidebar/TheSidebar.vue";
+import TheSidebar from "../components/common/Sidebar.vue";
 import { useAuth } from "../composables/useAuth";
 import { useRouter } from "vue-router";
 
