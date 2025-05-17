@@ -57,5 +57,4 @@ export async function useInitialSampleData() {
       user_id: user.value.id,
     });
   }
-  await todoStore.fetchTodos();
 }

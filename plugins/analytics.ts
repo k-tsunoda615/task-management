@@ -22,19 +22,15 @@ export default defineNuxtPlugin((nuxtApp) => {
     nuxtApp.hook("app:mounted", () => {
       const user = useSupabaseUser();
 
-      watch(
-        user,
-        (newUser) => {
-          if (newUser) {
-            // ログイン状態に変わった
-            pushEvent("user_login", {
-              user_id: newUser.id,
-              is_anonymous: newUser.is_anonymous,
-            });
-          }
-        },
-        { immediate: true }
-      );
+      watch(user, (newUser) => {
+        if (newUser) {
+          // ログイン状態に変わった
+          pushEvent("user_login", {
+            user_id: newUser.id,
+            is_anonymous: newUser.is_anonymous,
+          });
+        }
+      });
     });
   }
 
