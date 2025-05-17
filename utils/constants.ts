@@ -37,20 +37,20 @@ export const DB_STATUS_MAPPING = {
 // ステータスの色設定
 export const STATUS_COLORS = {
   [TASK_STATUS.PRIORITY]: {
-    bg: "bg-none",
-    border: "border border-green-300 border",
+    bg: "bg-white/80",
+    border: "border border-green-300",
     icon: "text-green-500",
     iconName: "i-heroicons-inbox",
   },
   [TASK_STATUS.NEXT]: {
-    bg: "bg-white",
-    border: "border border-blue-300 border",
+    bg: "bg-white/80",
+    border: "border border-blue-300",
     icon: "text-blue-500",
     iconName: "i-heroicons-clock",
   },
   [TASK_STATUS.ARCHIVED]: {
-    bg: "bg-white",
-    border: "border border-gray-300 border",
+    bg: "bg-white/80",
+    border: "border border-gray-300",
     icon: "text-gray-500",
     iconName: "i-heroicons-check-circle",
   },
