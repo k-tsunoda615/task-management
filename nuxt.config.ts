@@ -1,3 +1,5 @@
+import { gtmNoscript, gtmScript } from "./utils/gtm";
+
 export default defineNuxtConfig({
   modules: ["@nuxt/ui", "@nuxtjs/supabase", "@pinia/nuxt", "@vueuse/nuxt"],
 
@@ -26,6 +28,25 @@ export default defineNuxtConfig({
           name: "viewport",
           content:
             "width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no",
+        },
+      ],
+      script: [
+        {
+          id: "gtm-script",
+          innerHTML: gtmScript,
+          type: "text/javascript",
+        },
+      ],
+      // @ts-expect-error Nuxt Head型の制約回避
+      __dangerouslyDisableSanitizersByTagID: {
+        "gtm-script": ["innerHTML"],
+      },
+    },
+    body: {
+      noscript: [
+        {
+          id: "gtm-noscript",
+          innerHTML: gtmNoscript,
         },
       ],
     },
