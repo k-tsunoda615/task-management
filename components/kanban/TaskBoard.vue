@@ -3,27 +3,21 @@
     <!-- 現在計測中のタスク表示 -->
     <Transition name="slide">
       <div
-        v-if="currentTimingTodo"
-        class="mb-6 p-4 bg-blue-50/50 rounded-lg border border-blue-100 flex items-center justify-between"
+        v-if="currentTimingTodo && showTimerBar"
+        class="mb-6 p-4 bg-blue-50/50 rounded-lg border border-blue-100 flex flex-col md:flex-row gap-4 items-center justify-between"
       >
-        <div class="flex items-center gap-3">
-          <div
-            class="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center"
-          >
-            <UIcon name="i-heroicons-clock" class="w-5 h-5 text-blue-600" />
-          </div>
+        <div class="flex flex-col md:flex-row items-center gap-3">
+          <!-- アナログ時計風タイマー -->
+          <AnalogTimer :seconds="currentTotalTime" :size="240" />
           <div>
             <div class="font-medium text-gray-900">
               {{ currentTimingTodo.title }}
             </div>
-            <div class="text-sm text-blue-600 font-medium">
-              {{ formatTime(currentTotalTime) }}
-            </div>
           </div>
         </div>
         <UButton
-          color="red"
-          variant="soft"
+          color="green"
+          variant="solid"
           size="sm"
           @click="stopTiming(currentTimingTodo)"
           icon="i-heroicons-pause"
@@ -587,6 +581,7 @@ import {
   trackSearch,
   trackTagFiltered,
 } from "../../utils/analytics";
+import AnalogTimer from "./AnalogTimer.vue";
 
 const todoStore = useTodoStore();
 const tagStore = useTagStore();
