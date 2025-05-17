@@ -75,8 +75,9 @@
     >
       <div class="flex items-center text-sm text-gray-500">
         <UIcon name="i-heroicons-clock" class="w-4 h-4 mr-1.5" />
-        {{ formatTime(todo.total_time || 0) }}
+        {{ todo.is_timing ? "計測中..." : formatTime(todo.total_time || 0) }}
       </div>
+
       <div class="flex items-center gap-1">
         <UButton
           v-if="!todo.is_timing"
