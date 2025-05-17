@@ -1,6 +1,11 @@
 <template>
   <div
-    class="group bg-white border border-gray-200 rounded-lg p-4 hover:shadow-md transition-all duration-200 relative"
+    class="group bg-white rounded-lg p-4 hover:shadow-md transition-all duration-200 relative"
+    :class="[
+      todo.is_timing
+        ? 'bg-blue-100 border border-blue-500 pulsing-border'
+        : 'border border-gray-200',
+    ]"
     draggable="true"
     :data-status="todo.status"
     :data-todo-id="todo.id"
@@ -162,6 +167,12 @@ const startTiming = (event: Event) => {
   event.preventDefault();
   event.stopPropagation();
   emit("start-timing", props.todo);
+
+  // 画面上部にスクロール
+  window.scrollTo({
+    top: 0,
+    behavior: "smooth",
+  });
 };
 
 // タイミング停止 - イベント伝播を明示的に停止
@@ -187,6 +198,22 @@ function darkenColor(hex: string, amount = 0.2) {
 </script>
 
 <style scoped>
+.pulsing-border {
+  animation: pulse-border 2s infinite;
+}
+
+@keyframes pulse-border {
+  0% {
+    border-color: #3b82f6; /* blue-500 */
+  }
+  50% {
+    border-color: #dddddd; /* blue-300 */
+  }
+  100% {
+    border-color: #3b82f6; /* blue-500 */
+  }
+}
+
 .prose :deep(p) {
   margin: 0.5em 0;
   color: #4b5563;
