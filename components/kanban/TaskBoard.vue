@@ -575,6 +575,18 @@ import {
 import type { TaskStatus } from "../../utils/constants";
 import { ref, onMounted, onUnmounted } from "vue";
 import { useTodoSearch } from "../../composables/useTodoSearch";
+// アナリティクス用のユーティリティをインポート
+import {
+  trackTimerStarted,
+  trackTimerStopped,
+  trackTaskStatusChanged,
+  trackTaskCreated,
+  trackTaskUpdated,
+  trackTaskDeleted,
+  trackLayoutChanged,
+  trackSearch,
+  trackTagFiltered,
+} from "../../utils/analytics";
 
 const todoStore = useTodoStore();
 const tagStore = useTagStore();
@@ -967,7 +979,7 @@ const createTodo = async () => {
   const totalTimeSeconds = parseTimeToSeconds(timeInput.value);
   isCreating.value = true;
   try {
-    await todoStore.createTodo({
+    const newTaskData = {
       title: newTodo.value.title,
       memo: newTodo.value.memo,
       status: newTodo.value.status,
@@ -976,7 +988,20 @@ const createTodo = async () => {
       total_time: [totalTimeSeconds],
       is_timing: false,
       tags: newTodo.value.tags,
-    });
+    };
+
+    const result = await todoStore.createTodo(newTaskData);
+
+    // アナリティクスイベント送信
+    if (result && result.id) {
+      trackTaskCreated(
+        result.id,
+        newTaskData.status,
+        newTaskData.tags.length > 0,
+        newTaskData.is_private
+      );
+    }
+
     showNewTaskModal.value = false;
     newTodo.value = {
       title: "",
@@ -1009,6 +1034,10 @@ const updateTodo = async () => {
   isUpdating.value = true;
   try {
     await todoStore.updateTodo(updateData);
+
+    // アナリティクスイベント送信
+    trackTaskUpdated(updateData.id!, updateData.status!);
+
     showEditModal.value = false;
     useToast().add({
       title: "更新完了",
@@ -1043,6 +1072,7 @@ const handleDragChange = async (evt: any) => {
 
   const todo = evt[dragType].element;
   const newIndex = evt[dragType].newIndex;
+  const oldStatus = todo.status; // 移動前のステータスを保存
 
   // 移動先のリストを特定
   let newStatus: TaskStatus = TASK_STATUS.PRIORITY; // デフォルト値
@@ -1158,6 +1188,11 @@ const handleDragChange = async (evt: any) => {
 
       console.log("Todoを更新:", updateData);
 
+      // ステータスが変更された場合はイベントを送信
+      if (oldStatus !== newStatus) {
+        trackTaskStatusChanged(todo.id, oldStatus, newStatus);
+      }
+
       // 確実にステータスが更新されるようにする
       await todoStore.updateTodo(updateData);
 
@@ -1269,6 +1304,9 @@ const startTiming = async (todo: Todo) => {
     // タイマーを開始
     startTimerForTodo(todo, () => {});
 
+    // アナリティクスイベント送信
+    trackTimerStarted(todo.id, todo.title);
+
     // 成功メッセージ
     useToast().add({
       title: "計測開始",
@@ -1306,6 +1344,9 @@ const stopTiming = async (todo: Todo) => {
       is_timing: false,
       total_time: [finalTime],
     });
+
+    // アナリティクスイベント送信
+    trackTimerStopped(todo.id, todo.title, finalTime);
 
     useToast().add({
       title: "計測停止",
@@ -1368,6 +1409,10 @@ const updateTimerInBackground = async () => {
 const deleteTodo = async (todoId: string) => {
   try {
     await todoStore.deleteTodo(todoId);
+
+    // アナリティクスイベント送信
+    trackTaskDeleted(todoId);
+
     useToast().add({
       title: "削除完了",
       description: "タスクを削除しました",
@@ -1497,6 +1542,10 @@ const toggleLayout = () => {
   const currentIndex = layouts.indexOf(currentLayout.value);
   const nextIndex = (currentIndex + 1) % layouts.length;
   currentLayout.value = layouts[nextIndex];
+
+  // アナリティクスイベント送信
+  trackLayoutChanged(currentLayout.value);
+
   // ローカルストレージに保存
   localStorage.setItem("todoLayout", currentLayout.value);
 };
@@ -1532,6 +1581,32 @@ const statusOptions = computed(() => {
     value,
     label,
   }));
+});
+
+// 検索とタグフィルターの変更を監視してイベントを送信
+watch(searchQuery, (newQuery, oldQuery) => {
+  if (newQuery && newQuery !== oldQuery && newQuery.length > 2) {
+    // 検索結果数を取得するため少し遅延させる
+    setTimeout(() => {
+      trackSearch(newQuery, searchedTodos.value.length);
+    }, 300);
+  }
+});
+
+watch(selectedTagId, (newTagId, oldTagId) => {
+  if (newTagId && newTagId !== oldTagId) {
+    const selectedTag = tagStore.tags.find((tag) => tag.id === newTagId);
+    if (selectedTag) {
+      // 検索結果数を取得するため少し遅延させる
+      setTimeout(() => {
+        trackTagFiltered(
+          newTagId,
+          selectedTag.name,
+          searchedTodos.value.length
+        );
+      }, 300);
+    }
+  }
 });
 </script>
 
