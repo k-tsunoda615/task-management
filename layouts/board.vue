@@ -91,12 +91,16 @@
             <strong
               >【重要】ゲストのままログアウトすると、同じアカウントで再ログインすることはできません。</strong
             ><br />
-            作成したタスクやタグを残したい場合は、アカウント登録（メールアドレスとパスワードの設定）を行うことで、現在のデータをそのまま引き継ぐことができます。
-            <div class="mt-3">
-              <UButton color="primary" @click="goToSignUp" size="sm">
-                アカウント登録へ進む
-              </UButton>
-            </div>
+            作成したタスクやタグを残したい場合は、<NuxtLink
+              to="/auth?signup=1"
+              class="underline font-bold"
+              >アカウント登録</NuxtLink
+            >（メールアドレスとパスワードの設定）を行うことで、現在のデータをそのまま引き継ぐことができます。
+          </div>
+          <div class="m-3 flex justify-end">
+            <UButton color="primary" @click="goToSignUp" size="sm">
+              アカウント登録へ進む
+            </UButton>
           </div>
           <slot />
         </main>
