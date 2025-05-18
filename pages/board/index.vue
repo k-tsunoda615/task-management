@@ -6,6 +6,18 @@
       <KanbanTaskBoard />
     </div>
 
+    <!-- ミドルウェアのリダイレクトが効かなかった時のフォールバック -->
+    <div v-else>
+      <div class="flex justify-end mt-1">
+        <NuxtLink
+          to="/auth"
+          class="text-xs text-blue-600 underline hover:text-blue-800 transition"
+        >
+          ログインページが開かない場合はこちら
+        </NuxtLink>
+      </div>
+    </div>
+
     <!-- ヘルプモーダル -->
     <ModalsHelpModal v-model="showHelpModal" />
   </div>
@@ -27,13 +39,6 @@ useHead({
 
 const user = useSupabaseUser();
 const showHelpModal = ref(false);
-const client = useSupabaseClient();
-const router = useRouter();
-
-const logout = async () => {
-  await client.auth.signOut();
-  router.push("/auth");
-};
 
 onMounted(async () => {
   await useInitialSampleData();

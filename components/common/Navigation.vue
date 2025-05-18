@@ -61,7 +61,7 @@
     to="/auth?signup=1"
     class="m-3 flex justify-end"
   >
-    <UButton color="primary" size="sm"> アカウント登録へ進む</UButton>
+    <UButton color="primary" size="sm">アカウント登録へ進む</UButton>
   </NuxtLink>
 </template>
 
@@ -92,10 +92,13 @@ const logout = async () => {
   padding: 1em 2em 1em 1em;
   border: 1px solid #ffeeba;
   border-radius: 4px;
-  margin: 1em 0;
+  margin: 1em 0 0.5em 0;
   text-align: center;
   position: relative;
   font-size: 0.8em;
+}
+.flex.justify-end {
+  gap: 0.5em;
 }
 .close-btn {
   position: absolute;

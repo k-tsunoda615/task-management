@@ -3,7 +3,7 @@ export default defineNuxtRouteMiddleware((to) => {
   const loading = useState("auth-loading", () => true);
   console.log("middleware:", to.path, to.query);
 
-  // クライアントサイドでのみwindowを使って?code=を検知
+  // ?code=を検知しgoogle認証完了後にリダイレクト
   if (to.path === "/" && to.query.code) {
     return navigateTo("/board");
   }
