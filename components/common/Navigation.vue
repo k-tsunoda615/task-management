@@ -56,7 +56,10 @@
       >アカウント登録</NuxtLink
     >（メールアドレスとパスワードの設定）を行うことで、現在のデータをそのまま引き継ぐことができます。
   </div>
-  <div class="m-3 flex justify-end">
+  <div
+    v-if="showAnonymousBanner && user?.is_anonymous"
+    class="m-3 flex justify-end"
+  >
     <UButton color="primary" @click="goToSignUp" size="sm">
       アカウント登録へ進む
     </UButton>
@@ -65,6 +68,9 @@
 
 <script setup>
 import { useAuth } from "../../composables/useAuth";
+
+const client = useSupabaseClient();
+const router = useRouter();
 const { user } = useAuth();
 const props = defineProps({
   title: {
@@ -74,6 +80,10 @@ const props = defineProps({
 });
 const showHelpModal = ref(false);
 const showAnonymousBanner = ref(true);
+const logout = async () => {
+  await client.auth.signOut();
+  router.push("/auth");
+};
 </script>
 
 <style scoped>
