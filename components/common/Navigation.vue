@@ -65,7 +65,7 @@
   </NuxtLink>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { useAuth } from "../../composables/useAuth";
 
 const client = useSupabaseClient();
