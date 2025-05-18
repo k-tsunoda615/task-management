@@ -56,14 +56,13 @@
       >アカウント登録</NuxtLink
     >（メールアドレスとパスワードの設定）を行うことで、現在のデータをそのまま引き継ぐことができます。
   </div>
-  <div
+  <NuxtLink
     v-if="showAnonymousBanner && user?.is_anonymous"
+    to="/auth?signup=1"
     class="m-3 flex justify-end"
   >
-    <UButton color="primary" @click="goToSignUp" size="sm">
-      アカウント登録へ進む
-    </UButton>
-  </div>
+    <UButton color="primary" size="sm"> アカウント登録へ進む</UButton>
+  </NuxtLink>
 </template>
 
 <script setup>
