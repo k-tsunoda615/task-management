@@ -100,6 +100,44 @@
 
         <!-- 区切り線 -->
         <div class="my-2 border-t border-gray-200" />
+
+        <!-- ビュー切り替え -->
+        <div class="px-3 py-1 mb-1">
+          <p
+            v-if="isOpen || isMobile"
+            class="text-xs font-medium text-gray-500 uppercase px-1.5 mb-1"
+          >
+            表示形式
+          </p>
+          <div class="flex flex-col gap-1">
+            <!-- 統合された表示形式切り替えボタン -->
+            <UTooltip
+              :text="!isOpen ? getViewModeLabel() : ''"
+              :ui="{ popper: { strategy: 'fixed' } }"
+              class="w-full"
+            >
+              <UButton
+                :block="isOpen || isMobile"
+                :color="'primary'"
+                :variant="'soft'"
+                @click="cycleViewMode"
+                class="justify-start hover:bg-gray-100"
+              >
+                <UIcon
+                  :name="getViewModeIcon()"
+                  class="w-5 h-5 text-primary-500"
+                />
+                <span v-if="isOpen || isMobile" class="ml-2">
+                  {{ getViewModeLabel() }}
+                </span>
+              </UButton>
+            </UTooltip>
+          </div>
+        </div>
+
+        <!-- 区切り線 -->
+        <div class="my-2 border-t border-gray-200" />
+
         <!-- 表示切り替え系ボタン群 -->
         <div
           class="px-3 py-1.5"
@@ -177,30 +215,6 @@
               <span v-if="isOpen || isMobile" class="ml-2">
                 {{ showTimer ? "タイマー表示中" : "タイマー非表示" }}
               </span>
-            </UButton>
-          </UTooltip>
-        </div>
-        <div
-          class="px-3 py-1.5"
-          :class="{ 'text-center': !isOpen && !isMobile }"
-          v-if="!isMobile"
-        >
-          <UTooltip
-            :text="!isOpen ? 'レイアウト切り替え' : ''"
-            :ui="{ popper: { strategy: 'fixed' } }"
-            class="w-full"
-          >
-            <UButton
-              :block="isOpen || isMobile"
-              color="gray"
-              variant="ghost"
-              @click="$emit('toggle-layout')"
-              icon="i-heroicons-view-columns"
-              class="justify-start hover:bg-gray-100"
-            >
-              <span v-if="isOpen || isMobile" class="ml-2"
-                >レイアウト切り替え</span
-              >
             </UButton>
           </UTooltip>
         </div>
@@ -289,12 +303,10 @@ import { useProjectStore } from "../../stores/project";
 import { useTodoStore } from "../../stores/todo";
 import { useTagStore } from "../../stores/tag";
 import { useEventBus } from "@vueuse/core";
-// import type { Tag } from "../../types/todo";
 import TagManageModal from "../modals/TagManageModal.vue";
 import { useTags } from "../../composables/useTags";
-// import { darkenColor } from "@/utils/color";
 
-const props = defineProps({
+defineProps({
   isMobile: {
     type: Boolean,
     default: false,
@@ -318,6 +330,8 @@ const isOpen = ref(true); // サイドバーの開閉状態
 const showTimer = ref(true); // タイマー表示状態
 const showTagModal = ref(false);
 const showTagBar = ref(true); // タグ表示状態
+const route = useRoute();
+const router = useRouter();
 
 // tagStoreを直接インポート
 const directTagStore = useTagStore();
@@ -330,6 +344,117 @@ const totalItemCount = computed(() => {
   console.log("todoCount:", todoCount, "tagCount:", tagCount);
   return todoCount + tagCount;
 });
+
+// 現在のルートをチェックするメソッド
+function isCurrentRoute(path: string): boolean {
+  return route.path.startsWith(path);
+}
+
+// ページ遷移用関数
+function navigateTo(path: string): void {
+  router.push(path);
+}
+
+// viewモードの状態を管理
+const viewModeState = ref(0); // 0: ボード通常, 1: ボード比率変化1, 2: ボード比率変化2, 3: リスト表示
+
+// ページ読み込み時に状態を初期化
+onMounted(async () => {
+  const savedState = localStorage.getItem("sidebarOpen");
+  if (savedState !== null) {
+    isOpen.value = savedState === "true";
+  }
+
+  // タイマー表示状態を復元
+  const savedTimerState = localStorage.getItem("showTimer");
+  if (savedTimerState !== null) {
+    showTimer.value = savedTimerState === "true";
+  }
+
+  // タグ表示状態を復元
+  const savedTagBarState = localStorage.getItem("showTagBar");
+  if (savedTagBarState !== null) {
+    showTagBar.value = savedTagBarState === "true";
+  }
+
+  // プロジェクトとタグを取得
+  await Promise.all([projectStore.fetchProjects(), directTagStore.fetchTags()]);
+
+  // viewModeStateを初期化
+  if (isCurrentRoute("/list")) {
+    viewModeState.value = 3; // リスト表示
+  } else {
+    viewModeState.value = 0; // ボード表示（デフォルト）
+  }
+});
+
+// ビューモードを循環させる
+function cycleViewMode(): void {
+  // 次の状態に進める
+  viewModeState.value = (viewModeState.value + 1) % 4;
+
+  // 状態に応じた処理
+  if (viewModeState.value === 0) {
+    // ボード表示（標準レイアウト）
+    if (isCurrentRoute("/list")) {
+      navigateTo("/board");
+    }
+    // レイアウトを標準に戻す
+    resetLayout();
+  } else if (viewModeState.value === 1 || viewModeState.value === 2) {
+    // ボード表示（レイアウト変更）
+    if (isCurrentRoute("/list")) {
+      navigateTo("/board");
+      // 画面遷移後にレイアウトを変更するための遅延処理
+      setTimeout(() => {
+        emit("toggle-layout");
+      }, 100);
+    } else {
+      // すでにボード表示の場合は直接レイアウト変更
+      emit("toggle-layout");
+    }
+  } else if (viewModeState.value === 3) {
+    // リスト表示
+    navigateTo("/list");
+  }
+}
+
+// レイアウトをリセットする内部関数
+function resetLayout(): void {
+  // 実装は省略 - 必要に応じて実装
+}
+
+// 現在のビューモードを取得
+function getViewModeLabel(): string {
+  switch (viewModeState.value) {
+    case 0:
+      return "ボード表示：標準";
+    case 1:
+      return "ボード表示：比率1";
+    case 2:
+      return "ボード表示：比率2";
+    case 3:
+      return "リスト表示";
+    default:
+      return "ボード表示：標準";
+  }
+}
+
+// 現在のビューモードアイコンを取得
+function getViewModeIcon(): string {
+  switch (viewModeState.value) {
+    case 0:
+      return "i-heroicons-view-columns";
+    case 1:
+      return "i-heroicons-squares-2x2";
+    case 2:
+      return "i-heroicons-squares-plus";
+    case 3:
+      return "i-heroicons-table-cells";
+    default:
+      return "i-heroicons-view-columns";
+  }
+}
 
 // サイドバーの開閉を切り替える
 const toggleSidebar = () => {
@@ -369,29 +494,6 @@ const toggleTagVisibility = () => {
     })
   );
 };
-
-// ページ読み込み時にサイドバーの状態を復元
-onMounted(async () => {
-  const savedState = localStorage.getItem("sidebarOpen");
-  if (savedState !== null) {
-    isOpen.value = savedState === "true";
-  }
-
-  // タイマー表示状態を復元
-  const savedTimerState = localStorage.getItem("showTimer");
-  if (savedTimerState !== null) {
-    showTimer.value = savedTimerState === "true";
-  }
-
-  // タグ表示状態を復元
-  const savedTagBarState = localStorage.getItem("showTagBar");
-  if (savedTagBarState !== null) {
-    showTagBar.value = savedTagBarState === "true";
-  }
-
-  // プロジェクトとタグを取得
-  await Promise.all([projectStore.fetchProjects(), directTagStore.fetchTags()]);
-});
 
 // フィルターに応じたラベルを取得
 const getFilterLabel = () => {

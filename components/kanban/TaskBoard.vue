@@ -27,9 +27,9 @@
       </div>
     </Transition>
 
-    <div class="mb-6 flex items-center justify-between">
+    <!-- <div class="mb-6 flex items-center justify-between">
       <h1 class="text-2xl font-semibold text-gray-900">Task Board</h1>
-    </div>
+    </div> -->
     <!-- 検索ボックスとタグプルダウンを横並びで配置 -->
     <div
       class="mb-4 flex flex-col md:flex-row items-end md:items-center justify-end gap-2"
