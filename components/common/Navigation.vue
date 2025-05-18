@@ -40,9 +40,32 @@
       </div>
     </nav>
   </div>
+  <!-- アノニマスユーザー向け警告バナー -->
+  <div
+    v-if="showAnonymousBanner && user?.is_anonymous"
+    class="anonymous-warning"
+  >
+    <span class="close-btn" @click="showAnonymousBanner = false">&times;</span>
+    ゲスト（匿名）ユーザーとして利用中です。データは一定期間で自動削除されます。<br />
+    <strong
+      >【重要】ゲストのままログアウトすると、同じアカウントで再ログインすることはできません。</strong
+    ><br />
+    作成したタスクやタグを残したい場合は、<NuxtLink
+      to="/auth?signup=1"
+      class="underline font-bold"
+      >アカウント登録</NuxtLink
+    >（メールアドレスとパスワードの設定）を行うことで、現在のデータをそのまま引き継ぐことができます。
+  </div>
+  <div class="m-3 flex justify-end">
+    <UButton color="primary" @click="goToSignUp" size="sm">
+      アカウント登録へ進む
+    </UButton>
+  </div>
 </template>
 
 <script setup>
+import { useAuth } from "../../composables/useAuth";
+const { user } = useAuth();
 const props = defineProps({
   title: {
     type: String,
@@ -50,4 +73,27 @@ const props = defineProps({
   },
 });
 const showHelpModal = ref(false);
+const showAnonymousBanner = ref(true);
 </script>
+
+<style scoped>
+.anonymous-warning {
+  background: #fff3cd;
+  color: #856404;
+  padding: 1em 2em 1em 1em;
+  border: 1px solid #ffeeba;
+  border-radius: 4px;
+  margin: 1em 0;
+  text-align: center;
+  position: relative;
+  font-size: 0.8em;
+}
+.close-btn {
+  position: absolute;
+  right: 1em;
+  top: 0.7em;
+  font-size: 1.2em;
+  cursor: pointer;
+  color: #856404;
+}
+</style>

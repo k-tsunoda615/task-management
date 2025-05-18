@@ -79,29 +79,6 @@
             'mt-14': isMobile,
           }"
         >
-          <!-- 匿名ユーザー向け注意バナー -->
-          <div
-            v-if="showAnonymousBanner && user?.is_anonymous"
-            class="anonymous-warning"
-          >
-            <span class="close-btn" @click="showAnonymousBanner = false"
-              >&times;</span
-            >
-            ゲスト（匿名）ユーザーとして利用中です。データは一定期間で自動削除されます。<br />
-            <strong
-              >【重要】ゲストのままログアウトすると、同じアカウントで再ログインすることはできません。</strong
-            ><br />
-            作成したタスクやタグを残したい場合は、<NuxtLink
-              to="/auth?signup=1"
-              class="underline font-bold"
-              >アカウント登録</NuxtLink
-            >（メールアドレスとパスワードの設定）を行うことで、現在のデータをそのまま引き継ぐことができます。
-          </div>
-          <div class="m-3 flex justify-end">
-            <UButton color="primary" @click="goToSignUp" size="sm">
-              アカウント登録へ進む
-            </UButton>
-          </div>
           <slot />
         </main>
       </div>
@@ -119,10 +96,8 @@
 <script setup lang="ts">
 import TheSidebar from "../components/common/Sidebar.vue";
 import { useAuth } from "../composables/useAuth";
-import { useRouter } from "vue-router";
 
 const { user } = useAuth();
-const router = useRouter();
 const loading = useState("auth-loading", () => true);
 const initialized = ref(false);
 
@@ -132,9 +107,6 @@ const sidebarOpen = ref(true);
 const isMobileMenuOpen = ref(false);
 // モバイル判定
 const isMobile = ref(false);
-
-// 匿名ユーザー向けバナーの表示状態
-const showAnonymousBanner = ref(true);
 
 onMounted(() => {
   // 初期化完了を通知
@@ -160,30 +132,4 @@ onMounted(() => {
   checkMobile();
   window.addEventListener("resize", checkMobile);
 });
-
-const goToSignUp = () => {
-  router.push({ path: "/auth", query: { signup: "1" } });
-};
 </script>
-
-<style>
-.anonymous-warning {
-  background: #fff3cd;
-  color: #856404;
-  padding: 1em 2em 1em 1em;
-  border: 1px solid #ffeeba;
-  border-radius: 4px;
-  margin: 1em 0;
-  text-align: center;
-  position: relative;
-  font-size: 0.8em;
-}
-.close-btn {
-  position: absolute;
-  right: 1em;
-  top: 0.7em;
-  font-size: 1.2em;
-  cursor: pointer;
-  color: #856404;
-}
-</style>
