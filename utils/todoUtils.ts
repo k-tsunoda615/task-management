@@ -58,8 +58,14 @@ export function convertTodoForDB(todo: Partial<Todo>): Record<string, unknown> {
     return {
       ...dbData,
       status: dbStatus,
+      // 更新時間を現在に設定（更新日時が常に正しく記録されるように）
+      updated_at: new Date().toISOString(),
     };
   }
 
-  return dbData;
+  return {
+    ...dbData,
+    // 更新時間を現在に設定（常に更新されるように）
+    updated_at: new Date().toISOString(),
+  };
 }

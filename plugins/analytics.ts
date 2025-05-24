@@ -54,7 +54,7 @@ export const trackFormSubmit = (
   formId: string,
   formName: string | null,
   formDestination: string,
-  formLength: number
+  formLength: number,
 ) => {
   pushEvent("form_submit", {
     eventModel: {
@@ -78,7 +78,7 @@ export const trackFormComplete = (
   formId: string,
   formName: string,
   formType: string,
-  formLength: number
+  formLength: number,
 ) => {
   pushEvent("form_complete", {
     form_id: formId,
@@ -99,7 +99,7 @@ export const trackFormError = (
   formId: string,
   formName: string,
   errorMessage: string,
-  errorField?: string
+  errorField?: string,
 ) => {
   pushEvent("form_error", {
     form_id: formId,
@@ -118,7 +118,7 @@ export const trackFormError = (
 export const trackFormStart = (
   formId: string,
   formName: string,
-  formType: string
+  formType: string,
 ) => {
   pushEvent("form_start", {
     form_id: formId,

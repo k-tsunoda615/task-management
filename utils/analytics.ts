@@ -14,7 +14,7 @@ export const initDataLayer = () => {
  */
 export const pushEvent = (
   eventName: string,
-  params: Record<string, any> = {}
+  params: Record<string, string | number | boolean | null> = {},
 ) => {
   if (typeof window === "undefined") return;
 
@@ -44,7 +44,7 @@ export const trackTaskCreated = (
   taskId: string,
   status: string,
   hasTags: boolean,
-  isPrivate: boolean
+  isPrivate: boolean,
 ) => {
   pushEvent("task_created", {
     task_id: taskId,
@@ -85,7 +85,7 @@ export const trackTaskDeleted = (taskId: string) => {
 export const trackTaskStatusChanged = (
   taskId: string,
   oldStatus: string,
-  newStatus: string
+  newStatus: string,
 ) => {
   pushEvent("task_status_changed", {
     task_id: taskId,
@@ -115,7 +115,7 @@ export const trackTimerStarted = (taskId: string, taskTitle: string) => {
 export const trackTimerStopped = (
   taskId: string,
   taskTitle: string,
-  duration: number
+  duration: number,
 ) => {
   pushEvent("timer_stopped", {
     task_id: taskId,
@@ -156,7 +156,7 @@ export const trackSearch = (query: string, resultCount: number) => {
 export const trackTagFiltered = (
   tagId: string,
   tagName: string,
-  resultCount: number
+  resultCount: number,
 ) => {
   pushEvent("tag_filtered", {
     tag_id: tagId,
@@ -183,6 +183,8 @@ const formatDuration = (seconds: number): string => {
 // TypeScript型定義
 declare global {
   interface Window {
-    dataLayer: any[];
+    dataLayer: Array<
+      Record<string, string | number | boolean | null | undefined>
+    >;
   }
 }
