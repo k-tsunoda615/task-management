@@ -57,14 +57,29 @@
     </div>
 
     <!-- 削除確認モーダル -->
-    <BulkDeleteModal
-      :is-open="showDeleteModal"
-      @update:isOpen="showDeleteModal = $event"
-      :selected-count="selectedTodos.length"
-      :is-loading="isDeleting"
-      @cancel="showDeleteModal = false"
-      @confirm="confirmDelete"
-    />
+    <UModal v-model="showDeleteModal">
+      <div class="p-4">
+        <h3 class="text-lg font-medium mb-2">タスクの削除</h3>
+        <p class="mb-4">
+          選択した
+          {{ selectedTodos.length }}
+          件のタスクを削除します。この操作は元に戻せません。
+        </p>
+        <div class="flex justify-end gap-2">
+          <UButton color="gray" @click="showDeleteModal = false"
+            >キャンセル</UButton
+          >
+          <UButton
+            color="red"
+            @click="confirmDelete"
+            :loading="isDeleting"
+            :disabled="isDeleting"
+          >
+            削除
+          </UButton>
+        </div>
+      </div>
+    </UModal>
   </div>
 </template>
 
@@ -76,7 +91,6 @@ import type { Todo } from "../../types/todo";
 import TableHeader from "./TableHeader.vue";
 import TableRow from "./TableRow.vue";
 import TableActions from "./TableActions.vue";
-import BulkDeleteModal from "./BulkDeleteModal.vue";
 import { formatTime, extractTotalTime } from "./TableUtils";
 
 // Pinia ストアからTodo一覧を取得
@@ -151,16 +165,22 @@ function deleteSelectedTodos() {
 async function confirmDelete() {
   if (selectedTodos.value.length === 0) return;
 
+  const selectedCount = selectedTodos.value.length;
   try {
     isDeleting.value = true;
+    const idsToDelete = [...selectedTodos.value]; // 配列のコピーを作成
 
-    for (const id of selectedTodos.value) {
+    // 削除処理を実行
+    for (const id of idsToDelete) {
       await todoStore.deleteTodo(id);
     }
 
+    // 選択状態をリセット
     selectedTodos.value = [];
     selectAll.value = false;
     showDeleteModal.value = false;
+
+    console.log(`${selectedCount}件のタスクを削除しました`);
   } catch (error) {
     console.error("削除中にエラーが発生しました:", error);
   } finally {

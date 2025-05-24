@@ -87,9 +87,12 @@ export const useTodoStore = defineStore("todo", {
       try {
         const todoData = useTodoData();
         await todoData.deleteTodo(id);
+
+        // ストアからも削除
         this.todos = this.todos.filter((t) => t.id !== id);
+        return true;
       } catch (error) {
-        console.error("Todo削除中にエラーが発生しました:", error);
+        console.error(`Todo ID:${id} の削除中にエラーが発生:`, error);
         throw error;
       }
     },
@@ -109,12 +112,12 @@ export const useTodoStore = defineStore("todo", {
           this.todos[index].sort_order = todo.sort_order;
           console.log(
             "[updateTodoOrder] ローカルデータ更新成功:",
-            this.todos[index],
+            this.todos[index]
           );
         } else {
           console.warn(
             "[updateTodoOrder] ローカルでTodoが見つかりません:",
-            todo.id,
+            todo.id
           );
           await this.fetchTodos();
         }

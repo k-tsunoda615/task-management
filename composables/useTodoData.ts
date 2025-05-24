@@ -132,11 +132,24 @@ export function useTodoData() {
    */
   const deleteTodo = async (id: string) => {
     try {
+      // 関連するtodo_tagsレコードを先に削除
+      const { error: tagsError } = await client
+        .from("todo_tags")
+        .delete()
+        .eq("todo_id", id);
+
+      if (tagsError) {
+        console.warn(`Todo ID:${id} のタグ関連削除でエラー:`, tagsError);
+      }
+
+      // Todoレコードを削除
       const { error } = await client.from("todos").delete().eq("id", id);
+
       if (error) throw error;
+
       return true;
     } catch (error) {
-      console.error("Todo削除中にエラー:", error);
+      console.error(`Todo ID:${id} の削除でエラー:`, error);
       throw error;
     }
   };
