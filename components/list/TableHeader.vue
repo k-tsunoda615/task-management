@@ -1,12 +1,12 @@
 <template>
   <thead class="bg-gray-50">
     <tr>
-      <th class="w-8 px-2 py-3 text-center align-middle">
+      <!-- <th class="w-8 px-2 py-3 text-center align-middle">
         <UIcon
           name="i-heroicons-arrows-up-down"
           class="text-gray-400 w-4 h-4"
         />
-      </th>
+      </th> -->
       <th
         class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
       >

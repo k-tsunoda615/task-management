@@ -1,9 +1,9 @@
 <template>
   <tr class="hover:bg-gray-50" :data-id="todo.id">
     <!-- ドラッグハンドル -->
-    <td class="px-2 py-3 text-center cursor-move handle align-middle">
+    <!-- <td class="px-2 py-3 text-center cursor-move handle align-middle">
       <UIcon name="i-heroicons-bars-2" class="text-gray-400 w-4 h-4" />
-    </td>
+    </td> -->
 
     <!-- タイトル - 編集可能 -->
     <td class="px-4 py-3 text-sm text-gray-900 max-w-xs">
