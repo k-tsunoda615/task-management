@@ -27,9 +27,6 @@
       </div>
     </Transition>
 
-    <!-- <div class="mb-6 flex items-center justify-between">
-      <h1 class="text-2xl font-semibold text-gray-900">Task Board</h1>
-    </div> -->
     <!-- 検索ボックスとタグプルダウンを横並びで配置 -->
     <div
       class="mb-4 flex flex-col md:flex-row items-end md:items-center justify-end gap-2"
@@ -49,7 +46,7 @@
       />
     </div>
 
-    <!-- サイドバーコンポーネントにイベントを追加 -->
+    <!-- サイドバー表示 -->
     <TheSidebar
       @toggle-layout="toggleLayout"
       @open-new-task-modal="openNewTaskModal"
@@ -563,7 +560,6 @@ import { useTaskTimer } from "../../composables/useTaskTimer";
 import {
   TASK_STATUS,
   STATUS_COLORS,
-  STATUS_ORDER,
   TASK_STATUS_LABELS,
 } from "../../utils/constants";
 import type { TaskStatus } from "../../utils/constants";
@@ -582,6 +578,7 @@ import {
   trackTagFiltered,
 } from "../../utils/analytics";
 import AnalogTimer from "./AnalogTimer.vue";
+import { calculateNewOrders } from "../../utils/todoUtils";
 
 const todoStore = useTodoStore();
 const tagStore = useTagStore();
@@ -1159,48 +1156,54 @@ const handleDragChange = async (evt: any) => {
       [TASK_STATUS.ARCHIVED]: [...todosByStatus[TASK_STATUS.ARCHIVED]],
     };
 
-    // sort_orderを再計算（直接リストの順序を使用）
-    const updatedTodos = targetList.map((t: Todo, index: number) => {
-      return {
-        ...t,
-        sort_order: index * 100, // 大きな間隔で設定（0, 100, 200, ...）
-      };
-    });
+    // ステータスが変わった場合はアナリティクスイベントを送信
+    if (oldStatus !== newStatus) {
+      trackTaskStatusChanged(todo.id, oldStatus, newStatus);
+    }
 
-    // 現在のTodoの順序を設定
-    const currentSortOrder =
-      updatedTodos.find((t: Todo) => t.id === todo.id)?.sort_order || 0;
-    todo.sort_order = currentSortOrder;
-
-    // バックグラウンドで更新処理を実行
     try {
-      // 変更されたTodoのステータスと順序を更新
-      const updateData = {
-        id: todo.id,
-        status: todo.status,
-        sort_order: currentSortOrder,
-      };
+      // sort_orderを再計算（共通ユーティリティ関数を使用）
+      const { mainTodoUpdate, otherTodosUpdates } = calculateNewOrders(
+        todo,
+        newIndex,
+        targetList
+      );
 
-      console.log("Todoを更新:", updateData);
-
-      // ステータスが変更された場合はイベントを送信
-      if (oldStatus !== newStatus) {
-        trackTaskStatusChanged(todo.id, oldStatus, newStatus);
+      // 移動したTodoのローカルの順序とステータスを更新
+      const mainIndex = todoStore.todos.findIndex(
+        (t) => t.id === mainTodoUpdate.id
+      );
+      if (mainIndex !== -1) {
+        todoStore.todos[mainIndex].sort_order = mainTodoUpdate.sort_order;
+        todoStore.todos[mainIndex].status = newStatus;
       }
 
-      // 確実にステータスが更新されるようにする
-      await todoStore.updateTodo(updateData);
+      // メインのTodoはupdateTodoで更新（ステータスも一緒に更新）
+      await todoStore.updateTodo({
+        id: mainTodoUpdate.id,
+        status: newStatus,
+        sort_order: mainTodoUpdate.sort_order,
+      });
 
-      // 他のTodoの順序を一括更新
-      console.log(`${updatedTodos.length - 1}個のTodoの順序を更新`);
+      console.log("メインTodo更新完了");
 
-      const otherTodos = updatedTodos.filter((t: Todo) => t.id !== todo.id);
+      // 他のTodoの順序を一括更新（updateTodoOrderを使用）
+      if (otherTodosUpdates.length > 0) {
+        console.log(`${otherTodosUpdates.length}個のTodoの順序を更新`);
 
-      if (otherTodos.length > 0) {
-        const updatePromises = otherTodos.map((t: Todo) =>
+        // ローカルStoraを先に更新
+        otherTodosUpdates.forEach((update) => {
+          const index = todoStore.todos.findIndex((t) => t.id === update.id);
+          if (index !== -1) {
+            todoStore.todos[index].sort_order = update.sort_order || 0;
+          }
+        });
+
+        // サーバーに一括更新
+        const updatePromises = otherTodosUpdates.map((updateData) =>
           todoStore.updateTodoOrder({
-            id: t.id,
-            sort_order: t.sort_order ?? 0,
+            id: updateData.id,
+            sort_order: updateData.sort_order || 0,
           })
         );
 

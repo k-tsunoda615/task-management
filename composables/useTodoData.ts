@@ -159,15 +159,29 @@ export function useTodoData() {
    */
   const updateTodoOrder = async (todo: { id: string; sort_order: number }) => {
     try {
-      const { error } = await client
+      console.log("[useTodoData] 順序更新リクエスト:", todo);
+
+      // データが正しい形式かチェック
+      if (!todo.id) {
+        console.error("[useTodoData] IDが指定されていません");
+        throw new Error("Todo IDが指定されていません");
+      }
+
+      const { error, data } = await client
         .from("todos")
         .update({ sort_order: todo.sort_order })
-        .eq("id", todo.id);
+        .eq("id", todo.id)
+        .select();
 
-      if (error) throw error;
-      return true;
+      if (error) {
+        console.error("[useTodoData] 順序更新エラー:", error);
+        throw error;
+      }
+
+      console.log("[useTodoData] 順序更新成功:", data);
+      return data;
     } catch (error) {
-      console.error("Todo順序更新中にエラー:", error);
+      console.error("[useTodoData] Todo順序更新中にエラー:", error);
       throw error;
     }
   };

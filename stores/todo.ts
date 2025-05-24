@@ -103,8 +103,10 @@ export const useTodoStore = defineStore("todo", {
 
     async updateTodoOrder(todo: { id: string; sort_order: number }) {
       try {
+        console.log("[updateTodoOrder] サーバー更新開始:", todo);
         const todoData = useTodoData();
-        await todoData.updateTodoOrder(todo);
+        const result = await todoData.updateTodoOrder(todo);
+        console.log("[updateTodoOrder] サーバー更新結果:", result);
 
         // ローカルのtodosも更新
         const index = this.todos.findIndex((t) => t.id === todo.id);

@@ -1,27 +1,16 @@
 <template>
   <thead class="bg-gray-50">
     <tr>
-      <th class="w-12 px-4 py-3 text-center">
-        <UCheckbox
-          :checked="selectAll"
-          @change="$emit('toggleSelectAll', $event)"
-          class="mx-auto"
+      <th class="w-8 px-2 py-3 text-center align-middle">
+        <UIcon
+          name="i-heroicons-arrows-up-down"
+          class="text-gray-400 w-4 h-4"
         />
       </th>
       <th
-        class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer"
-        @click="$emit('sort', 'title')"
+        class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
       >
-        <div class="flex items-center">
-          タイトル
-          <UIcon
-            :name="getSortIcon('title')"
-            class="inline ml-1 w-4 h-4"
-            :class="
-              sortColumn === 'title' ? 'text-primary-500' : 'text-gray-300'
-            "
-          />
-        </div>
+        <div class="flex items-center">タイトル</div>
       </th>
       <th
         class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer"
@@ -88,6 +77,13 @@
       >
         タグ
       </th>
+      <th class="w-12 px-4 py-3 text-center">
+        <UCheckbox
+          :checked="selectAll"
+          @change="$emit('toggleSelectAll', $event)"
+          class="mx-auto"
+        />
+      </th>
     </tr>
   </thead>
 </template>
@@ -99,7 +95,7 @@ const props = defineProps({
     required: true,
   },
   sortDirection: {
-    type: String as () => "asc" | "desc",
+    type: String as () => "asc" | "desc" | "none",
     required: true,
   },
   selectAll: {
@@ -115,8 +111,13 @@ function getSortIcon(column: string): string {
   if (column !== props.sortColumn) {
     return "i-heroicons-arrows-up-down";
   }
-  return props.sortDirection === "asc"
-    ? "i-heroicons-arrow-up"
-    : "i-heroicons-arrow-down";
+
+  if (props.sortDirection === "asc") {
+    return "i-heroicons-arrow-up";
+  } else if (props.sortDirection === "desc") {
+    return "i-heroicons-arrow-down";
+  } else {
+    return "i-heroicons-arrows-up-down";
+  }
 }
 </script>
