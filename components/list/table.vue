@@ -44,6 +44,7 @@
                 :is-selected="selectedTodos.includes(element.id)"
                 @toggleSelect="toggleSelect"
                 @updateTodo="updateTodo"
+                @closeAllEditors="closeAllEditors"
               />
             </template>
             <template #footer v-if="filteredAndSortedTodos.length === 0">
@@ -553,6 +554,18 @@ function sortBy(column: string) {
     // 最初は降順から始める
     sortDirection.value = "desc";
   }
+}
+
+// すべての編集状態を閉じる関数
+function closeAllEditors() {
+  // 全てのTableRowコンポーネントに通知するためのイベントバスを使う方法もあります
+  // 単純な実装として、イベントをブロードキャストします
+  const tableRows = document.querySelectorAll("tbody tr");
+  tableRows.forEach((row) => {
+    // Vue componentインスタンスへのアクセス方法がないため、
+    // カスタムイベントでDOM経由で通知
+    row.dispatchEvent(new CustomEvent("close-editors", { bubbles: true }));
+  });
 }
 </script>
 

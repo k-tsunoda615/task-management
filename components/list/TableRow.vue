@@ -196,7 +196,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch, nextTick } from "vue";
+import { ref, computed, watch, nextTick, onMounted, onUnmounted } from "vue";
 import {
   TASK_STATUS,
   TASK_STATUS_LABELS,
@@ -218,7 +218,12 @@ const props = defineProps({
   },
 });
 
-const emit = defineEmits(["toggleSelect", "updateTodo", "updateTodoOrder"]);
+const emit = defineEmits([
+  "toggleSelect",
+  "updateTodo",
+  "updateTodoOrder",
+  "closeAllEditors",
+]);
 
 const selected = ref(props.isSelected);
 const todoStore = useTodoStore();
@@ -232,6 +237,57 @@ const editedTitle = ref(props.todo.title);
 const editedStatus = ref(props.todo.status);
 const editedTags = ref(props.todo.tags?.map((tag) => tag.id) || []);
 const titleInput = ref<HTMLInputElement | null>(null);
+
+// グローバルなエスケープキーハンドラを追加
+function handleEscapeKey(event: KeyboardEvent) {
+  if (event.key === "Escape") {
+    closeAllEditors();
+  }
+}
+
+// コンポーネントマウント時にイベントリスナーを追加
+onMounted(() => {
+  document.addEventListener("keydown", handleEscapeKey);
+
+  // 親から他の行の編集状態を閉じるよう指示された時
+  const el = document.querySelector(`tr[data-id="${props.todo.id}"]`);
+  if (el) {
+    el.addEventListener("close-editors", () => {
+      onCloseEditorsFromExternal();
+    });
+  }
+});
+
+// コンポーネント破棄時にイベントリスナーを削除
+onUnmounted(() => {
+  document.removeEventListener("keydown", handleEscapeKey);
+
+  // カスタムイベントリスナーの削除
+  const el = document.querySelector(`tr[data-id="${props.todo.id}"]`);
+  if (el) {
+    el.removeEventListener("close-editors", onCloseEditorsFromExternal);
+  }
+});
+
+// 全ての編集状態をリセット
+function closeAllEditors() {
+  if (isEditingTitle.value) {
+    cancelTitleEdit();
+  }
+  isEditingStatus.value = false;
+  isEditingTags.value = false;
+
+  // 他のコンポーネントの編集状態も閉じるイベントを発行
+  emit("closeAllEditors");
+}
+
+// 編集の開始前に他の編集状態をすべて閉じる
+function beforeStartEdit() {
+  // 他のコンポーネントのエディタを閉じる
+  emit("closeAllEditors");
+  // 自身のエディタを閉じる
+  closeAllEditors();
+}
 
 // ステータスオプションを作成
 const statusOptions = computed(() => {
@@ -260,6 +316,7 @@ watch(
 
 // タイトル編集を開始
 function startTitleEdit() {
+  beforeStartEdit();
   editedTitle.value = props.todo.title;
   isEditingTitle.value = true;
   nextTick(() => {
@@ -291,6 +348,7 @@ function cancelTitleEdit() {
 
 // ステータス編集を開始
 function startStatusEdit() {
+  beforeStartEdit();
   editedStatus.value = props.todo.status;
   isEditingStatus.value = true;
 }
@@ -309,6 +367,7 @@ function saveStatus() {
 
 // タグ編集を開始
 function startTagsEdit() {
+  beforeStartEdit();
   editedTags.value = props.todo.tags?.map((tag) => tag.id) || [];
   isEditingTags.value = true;
 }
@@ -338,6 +397,13 @@ function saveTagsEdit() {
       tags: selectedTags,
     });
   }
+  isEditingTags.value = false;
+}
+
+// 外部からのエディタ閉じるイベントのハンドラ
+function onCloseEditorsFromExternal() {
+  isEditingTitle.value = false;
+  isEditingStatus.value = false;
   isEditingTags.value = false;
 }
 
