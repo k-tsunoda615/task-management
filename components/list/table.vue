@@ -493,9 +493,33 @@ async function handleDragChange(evt: any) {
 async function updateTodo(updatedData: Partial<Todo>) {
   try {
     console.log("TodoRow からの更新データ:", updatedData);
-    await todoStore.updateTodo(updatedData);
+
+    // タグが含まれている場合、正しい形式で保存されるようにする
+    if (updatedData.tags) {
+      console.log("タグの更新処理:", updatedData.tags);
+    }
+
+    const result = await todoStore.updateTodo(updatedData);
+
+    // 更新が成功したらトースト表示
+    useToast().add({
+      title: "更新完了",
+      description: "タスクを更新しました",
+      color: "green",
+    });
+
+    return result;
   } catch (error) {
     console.error("タスクの更新中にエラーが発生しました:", error);
+
+    // エラー時にはトースト表示
+    useToast().add({
+      title: "エラー",
+      description: "タスクの更新に失敗しました",
+      color: "red",
+    });
+
+    throw error;
   }
 }
 
@@ -534,12 +558,12 @@ function sortBy(column: string) {
 
 <style>
 /* ドラッグ＆ドロップ関連のスタイル */
-.ghost-card {
+/* .ghost-card {
   background-color: #f3f4f6;
   border: 1px dashed #d1d5db;
   opacity: 0.6;
   transition: all 0.3s ease;
-  z-index: 100;
+  z-index: 10;
   box-shadow: none !important;
 }
 
@@ -548,7 +572,7 @@ function sortBy(column: string) {
   background-color: #f9fafb;
   transform: rotate(1deg) scale(1.02);
   box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-  z-index: 200;
+  z-index: 20;
   transition: transform 0.3s ease;
   cursor: grabbing;
   will-change: transform;
@@ -557,12 +581,12 @@ function sortBy(column: string) {
 .chosen-item {
   background-color: #f9fafb;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  z-index: 150;
+  z-index: 15;
   transition: all 0.3s ease;
-}
+} */
 
 /* ドラッグハンドルのスタイル */
-.handle {
+/* .handle {
   cursor: grab;
   touch-action: none;
   display: flex;
@@ -577,27 +601,27 @@ function sortBy(column: string) {
 }
 .handle:active {
   cursor: grabbing;
-}
+} */
 
 /* アニメーション効果 */
-.sortable-drag {
+/* .sortable-drag {
   transition: transform 0.3s ease;
   will-change: transform;
 }
 .sortable-ghost {
   transition: all 0.3s ease;
   opacity: 0.5;
-}
+} */
 
 /* ドラッグ中のテーブル行スタイル */
-tr.is-dragging {
+/* tr.is-dragging {
   background-color: #f9fafb;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   will-change: transform;
-}
+} */
 
 /* ドラッグ可能なテーブル行にホバー効果を追加 */
-tbody tr {
+/* tbody tr {
   transition:
     background-color 0.3s ease,
     box-shadow 0.3s ease,
@@ -608,5 +632,5 @@ tbody tr {
 
 tbody tr:hover .handle {
   color: #6366f1;
-}
+} */
 </style>

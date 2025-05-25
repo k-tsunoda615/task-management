@@ -13,7 +13,13 @@ export default defineNuxtConfig({
     key: process.env.NUXT_SUPABASE_ANON_KEY,
   },
 
-  devtools: { enabled: true },
+  devtools: {
+    enabled: true,
+
+    timeline: {
+      enabled: true,
+    },
+  },
 
   typescript: {
     strict: true,
