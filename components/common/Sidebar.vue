@@ -218,6 +218,37 @@
             </UButton>
           </UTooltip>
         </div>
+
+        <!-- アナリティクス -->
+        <div
+          class="px-3 py-1.5"
+          :class="{ 'text-center': !isOpen && !isMobile }"
+        >
+          <UTooltip
+            :text="!isOpen ? 'アナリティクス' : ''"
+            :ui="{ popper: { strategy: 'fixed' } }"
+            class="w-full"
+          >
+            <UButton
+              :block="isOpen || isMobile"
+              color="gray"
+              :variant="isCurrentRoute('/analytics') ? 'solid' : 'ghost'"
+              @click="navigateTo('/analytics')"
+              class="justify-start hover:bg-gray-100"
+            >
+              <UIcon
+                name="i-heroicons-chart-bar"
+                class="w-5 h-5"
+                :class="
+                  isCurrentRoute('/analytics')
+                    ? 'text-primary-500'
+                    : 'text-gray-400'
+                "
+              />
+              <span v-if="isOpen || isMobile" class="ml-2">アナリティクス</span>
+            </UButton>
+          </UTooltip>
+        </div>
       </div>
 
       <!-- ゴミ箱エリア -->
