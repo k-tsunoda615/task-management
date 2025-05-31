@@ -683,17 +683,17 @@ const parsedPreviewMemo = computed(() => {
 });
 
 // 日付フォーマット関数
-const formatDate = (dateString: string | undefined): string => {
-  if (!dateString) return "不明";
-  const date = new Date(dateString);
-  return date.toLocaleString("ja-JP", {
-    year: "numeric",
-    month: "2-digit",
-    day: "2-digit",
-    hour: "2-digit",
-    minute: "2-digit",
-  });
-};
+// const formatDate = (dateString: string | undefined): string => {
+//   if (!dateString) return "不明";
+//   const date = new Date(dateString);
+//   return date.toLocaleString("ja-JP", {
+//     year: "numeric",
+//     month: "2-digit",
+//     day: "2-digit",
+//     hour: "2-digit",
+//     minute: "2-digit",
+//   });
+// };
 
 // 時間のフォーマット関数（秒数を hh:mm:ss 形式に変換）
 const formatTime = (seconds: number | number[]) => {
@@ -749,18 +749,18 @@ const parseTimeToSeconds = (timeStr: string): number => {
 };
 
 // ステータスの日本語と英語のマッピング
-const statusMap = {
-  未対応: "todo",
-  対応中: "inProgress",
-  完了: "done",
-};
+// const statusMap = {
+//   未対応: "todo",
+//   対応中: "inProgress",
+//   完了: "done",
+// };
 
 // 逆マッピング（英語から日本語へ）
-const reverseStatusMap = {
-  todo: "未対応",
-  inProgress: "対応中",
-  done: "完了",
-};
+// const reverseStatusMap = {
+//   todo: "未対応",
+//   inProgress: "対応中",
+//   done: "完了",
+// };
 
 // ステータス別のTodoを管理するreactiveな状態（新構造）
 const todosByStatus = reactive({
