@@ -598,6 +598,8 @@ const {
   startTimerForTodo,
   stopTimer,
   extractTotalTime,
+  updateTitle,
+  resetTitle,
 } = useTaskTimer();
 const showTimerBar = ref(true);
 const showTagBar = ref(true);
@@ -659,6 +661,24 @@ const editingTodo = ref<EditingTodo>({
 
 // プレビュー用のマークダウンパース
 const parsedPreviewMemo = computed(() => {
+  // markedのレンダラーをカスタマイズ
+  const renderer = new marked.Renderer();
+  // リンクをカスタマイズ：すべてのリンクをtarget="_blank"で開く
+  renderer.link = ({
+    href,
+    title,
+    text,
+  }: {
+    href: string;
+    title?: string | null | undefined;
+    text: string;
+  }) => {
+    return `<a href="${href}" target="_blank" rel="noopener noreferrer" ${title ? `title="${title}"` : ""}>${text}</a>`;
+  };
+
+  // レンダラーを適用
+  marked.setOptions({ renderer });
+
   return marked(editingTodo.value.memo || "");
 });
 
@@ -874,9 +894,43 @@ onMounted(() => {
     showTagBar.value = event.detail.showTagBar;
   };
 
+  // ページの表示状態変化を監視するリスナー
+  const handleVisibilityChange = () => {
+    if (document.visibilityState === "hidden") {
+      // ページが非表示になった時の処理
+      // タイマーは続行するが、UIの更新は停止
+      console.log("ページが非表示になりました");
+
+      // 現在のタイマー状態をローカルストレージに保存
+      if (currentTimingTodo.value) {
+        localStorage.setItem(
+          "timerState",
+          JSON.stringify({
+            todoId: currentTimingTodo.value.id,
+            startTime: startTime.value,
+            currentTotalTime: currentTotalTime.value,
+            title: currentTimingTodo.value.title,
+          })
+        );
+      }
+    } else {
+      // ページが再表示された時の処理
+      console.log("ページが再表示されました");
+
+      // タイマーの状態を復元
+      if (currentTimingTodo.value && timerInterval.value === null) {
+        startTimerForTodo(currentTimingTodo.value, (total) => {
+          // タイトルを更新する
+          updateTitle(total, currentTimingTodo.value!.title);
+        });
+      }
+    }
+  };
+
   // イベントリスナーを追加
   window.addEventListener("timerVisibilityToggle", handleTimerVisibilityToggle);
   window.addEventListener("tagVisibilityToggle", handleTagVisibilityToggle);
+  document.addEventListener("visibilitychange", handleVisibilityChange);
 
   // コンポーネントがアンマウントされたときにイベントリスナーを削除
   onUnmounted(() => {
@@ -888,11 +942,15 @@ onMounted(() => {
       "tagVisibilityToggle",
       handleTagVisibilityToggle
     );
+    document.removeEventListener("visibilitychange", handleVisibilityChange);
 
     // タイマーを停止
     if (timerInterval.value) {
       cancelAnimationFrame(timerInterval.value);
     }
+
+    // タイトルを元に戻す
+    resetTitle();
   });
 
   // 初期タイマー表示状態を設定
@@ -1299,8 +1357,11 @@ const startTiming = async (todo: Todo) => {
       total_time: [currentTotalTime.value],
     });
 
-    // タイマーを開始
-    startTimerForTodo(todo, () => {});
+    // タイマーを開始（タブタイトルの更新も含む）
+    startTimerForTodo(todo, (total) => {
+      // コールバックでタイトルを更新
+      updateTitle(total, todo.title);
+    });
 
     // アナリティクスイベント送信
     trackTimerStarted(todo.id, todo.title);
@@ -1343,6 +1404,9 @@ const stopTiming = async (todo: Todo) => {
       total_time: [finalTime],
     });
 
+    // タイトルを元に戻す
+    resetTitle();
+
     // アナリティクスイベント送信
     trackTimerStopped(todo.id, todo.title, finalTime);
 
@@ -1354,7 +1418,9 @@ const stopTiming = async (todo: Todo) => {
   } catch (error) {
     // エラー時は状態を元に戻す
     currentTimingTodo.value = prevTodo;
-    startTimerForTodo(todo, () => {});
+    startTimerForTodo(todo, (total) => {
+      updateTitle(total, todo.title);
+    });
 
     useToast().add({
       title: "エラー",

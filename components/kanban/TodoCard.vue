@@ -160,6 +160,25 @@ const handleDragStart = (event: any) => {
 // メモをマークダウンとしてパース
 const parsedMemo = computed(() => {
   if (!props.todo.memo) return "";
+
+  // markedのレンダラーをカスタマイズ
+  const renderer = new marked.Renderer();
+  // リンクをカスタマイズ：すべてのリンクをtarget="_blank"で開く
+  renderer.link = ({
+    href,
+    title,
+    text,
+  }: {
+    href: string;
+    title?: string | null | undefined;
+    text: string;
+  }) => {
+    return `<a href="${href}" target="_blank" rel="noopener noreferrer" ${title ? `title="${title}"` : ""}>${text}</a>`;
+  };
+
+  // レンダラーを適用
+  marked.setOptions({ renderer });
+
   return marked(props.todo.memo);
 });
 
@@ -184,18 +203,18 @@ const stopTiming = (event: Event) => {
 };
 
 // 色を暗くするユーティリティ関数
-function darkenColor(hex: string, amount = 0.2) {
-  let c = hex.replace("#", "");
-  if (c.length === 3) c = c[0] + c[0] + c[1] + c[1] + c[2] + c[2];
-  const num = parseInt(c, 16);
-  let r = (num >> 16) & 0xff;
-  let g = (num >> 8) & 0xff;
-  let b = num & 0xff;
-  r = Math.max(0, Math.floor(r * (1 - amount)));
-  g = Math.max(0, Math.floor(g * (1 - amount)));
-  b = Math.max(0, Math.floor(b * (1 - amount)));
-  return `#${r.toString(16).padStart(2, "0")}${g.toString(16).padStart(2, "0")}${b.toString(16).padStart(2, "0")}`;
-}
+// function darkenColor(hex: string, amount = 0.2) {
+//   let c = hex.replace("#", "");
+//   if (c.length === 3) c = c[0] + c[0] + c[1] + c[1] + c[2] + c[2];
+//   const num = parseInt(c, 16);
+//   let r = (num >> 16) & 0xff;
+//   let g = (num >> 8) & 0xff;
+//   let b = num & 0xff;
+//   r = Math.max(0, Math.floor(r * (1 - amount)));
+//   g = Math.max(0, Math.floor(g * (1 - amount)));
+//   b = Math.max(0, Math.floor(b * (1 - amount)));
+//   return `#${r.toString(16).padStart(2, "0")}${g.toString(16).padStart(2, "0")}${b.toString(16).padStart(2, "0")}`;
+// }
 </script>
 
 <style scoped>
