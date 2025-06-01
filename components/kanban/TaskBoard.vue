@@ -594,6 +594,7 @@ import {
 } from "../../utils/analytics";
 import AnalogTimer from "./AnalogTimer.vue";
 import { calculateNewOrders } from "../../utils/todoUtils";
+import type { TimerNavigationEvent } from "../../types/timer";
 
 const todoStore = useTodoStore();
 const tagStore = useTagStore();
@@ -908,6 +909,23 @@ onMounted(() => {
   const handleTagVisibilityToggle = (event: any) => {
     showTagBar.value = event.detail.showTagBar;
   };
+
+  // タイマーナビゲーションイベントをリッスン
+  const timerNavigationBus =
+    useEventBus<TimerNavigationEvent>("timer-navigation");
+  const unsubscribe = timerNavigationBus.on((event) => {
+    if (
+      event.action === "stop-timer" &&
+      currentTimingTodo.value &&
+      event.todoId === currentTimingTodo.value.id
+    ) {
+      // タイマーを停止
+      stopTiming(currentTimingTodo.value).then(() => {
+        // タイマー停止後に指定の場所に遷移
+        navigateTo(event.destination);
+      });
+    }
+  });
 
   // ページの表示状態変化を監視するリスナー
   const handleVisibilityChange = () => {
