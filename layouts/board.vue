@@ -1,5 +1,5 @@
 <template>
-  <div class="min-h-screen">
+  <div class="min-h-screen bg-gray-100/20">
     <!-- クライアントサイドでのみ評価される loading 状態 -->
     <ClientOnly>
       <div

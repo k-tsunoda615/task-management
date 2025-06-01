@@ -146,7 +146,7 @@ import AnalyticsTagDistribution from "../../components/analytics/TagDistribution
 import AnalyticsTimeDistribution from "../../components/analytics/TimeDistribution.vue";
 
 definePageMeta({
-  layout: "default",
+  layout: "board",
   middleware: ["auth"],
 });
 
