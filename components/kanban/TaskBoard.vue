@@ -44,6 +44,21 @@
         class="w-full md:w-48"
         clearable
       />
+
+      <!-- レイアウト切り替えボタン（PC表示のみ） -->
+      <div class="hidden md:flex">
+        <UTooltip :text="getLayoutTooltip()">
+          <UButton
+            variant="ghost"
+            color="gray"
+            @click="toggleLayout"
+            class="flex items-center"
+          >
+            <UIcon :name="getLayoutIcon()" class="w-5 h-5 mr-1" />
+            <span class="text-sm">レイアウト</span>
+          </UButton>
+        </UTooltip>
+      </div>
     </div>
 
     <!-- サイドバー表示 -->
@@ -338,12 +353,12 @@
       @add-tag="addTag"
       @toggle-tag="toggleTagOnNewTodo"
       @validate-time="validateTimeInput"
-      @update:newTodoTitle="(val) => (newTodo.title = val)"
-      @update:newTodoMemo="(val) => (newTodo.memo = val)"
-      @update:newTodoStatus="(val) => (newTodo.status = val)"
-      @update:newTodoIsPrivate="(val) => (newTodo.is_private = val)"
-      @update:timeInput="(val) => (timeInput = val)"
-      @update:newTagName="(val) => (newTagName = val)"
+      @update:newTodoTitle="(val: string) => (newTodo.title = val)"
+      @update:newTodoMemo="(val: string) => (newTodo.memo = val)"
+      @update:newTodoStatus="(val: string) => (newTodo.status = val)"
+      @update:newTodoIsPrivate="(val: boolean) => (newTodo.is_private = val)"
+      @update:timeInput="(val: string) => (timeInput = val)"
+      @update:newTagName="(val: string) => (newTagName = val)"
     />
 
     <!-- 編集タスクモーダル -->
@@ -436,7 +451,7 @@
                     borderRadius: '0.375rem',
                     padding: '0.25rem 0.75rem',
                     lineHeight: '1.25',
-                    opacity: editingTodo.tags.some((t) => t.id === tag.id)
+                    opacity: editingTodo.tags.some((t: Tag) => t.id === tag.id)
                       ? 1
                       : 0.5,
                     cursor: 'pointer',
@@ -444,9 +459,9 @@
                   class="transition-all duration-200 hover:opacity-100"
                   @click="
                     () => {
-                      if (editingTodo.tags.some((t) => t.id === tag.id)) {
+                      if (editingTodo.tags.some((t: Tag) => t.id === tag.id)) {
                         editingTodo.tags = editingTodo.tags.filter(
-                          (t) => t.id !== tag.id
+                          (t: Tag) => t.id !== tag.id
                         );
                       } else {
                         editingTodo.tags.push(tag);
@@ -992,6 +1007,12 @@ onMounted(() => {
       deleteTodo(todoId as string);
     }
   });
+
+  // レイアウトの初期値をローカルストレージから取得
+  const savedLayout = localStorage.getItem("todoLayout");
+  if (savedLayout && ["4-1", "3-2", "1-1", "1-col"].includes(savedLayout)) {
+    currentLayout.value = savedLayout as LayoutType;
+  }
 });
 
 // 編集モーダルを開く
@@ -1672,6 +1693,22 @@ watch(selectedTagId, (newTagId, oldTagId) => {
     }
   }
 });
+
+// レイアウトアイコンを取得
+const getLayoutIcon = () => {
+  switch (currentLayout.value) {
+    case "4-1":
+      return "i-heroicons-squares-2x2";
+    case "3-2":
+      return "i-heroicons-view-columns";
+    case "1-1":
+      return "i-heroicons-squares-plus";
+    case "1-col":
+      return "i-heroicons-bars-3";
+    default:
+      return "i-heroicons-view-columns";
+  }
+};
 </script>
 
 <style scoped>

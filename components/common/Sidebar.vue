@@ -110,25 +110,86 @@
             表示形式
           </p>
           <div class="flex flex-col gap-1">
-            <!-- 統合された表示形式切り替えボタン -->
+            <!-- ボードビュー -->
             <UTooltip
-              :text="!isOpen ? getViewModeLabel() : ''"
+              :text="!isOpen ? 'ボードビュー' : ''"
               :ui="{ popper: { strategy: 'fixed' } }"
               class="w-full"
             >
               <UButton
                 :block="isOpen || isMobile"
-                :color="'primary'"
-                :variant="'soft'"
-                @click="cycleViewMode"
+                :color="isCurrentRoute('/board') ? 'primary' : 'gray'"
+                :variant="isCurrentRoute('/board') ? 'soft' : 'ghost'"
+                @click="navigateToBoard"
                 class="justify-start hover:bg-gray-100"
               >
                 <UIcon
-                  :name="getViewModeIcon()"
-                  class="w-5 h-5 text-primary-500"
+                  name="i-heroicons-view-columns"
+                  class="w-5 h-5"
+                  :class="
+                    isCurrentRoute('/board')
+                      ? 'text-primary-500'
+                      : 'text-gray-500'
+                  "
                 />
                 <span v-if="isOpen || isMobile" class="ml-2">
-                  {{ getViewModeLabel() }}
+                  ボードビュー
+                </span>
+              </UButton>
+            </UTooltip>
+
+            <!-- リストビュー -->
+            <UTooltip
+              :text="!isOpen ? 'リストビュー' : ''"
+              :ui="{ popper: { strategy: 'fixed' } }"
+              class="w-full"
+            >
+              <UButton
+                :block="isOpen || isMobile"
+                :color="isCurrentRoute('/list') ? 'primary' : 'gray'"
+                :variant="isCurrentRoute('/list') ? 'soft' : 'ghost'"
+                @click="navigateTo('/list')"
+                class="justify-start hover:bg-gray-100"
+              >
+                <UIcon
+                  name="i-heroicons-table-cells"
+                  class="w-5 h-5"
+                  :class="
+                    isCurrentRoute('/list')
+                      ? 'text-primary-500'
+                      : 'text-gray-500'
+                  "
+                />
+                <span v-if="isOpen || isMobile" class="ml-2">
+                  リストビュー
+                </span>
+              </UButton>
+            </UTooltip>
+
+            <!-- アナリティクスビュー -->
+            <UTooltip
+              :text="!isOpen ? 'アナリティクスビュー' : ''"
+              :ui="{ popper: { strategy: 'fixed' } }"
+              class="w-full"
+            >
+              <UButton
+                :block="isOpen || isMobile"
+                :color="isCurrentRoute('/analytics') ? 'primary' : 'gray'"
+                :variant="isCurrentRoute('/analytics') ? 'soft' : 'ghost'"
+                @click="navigateTo('/analytics')"
+                class="justify-start hover:bg-gray-100"
+              >
+                <UIcon
+                  name="i-heroicons-chart-bar"
+                  class="w-5 h-5"
+                  :class="
+                    isCurrentRoute('/analytics')
+                      ? 'text-primary-500'
+                      : 'text-gray-500'
+                  "
+                />
+                <span v-if="isOpen || isMobile" class="ml-2">
+                  アナリティクスビュー
                 </span>
               </UButton>
             </UTooltip>
@@ -140,6 +201,7 @@
 
         <!-- 表示切り替え系ボタン群 -->
         <div
+          v-if="isCurrentRoute('/board')"
           class="px-3 py-1.5"
           :class="{ 'text-center': !isOpen && !isMobile }"
         >
@@ -162,7 +224,10 @@
             </UButton>
           </UTooltip>
         </div>
+
+        <!-- タグ表示切り替え -->
         <div
+          v-if="isCurrentRoute('/board')"
           class="px-3 py-1.5"
           :class="{ 'text-center': !isOpen && !isMobile }"
         >
@@ -190,6 +255,7 @@
           </UTooltip>
         </div>
         <div
+          v-if="isCurrentRoute('/board')"
           class="px-3 py-1.5"
           :class="{ 'text-center': !isOpen && !isMobile }"
         >
@@ -218,43 +284,12 @@
             </UButton>
           </UTooltip>
         </div>
-
-        <!-- アナリティクス -->
-        <div
-          class="px-3 py-1.5"
-          :class="{ 'text-center': !isOpen && !isMobile }"
-        >
-          <UTooltip
-            :text="!isOpen ? 'アナリティクス' : ''"
-            :ui="{ popper: { strategy: 'fixed' } }"
-            class="w-full"
-          >
-            <UButton
-              :block="isOpen || isMobile"
-              color="gray"
-              :variant="isCurrentRoute('/analytics') ? 'solid' : 'ghost'"
-              @click="navigateTo('/analytics')"
-              class="justify-start hover:bg-gray-100"
-            >
-              <UIcon
-                name="i-heroicons-chart-bar"
-                class="w-5 h-5"
-                :class="
-                  isCurrentRoute('/analytics')
-                    ? 'text-primary-500'
-                    : 'text-gray-400'
-                "
-              />
-              <span v-if="isOpen || isMobile" class="ml-2">アナリティクス</span>
-            </UButton>
-          </UTooltip>
-        </div>
       </div>
 
       <!-- ゴミ箱エリア -->
       <div class="mt-auto border-t border-gray-200">
         <!-- ゴミ箱 -->
-        <div v-if="!isMobile">
+        <div v-if="!isMobile && isCurrentRoute('/board')">
           <UTooltip
             :text="!isOpen ? 'タスクをドラッグして削除' : ''"
             :ui="{ popper: { strategy: 'fixed' } }"
@@ -344,11 +379,7 @@ defineProps({
   },
 });
 
-const emit = defineEmits([
-  "close-mobile-menu",
-  "toggle-layout",
-  "open-new-task-modal",
-]);
+const emit = defineEmits(["close-mobile-menu", "open-new-task-modal"]);
 
 const projectStore = useProjectStore();
 const todoStore = useTodoStore();
@@ -386,9 +417,6 @@ function navigateTo(path: string): void {
   router.push(path);
 }
 
-// viewモードの状態を管理
-const viewModeState = ref(0); // 0: ボード通常, 1: ボード比率変化1, 2: ボード比率変化2, 3: リスト表示
-
 // ページ読み込み時に状態を初期化
 onMounted(async () => {
   const savedState = localStorage.getItem("sidebarOpen");
@@ -410,82 +438,12 @@ onMounted(async () => {
 
   // プロジェクトとタグを取得
   await Promise.all([projectStore.fetchProjects(), directTagStore.fetchTags()]);
-
-  // viewModeStateを初期化
-  if (isCurrentRoute("/list")) {
-    viewModeState.value = 3; // リスト表示
-  } else {
-    viewModeState.value = 0; // ボード表示（デフォルト）
-  }
 });
 
-// ビューモードを循環させる
-function cycleViewMode(): void {
-  // 次の状態に進める
-  viewModeState.value = (viewModeState.value + 1) % 4;
-
-  // 状態に応じた処理
-  if (viewModeState.value === 0) {
-    // ボード表示（標準レイアウト）
-    if (isCurrentRoute("/list")) {
-      navigateTo("/board");
-    }
-    // レイアウトを標準に戻す
-    resetLayout();
-  } else if (viewModeState.value === 1 || viewModeState.value === 2) {
-    // ボード表示（レイアウト変更）
-    if (isCurrentRoute("/list")) {
-      navigateTo("/board");
-      // 画面遷移後にレイアウトを変更するための遅延処理
-      setTimeout(() => {
-        emit("toggle-layout");
-      }, 100);
-    } else {
-      // すでにボード表示の場合は直接レイアウト変更
-      emit("toggle-layout");
-    }
-  } else if (viewModeState.value === 3) {
-    // リスト表示
-    navigateTo("/list");
-  }
-}
-
-// レイアウトをリセットする内部関数
-function resetLayout(): void {
-  // 実装は省略 - 必要に応じて実装
-}
-
-// 現在のビューモードを取得
-function getViewModeLabel(): string {
-  switch (viewModeState.value) {
-    case 0:
-      return "ボード表示：標準";
-    case 1:
-      return "ボード表示：比率1";
-    case 2:
-      return "ボード表示：比率2";
-    case 3:
-      return "リスト表示";
-    default:
-      return "ボード表示：標準";
-  }
-}
-
-// 現在のビューモードアイコンを取得
-function getViewModeIcon(): string {
-  switch (viewModeState.value) {
-    case 0:
-      return "i-heroicons-view-columns";
-    case 1:
-      return "i-heroicons-squares-2x2";
-    case 2:
-      return "i-heroicons-squares-plus";
-    case 3:
-      return "i-heroicons-table-cells";
-    default:
-      return "i-heroicons-view-columns";
-  }
-}
+// ボードビューに移動
+const navigateToBoard = () => {
+  navigateTo("/board");
+};
 
 // サイドバーの開閉を切り替える
 const toggleSidebar = () => {
