@@ -404,7 +404,13 @@
               <USelect v-model="editingTodo.status" :options="statusOptions" />
             </UFormGroup>
             <UFormGroup class="flex-1">
-              <UCheckbox v-model="editingTodo.is_private" label="Private" />
+              <div class="space-y-2">
+                <UCheckbox
+                  v-model="editingTodo.is_finished"
+                  label="完了済み"
+                  class="text-sm"
+                />
+              </div>
             </UFormGroup>
           </div>
           <UFormGroup label="合計時間 (hh:mm:ss)">
@@ -609,6 +615,7 @@ const {
 } = useTaskTimer();
 const showTimerBar = ref(true);
 const showTagBar = ref(true);
+const showCompletedTasks = ref(false);
 const currentTimingTodo = ref<Todo | null>(null);
 
 // 時間入力フィールド
@@ -628,6 +635,7 @@ interface NewTodo {
   memo: string;
   status: TaskStatus;
   is_private: boolean;
+  is_finished: boolean;
   total_time: number;
   is_timing: boolean;
   tags: Tag[];
@@ -639,6 +647,7 @@ interface EditingTodo {
   memo: string;
   status: TaskStatus;
   is_private: boolean;
+  is_finished: boolean;
   total_time: number;
   is_timing: boolean;
   tags: Tag[];
@@ -649,6 +658,7 @@ const newTodo = ref<NewTodo>({
   memo: "",
   status: TASK_STATUS.PRIORITY,
   is_private: false,
+  is_finished: false,
   total_time: 0,
   is_timing: false,
   tags: [] as Tag[],
@@ -660,6 +670,7 @@ const editingTodo = ref<EditingTodo>({
   memo: "",
   status: TASK_STATUS.PRIORITY,
   is_private: false,
+  is_finished: false,
   total_time: 0,
   is_timing: false,
   tags: [] as Tag[],
@@ -815,6 +826,17 @@ const { searchedTodos } = useTodoSearch(
   computed(() => selectedTagId.value || null)
 );
 
+// searchedTodosを元に、完了タスクをフィルタリングしたcomputed
+const filteredTodos = computed(() => {
+  if (showCompletedTasks.value) {
+    // 完了タスクを表示する場合は全て表示
+    return searchedTodos.value;
+  } else {
+    // 完了タスクを非表示にする場合
+    return searchedTodos.value.filter((todo) => !todo.is_finished);
+  }
+});
+
 // updateTodosByStatusを検索結果で分類するよう修正
 const updateTodosByStatus = () => {
   // ドラッグ中は再分類をスキップ
@@ -823,8 +845,8 @@ const updateTodosByStatus = () => {
   todosByStatus[TASK_STATUS.PRIORITY] = [];
   todosByStatus[TASK_STATUS.NEXT] = [];
   todosByStatus[TASK_STATUS.ARCHIVED] = [];
-  // 検索結果で再分類
-  searchedTodos.value.forEach((todo: Todo) => {
+  // 検索結果で再分類 (filteredTodosを使用)
+  filteredTodos.value.forEach((todo: Todo) => {
     if (todo.status === TASK_STATUS.PRIORITY) {
       todosByStatus[TASK_STATUS.PRIORITY].push(todo);
     } else if (todo.status === TASK_STATUS.NEXT) {
@@ -846,7 +868,7 @@ const updateTodosByStatus = () => {
     (a: Todo, b: Todo) => (a.sort_order || 0) - (b.sort_order || 0)
   );
   // 計測中のタスクを確認
-  const timingTodo = searchedTodos.value.find((todo: Todo) => todo.is_timing);
+  const timingTodo = filteredTodos.value.find((todo: Todo) => todo.is_timing);
   if (timingTodo) {
     currentTimingTodo.value = timingTodo;
     if (!timerInterval.value) {
@@ -860,12 +882,12 @@ const updateTodosByStatus = () => {
 
 // 検索クエリが変わったら再分類
 watch(
-  () => [searchedTodos.value, todoStore.taskFilter],
+  () => [filteredTodos.value, todoStore.taskFilter],
   () => {
     if (isUpdatingRef.value) return;
     updateTodosByStatus();
     // 計測中のタスクを確認
-    const timingTodo = searchedTodos.value.find((todo: Todo) => todo.is_timing);
+    const timingTodo = filteredTodos.value.find((todo: Todo) => todo.is_timing);
     if (timingTodo) {
       currentTimingTodo.value = timingTodo;
       currentTotalTime.value = extractTotalTime(timingTodo.total_time);
@@ -898,6 +920,11 @@ onMounted(() => {
   // タグ表示切り替えイベントを監視する関数を定義
   const handleTagVisibilityToggle = (event: any) => {
     showTagBar.value = event.detail.showTagBar;
+  };
+
+  // 完了タスク表示切り替えイベントを監視する関数を定義
+  const handleCompletedTasksVisibilityToggle = (event: any) => {
+    showCompletedTasks.value = event.detail.showCompletedTasks;
   };
 
   // タイマーナビゲーションイベントをリッスン
@@ -953,6 +980,10 @@ onMounted(() => {
   // イベントリスナーを追加
   window.addEventListener("timerVisibilityToggle", handleTimerVisibilityToggle);
   window.addEventListener("tagVisibilityToggle", handleTagVisibilityToggle);
+  window.addEventListener(
+    "completedTasksVisibilityToggle",
+    handleCompletedTasksVisibilityToggle
+  );
   document.addEventListener("visibilitychange", handleVisibilityChange);
 
   // コンポーネントがアンマウントされたときにイベントリスナーを削除
@@ -964,6 +995,10 @@ onMounted(() => {
     window.removeEventListener(
       "tagVisibilityToggle",
       handleTagVisibilityToggle
+    );
+    window.removeEventListener(
+      "completedTasksVisibilityToggle",
+      handleCompletedTasksVisibilityToggle
     );
     document.removeEventListener("visibilitychange", handleVisibilityChange);
 
@@ -986,6 +1021,12 @@ onMounted(() => {
   const savedTagBarState = localStorage.getItem("showTagBar");
   if (savedTagBarState !== null) {
     showTagBar.value = savedTagBarState === "true";
+  }
+
+  // 初期完了タスク表示状態を設定
+  const savedCompletedTasksState = localStorage.getItem("showCompletedTasks");
+  if (savedCompletedTasksState !== null) {
+    showCompletedTasks.value = savedCompletedTasksState === "true";
   }
 
   // 初期データの取得
@@ -1031,6 +1072,7 @@ const openEditModal = (todo: Todo) => {
     status: todo.status,
     memo: todo.memo || "",
     is_private: todo.is_private || false,
+    is_finished: todo.is_finished || false,
     total_time: extractTotalTime(todo.total_time),
     is_timing: todo.is_timing || false,
     tags: todo.tags || [],
@@ -1063,6 +1105,7 @@ const createTodo = async () => {
       memo: newTodo.value.memo,
       status: newTodo.value.status,
       is_private: newTodo.value.is_private,
+      is_finished: newTodo.value.is_finished,
       sort_order: minSortOrder,
       total_time: [totalTimeSeconds],
       is_timing: false,
@@ -1087,6 +1130,7 @@ const createTodo = async () => {
       memo: "",
       status: TASK_STATUS.PRIORITY,
       is_private: false,
+      is_finished: false,
       total_time: 0,
       is_timing: false,
       tags: [],
@@ -1105,10 +1149,15 @@ const updateTodo = async () => {
   let totalTimeSeconds = editingTodo.value.is_timing
     ? currentTotalTime.value
     : parseTimeToSeconds(editTimeInput.value);
+
+  // 完了フラグはステータスと独立して管理
+  // is_finishedは明示的に設定された値を使用
+
   const updateData: Partial<Todo> = {
     ...editingTodo.value,
     total_time: [totalTimeSeconds],
     tags: editingTodo.value.tags,
+    is_finished: editingTodo.value.is_finished,
   };
   isUpdating.value = true;
   try {

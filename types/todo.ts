@@ -15,6 +15,7 @@ export type Todo = {
   memo?: string;
   sort_order?: number;
   is_private?: boolean;
+  is_finished?: boolean;
   user_id?: string;
   updated_at?: string;
   total_time?: number | number[];

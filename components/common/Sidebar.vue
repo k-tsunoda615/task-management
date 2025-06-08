@@ -254,6 +254,46 @@
             </UButton>
           </UTooltip>
         </div>
+
+        <!-- 完了タスク表示切り替え -->
+        <div
+          v-if="isCurrentRoute('/board')"
+          class="px-3 py-1.5"
+          :class="{ 'text-center': !isOpen && !isMobile }"
+        >
+          <UTooltip
+            :text="
+              !isOpen
+                ? showCompletedTasks
+                  ? '完了タスク非表示'
+                  : '完了タスク表示'
+                : ''
+            "
+            :ui="{ popper: { strategy: 'fixed' } }"
+            class="w-full"
+          >
+            <UButton
+              :block="isOpen || isMobile"
+              :color="showCompletedTasks ? 'green' : 'gray'"
+              :variant="'ghost'"
+              @click="toggleCompletedTasksVisibility"
+              class="justify-start hover:bg-gray-100"
+            >
+              <UIcon
+                name="i-heroicons-check-circle"
+                class="w-5 h-5"
+                :class="showCompletedTasks ? 'text-green-500' : 'text-gray-400'"
+              />
+              <span v-if="isOpen || isMobile" class="ml-2">
+                {{
+                  showCompletedTasks ? "完了タスク表示中" : "完了タスク非表示"
+                }}
+              </span>
+            </UButton>
+          </UTooltip>
+        </div>
+
+        <!-- タイマー表示切り替え -->
         <div
           v-if="isCurrentRoute('/board')"
           class="px-3 py-1.5"
@@ -392,6 +432,7 @@ const isOpen = ref(true); // サイドバーの開閉状態
 const showTimer = ref(true); // タイマー表示状態
 const showTagModal = ref(false);
 const showTagBar = ref(true); // タグ表示状態
+const showCompletedTasks = ref(false); // 完了タスク表示状態の初期値はfalse
 const route = useRoute();
 const router = useRouter();
 
@@ -434,6 +475,12 @@ onMounted(async () => {
   const savedTagBarState = localStorage.getItem("showTagBar");
   if (savedTagBarState !== null) {
     showTagBar.value = savedTagBarState === "true";
+  }
+
+  // 完了タスク表示状態を復元
+  const savedCompletedTasksState = localStorage.getItem("showCompletedTasks");
+  if (savedCompletedTasksState !== null) {
+    showCompletedTasks.value = savedCompletedTasksState === "true";
   }
 
   // プロジェクトとタグを取得
@@ -480,6 +527,20 @@ const toggleTagVisibility = () => {
   window.dispatchEvent(
     new CustomEvent("tagVisibilityToggle", {
       detail: { showTagBar: showTagBar.value },
+    })
+  );
+};
+
+// 完了タスク表示の切り替え
+const toggleCompletedTasksVisibility = () => {
+  showCompletedTasks.value = !showCompletedTasks.value;
+  localStorage.setItem(
+    "showCompletedTasks",
+    showCompletedTasks.value.toString()
+  );
+  window.dispatchEvent(
+    new CustomEvent("completedTasksVisibilityToggle", {
+      detail: { showCompletedTasks: showCompletedTasks.value },
     })
   );
 };
