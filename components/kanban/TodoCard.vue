@@ -1,6 +1,6 @@
 <template>
   <div
-    class="group bg-white rounded-lg p-4 hover:shadow-md transition-all duration-200 relative"
+    class="group bg-white rounded-[6px] p-4 hover:shadow-md transition-all duration-200 relative"
     :class="[
       todo.is_timing
         ? 'bg-blue-100 border border-blue-500'

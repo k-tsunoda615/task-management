@@ -4,7 +4,7 @@
     <Transition name="slide">
       <div
         v-if="currentTimingTodo && showTimerBar"
-        class="mb-6 p-4 bg-blue-50/50 rounded-lg border border-blue-100 flex flex-col md:flex-row gap-4 items-center justify-between"
+        class="mb-6 p-4 bg-blue-50/50 rounded-[6px] border border-blue-100 flex flex-col md:flex-row gap-4 items-center justify-between"
       >
         <div class="flex flex-col md:flex-row items-center gap-3">
           <!-- アナログ時計風タイマー -->
@@ -72,13 +72,11 @@
       <!-- Priority -->
       <div :class="getPriorityClass()">
         <div
-          class="rounded-lg p-4 h-full flex flex-col"
-          :class="{
-            [STATUS_COLORS[TASK_STATUS.PRIORITY].bg]: true,
-            [STATUS_COLORS[TASK_STATUS.PRIORITY].border]: true,
-          }"
+          class="rounded-[6px] p-4 h-full flex flex-col shadow-md border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900"
         >
-          <h2 class="mb-4 font-medium text-gray-900 flex items-center gap-2">
+          <h2
+            class="mb-4 font-medium text-gray-900 dark:text-gray-100 flex items-center gap-2"
+          >
             <UIcon
               :name="STATUS_COLORS[TASK_STATUS.PRIORITY].iconName"
               class="w-5 h-5"
@@ -99,7 +97,7 @@
               chosen-class="chosen-item"
               :key="'priority-container'"
               :class="{
-                'border-2 border-dashed border-gray-200 rounded-lg p-4':
+                'border-2 border-dashed border-gray-200 rounded-[6px] p-4':
                   todosByStatus[TASK_STATUS.PRIORITY].length === 0,
               }"
               @change="handleDragChange"
@@ -133,13 +131,11 @@
       <!-- Next Up -->
       <div :class="getNextUpClass()">
         <div
-          class="rounded-lg p-4 h-full"
-          :class="{
-            [STATUS_COLORS[TASK_STATUS.NEXT].bg]: true,
-            [STATUS_COLORS[TASK_STATUS.NEXT].border]: true,
-          }"
+          class="rounded-[6px] p-4 h-full shadow-md border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900"
         >
-          <h2 class="mb-4 font-medium text-gray-900 flex items-center gap-2">
+          <h2
+            class="mb-4 font-medium text-gray-900 dark:text-gray-100 flex items-center gap-2"
+          >
             <UIcon
               :name="STATUS_COLORS[TASK_STATUS.NEXT].iconName"
               class="w-5 h-5"
@@ -188,13 +184,11 @@
     <div class="block md:hidden space-y-4">
       <!-- Priority -->
       <div
-        class="rounded-lg p-4"
-        :class="{
-          [STATUS_COLORS[TASK_STATUS.PRIORITY].bg]: true,
-          [STATUS_COLORS[TASK_STATUS.PRIORITY].border]: true,
-        }"
+        class="rounded-[6px] p-4 shadow-md border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900"
       >
-        <h2 class="mb-4 font-medium text-gray-900 flex items-center gap-2">
+        <h2
+          class="mb-4 font-medium text-gray-900 dark:text-gray-100 flex items-center gap-2"
+        >
           <UIcon
             :name="STATUS_COLORS[TASK_STATUS.PRIORITY].iconName"
             class="w-5 h-5"
@@ -239,13 +233,11 @@
 
       <!-- Next Up -->
       <div
-        class="rounded-lg p-4"
-        :class="{
-          [STATUS_COLORS[TASK_STATUS.NEXT].bg]: true,
-          [STATUS_COLORS[TASK_STATUS.NEXT].border]: true,
-        }"
+        class="rounded-[6px] p-4 shadow-md border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900"
       >
-        <h2 class="mb-4 font-medium text-gray-900 flex items-center gap-2">
+        <h2
+          class="mb-4 font-medium text-gray-900 dark:text-gray-100 flex items-center gap-2"
+        >
           <UIcon
             :name="STATUS_COLORS[TASK_STATUS.NEXT].iconName"
             class="w-5 h-5"
@@ -291,13 +283,11 @@
 
     <!-- PC/モバイル共通: 下段：Archived -->
     <div
-      class="rounded-lg p-4 mt-4"
-      :class="{
-        [STATUS_COLORS[TASK_STATUS.ARCHIVED].bg]: true,
-        [STATUS_COLORS[TASK_STATUS.ARCHIVED].border]: true,
-      }"
+      class="rounded-[6px] p-4 mt-4 shadow-md border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900"
     >
-      <h2 class="mb-4 font-medium text-gray-900 flex items-center gap-2">
+      <h2
+        class="mb-4 font-medium text-gray-900 dark:text-gray-100 flex items-center gap-2"
+      >
         <UIcon
           :name="STATUS_COLORS[TASK_STATUS.ARCHIVED].iconName"
           class="w-5 h-5"

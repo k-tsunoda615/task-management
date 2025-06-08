@@ -1,4 +1,5 @@
 <template>
+  <CommonNavigation :title="'アナリティクス'" />
   <div class="p-[1.5rem]">
     <UCard class="mb-6">
       <template #header>
