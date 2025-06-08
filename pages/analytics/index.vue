@@ -1,15 +1,15 @@
 <template>
   <CommonNavigation :title="'アナリティクスビュー'" />
   <div>
-    <UCard class="mb-6">
+    <UCard class="mb-6 rounded-[6px]">
       <template #header>
-        <div class="flex justify-between items-center">
+        <div class="flex justify-between items-center rounded-[6px]">
           <h2 class="text-xl font-bold">タスク分析ダッシュボード</h2>
-          <div class="flex gap-2">
+          <div class="flex gap-2 rounded-[6px] border">
             <!-- 期間フィルター -->
             <select
               v-model="selectedPeriod"
-              class="w-40 rounded border border-gray-300 appearance-none px-3 py-2 focus:border-primary-500 focus:outline-none"
+              class="w-40 rounded-[6px] border border-gray-300 appearance-none px-3 py-2 focus:border-primary-500 focus:outline-none"
             >
               <option value="today">今日</option>
               <option value="7days">過去7日間</option>
@@ -20,7 +20,7 @@
         </div>
       </template>
       <div class="analytics-summary grid grid-cols-1 md:grid-cols-3 gap-4">
-        <UCard>
+        <UCard class="rounded-[6px]">
           <div class="text-center">
             <div class="text-2xl font-bold text-primary-600">
               {{ totalTasks }}
@@ -28,7 +28,7 @@
             <div class="text-sm text-gray-500">実施タスク数</div>
           </div>
         </UCard>
-        <UCard>
+        <UCard class="rounded-[6px]">
           <div class="text-center">
             <div
               v-if="showCompletedTasks"
@@ -40,7 +40,7 @@
             <div class="text-sm text-gray-500">完了タスク数</div>
           </div>
         </UCard>
-        <UCard>
+        <UCard class="rounded-[6px]">
           <div class="text-center">
             <div class="text-2xl font-bold text-yellow-600">
               {{ formatTime(totalTimeSpent) }}
@@ -52,7 +52,7 @@
     </UCard>
 
     <!-- タスクステータス分布 -->
-    <UCard class="mb-6">
+    <UCard class="mb-6 rounded-[6px]">
       <template #header>
         <h3 class="text-lg font-bold">ステータス別タスク分布</h3>
       </template>
@@ -61,7 +61,7 @@
 
     <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
       <!-- タスク時間分析 -->
-      <UCard>
+      <UCard class="rounded-[6px]">
         <template #header>
           <h3 class="text-lg font-bold">タスク時間分析</h3>
         </template>
@@ -71,7 +71,7 @@
       </UCard>
 
       <!-- タグ別タスク分布 -->
-      <UCard>
+      <UCard class="rounded-[6px]">
         <template #header>
           <h3 class="text-lg font-bold">タグ別タスク分布</h3>
         </template>
@@ -82,7 +82,7 @@
     </div>
 
     <!-- 最近のアクティビティ -->
-    <UCard>
+    <UCard class="rounded-[6px]">
       <template #header>
         <h3 class="text-lg font-bold">最近のアクティビティ</h3>
       </template>

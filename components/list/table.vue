@@ -9,7 +9,7 @@
     />
 
     <!-- メインテーブル -->
-    <div class="border rounded-lg overflow-hidden">
+    <div class="rounded-[6px] border overflow-hidden">
       <div class="overflow-x-auto">
         <table class="w-full whitespace-nowrap">
           <TableHeader
