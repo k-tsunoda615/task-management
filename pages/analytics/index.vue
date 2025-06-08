@@ -1,22 +1,22 @@
 <template>
   <CommonNavigation :title="'アナリティクスビュー'" />
   <div>
+    <div class="flex justify-end gap-2 mb-4">
+      <!-- 期間フィルター -->
+      <select
+        v-model="selectedPeriod"
+        class="w-40 rounded-[6px] border border-gray-300 appearance-none px-3 py-2 focus:border-primary-500 focus:outline-none"
+      >
+        <option value="today">今日</option>
+        <option value="7days">過去7日間</option>
+        <option value="30days">過去30日間</option>
+        <option value="all">すべて</option>
+      </select>
+    </div>
     <UCard class="mb-6 rounded-[6px]">
       <template #header>
         <div class="flex justify-between items-center rounded-[6px]">
-          <h2 class="text-xl font-bold">タスク分析ダッシュボード</h2>
-          <div class="flex gap-2 rounded-[6px] border">
-            <!-- 期間フィルター -->
-            <select
-              v-model="selectedPeriod"
-              class="w-40 rounded-[6px] border border-gray-300 appearance-none px-3 py-2 focus:border-primary-500 focus:outline-none"
-            >
-              <option value="today">今日</option>
-              <option value="7days">過去7日間</option>
-              <option value="30days">過去30日間</option>
-              <option value="all">すべて</option>
-            </select>
-          </div>
+          <h2 class="text-xl font-bold">集計サマリー</h2>
         </div>
       </template>
       <div class="analytics-summary grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -174,6 +174,11 @@ import AnalyticsTimeDistribution from "../../components/analytics/TimeDistributi
 definePageMeta({
   layout: "board",
   middleware: ["auth"],
+});
+
+useHead({
+  title: "アナリティクス",
+  meta: [{ name: "description", content: "アナリティクス" }],
 });
 
 // ストアのインスタンス化
