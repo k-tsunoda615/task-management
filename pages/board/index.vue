@@ -1,6 +1,6 @@
 <template>
   <div>
-    <CommonNavigation :title="'Task Board'" />
+    <CommonNavigation :title="'ボードビュー'" />
     <!-- メインコンテンツ -->
     <div v-if="user">
       <KanbanTaskBoard />

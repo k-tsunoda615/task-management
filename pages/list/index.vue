@@ -1,6 +1,6 @@
 <template>
   <div>
-    <CommonNavigation :title="'Todo リスト'" />
+    <CommonNavigation :title="'リストビュー'" />
     <div v-if="user">
       <ListTable />
     </div>

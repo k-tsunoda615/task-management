@@ -3,15 +3,15 @@
   <div class="mb-6 border-b border-gray-200 pb-4">
     <nav class="flex items-center justify-between">
       <div class="flex items-center space-x-4">
-        <NuxtLink
+        <!-- <NuxtLink
           to="/"
           class="text-gray-600 hover:text-gray-900 flex items-center"
         >
           <UIcon name="i-heroicons-home" class="mr-1 h-5 w-5" />
           <span class="md:inline hidden">ホーム</span>
         </NuxtLink>
-        <span class="text-gray-400 md:inline hidden">/</span>
-        <span class="font-medium text-gray-900 md:inline hidden">{{
+        <span class="text-gray-400 md:inline hidden">/</span> -->
+        <span class="font-medium text-lg text-gray-900 md:inline hidden">{{
           props.title
         }}</span>
       </div>
