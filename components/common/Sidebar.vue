@@ -13,9 +13,9 @@
       <div
         class="flex items-center justify-between p-4 border-b border-gray-200"
       >
-        <h2 class="text-lg font-medium text-gray-900" v-if="isOpen || isMobile">
-          Task Board
-        </h2>
+        <p class="font-medium text-gray-900" v-if="isOpen || isMobile">
+          メニュー
+        </p>
         <UButton
           v-if="isMobile"
           @click="$emit('close-mobile-menu')"
