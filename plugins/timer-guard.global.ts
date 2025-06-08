@@ -1,6 +1,6 @@
 import { useTodoStore } from "../stores/todo";
 
-type TimerNavigationEvent = {
+export type TimerNavigationEvent = {
   action: "stop-timer";
   todoId: string;
   destination: string;

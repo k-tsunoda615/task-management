@@ -345,7 +345,7 @@
       @validate-time="validateTimeInput"
       @update:newTodoTitle="(val: string) => (newTodo.title = val)"
       @update:newTodoMemo="(val: string) => (newTodo.memo = val)"
-      @update:newTodoStatus="(val: string) => (newTodo.status = val)"
+      @update:newTodoStatus="(val: any) => (newTodo.status = val)"
       @update:newTodoIsPrivate="(val: boolean) => (newTodo.is_private = val)"
       @update:timeInput="(val: string) => (timeInput = val)"
       @update:newTagName="(val: string) => (newTagName = val)"
@@ -584,7 +584,7 @@ import {
 } from "../../utils/analytics";
 import AnalogTimer from "./AnalogTimer.vue";
 import { calculateNewOrders } from "../../utils/todoUtils";
-import type { TimerNavigationEvent } from "../../types/timer";
+import type { TimerNavigationEvent } from "../../plugins/timer-guard.global";
 
 const todoStore = useTodoStore();
 const tagStore = useTagStore();
