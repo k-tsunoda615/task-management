@@ -20,7 +20,12 @@
             name="i-heroicons-lock-closed"
             class="text-gray-400 w-4 h-4 flex-shrink-0 mr-1.5"
           />
-          <h3 class="font-medium text-gray-900 truncate">{{ todo.title }}</h3>
+          <NuxtLink
+            :to="`/note/${todo.id}`"
+            class="font-medium text-gray-900 truncate hover:text-primary-600 hover:underline transition-colors"
+          >
+            {{ todo.title }}
+          </NuxtLink>
         </div>
 
         <!-- タグ -->
@@ -56,7 +61,21 @@
       </div>
 
       <!-- アクションボタン -->
-      <div class="ml-4 opacity-0 group-hover:opacity-100 transition-opacity">
+      <div
+        class="ml-4 opacity-0 group-hover:opacity-100 transition-opacity flex gap-1"
+      >
+        <NuxtLink
+          :to="`/note/${todo.id}`"
+          class="text-gray-500 hover:text-primary-600 transition-colors"
+        >
+          <UButton
+            color="gray"
+            variant="ghost"
+            icon="i-heroicons-document-text"
+            size="xs"
+            class="hover:bg-gray-100"
+          />
+        </NuxtLink>
         <UButton
           color="gray"
           variant="ghost"

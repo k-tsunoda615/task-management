@@ -115,8 +115,19 @@
           <tbody class="bg-white divide-y divide-gray-200">
             <tr v-for="task in recentTasks" :key="task.id">
               <td class="px-6 py-4 whitespace-nowrap">
-                <div class="text-sm font-medium text-gray-900">
-                  {{ task.title }}
+                <div
+                  class="text-sm font-medium text-gray-900 flex items-center"
+                >
+                  <NuxtLink
+                    :to="`/note/${task.id}`"
+                    class="group hover:text-primary-600 hover:underline transition-colors flex items-center"
+                  >
+                    <UIcon
+                      name="i-heroicons-document-text"
+                      class="mr-2 w-4 h-4 text-gray-400 group-hover:text-primary-600"
+                    />
+                    {{ task.title }}
+                  </NuxtLink>
                 </div>
               </td>
               <td class="px-6 py-4 whitespace-nowrap">

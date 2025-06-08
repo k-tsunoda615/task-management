@@ -6,23 +6,39 @@
     </td> -->
 
     <!-- タイトル - 編集可能 -->
-    <td class="px-4 py-3 text-sm text-gray-900 max-w-xs">
-      <UInput
-        v-if="isEditingTitle"
-        v-model="editedTitle"
-        size="sm"
-        class="w-full"
-        @blur="saveTitle"
-        @keyup.enter="saveTitle"
-        @keyup.escape="cancelTitleEdit"
-        ref="titleInput"
-      />
+    <td
+      class="px-4 py-3 text-sm relative"
+      @click="isEditingTitle || startTitleEdit()"
+    >
+      <div v-if="isEditingTitle" class="flex items-center">
+        <input
+          ref="titleInput"
+          v-model="editedTitle"
+          class="block w-full px-2 py-1 text-sm border border-gray-300 rounded focus:ring-primary-500 focus:border-primary-500"
+          @keyup.enter="saveTitleEdit"
+          @keyup.esc="cancelTitleEdit"
+          @blur="saveTitleEdit"
+        />
+      </div>
       <div
         v-else
-        class="truncate cursor-pointer hover:text-primary-500"
-        @click="startTitleEdit"
+        class="flex items-center cursor-pointer group-hover:text-primary-600"
       >
-        {{ todo.title }}
+        <NuxtLink
+          :to="`/note/${todo.id}`"
+          class="text-gray-500 hover:text-primary-600 transition-colors mr-2"
+          @click.stop
+        >
+          <UIcon
+            name="i-heroicons-document-text"
+            class="w-4 h-4 text-gray-400 hover:text-primary-600"
+          />
+        </NuxtLink>
+        <span class="truncate">{{ todo.title }}</span>
+        <UIcon
+          name="i-heroicons-pencil-square"
+          class="w-4 h-4 text-gray-400 ml-1 opacity-0 group-hover:opacity-100 transition-opacity"
+        />
       </div>
     </td>
 
@@ -339,7 +355,7 @@ function startTitleEdit() {
 }
 
 // タイトル編集を保存
-function saveTitle() {
+function saveTitleEdit() {
   if (
     editedTitle.value.trim() !== "" &&
     editedTitle.value !== props.todo.title
