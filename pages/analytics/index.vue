@@ -1,11 +1,12 @@
 <template>
   <CommonNavigation :title="'アナリティクスビュー'" />
-  <div class="p-[1.5rem]">
+  <div>
     <UCard class="mb-6">
       <template #header>
         <div class="flex justify-between items-center">
           <h2 class="text-xl font-bold">タスク分析ダッシュボード</h2>
           <div class="flex gap-2">
+            <!-- 期間フィルター -->
             <select
               v-model="selectedPeriod"
               class="w-40 rounded border border-gray-300 appearance-none px-3 py-2 focus:border-primary-500 focus:outline-none"
@@ -24,14 +25,18 @@
             <div class="text-2xl font-bold text-primary-600">
               {{ totalTasks }}
             </div>
-            <div class="text-sm text-gray-500">合計タスク数</div>
+            <div class="text-sm text-gray-500">実施タスク数</div>
           </div>
         </UCard>
         <UCard>
           <div class="text-center">
-            <div class="text-2xl font-bold text-green-600">
+            <div
+              v-if="showCompletedTasks"
+              class="text-2xl font-bold text-green-600"
+            >
               {{ completedTasks }}
             </div>
+            <div v-else class="text-2xl font-bold text-gray-400">--</div>
             <div class="text-sm text-gray-500">完了タスク数</div>
           </div>
         </UCard>
@@ -51,9 +56,7 @@
       <template #header>
         <h3 class="text-lg font-bold">ステータス別タスク分布</h3>
       </template>
-      <div class="h-64">
-        <AnalyticsStatusDistribution :tasks="filteredTasks" />
-      </div>
+      <AnalyticsStatusDistribution :tasks="filteredTasks" />
     </UCard>
 
     <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
@@ -117,13 +120,17 @@
                 </div>
               </td>
               <td class="px-6 py-4 whitespace-nowrap">
-                <UBadge
-                  :color="getStatusColor(task.status)"
-                  :variant="getStatusVariant(task.status)"
-                  class="text-xs font-medium"
+                <span
+                  class="px-2 py-1 text-xs rounded-full flex items-center w-fit"
+                  :class="getStatusClasses(task.status)"
                 >
+                  <UIcon
+                    :name="getStatusIconName(task.status)"
+                    class="mr-1 w-4 h-4"
+                    :class="getStatusIconClass(task.status)"
+                  />
                   {{ getStatusLabel(task.status) }}
-                </UBadge>
+                </span>
               </td>
               <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                 {{ formatTime(task.total_time || 0) }}
@@ -142,7 +149,11 @@
 <script setup lang="ts">
 import { useTodoStore } from "../../stores/todo";
 import { useTagStore } from "../../stores/tag";
-import { TASK_STATUS, TASK_STATUS_LABELS } from "../../utils/constants";
+import {
+  TASK_STATUS,
+  TASK_STATUS_LABELS,
+  STATUS_COLORS,
+} from "../../utils/constants";
 import { formatTime } from "../../utils/time";
 import type { Todo } from "../../types/todo";
 import AnalyticsStatusDistribution from "../../components/analytics/StatusDistribution.vue";
@@ -166,7 +177,7 @@ const showCompletedTasks = ref(false); // 完了タスク表示/非表示
 const tasks = ref<Todo[]>([]);
 const tags = computed(() => tagStore.tags);
 
-// 選択された期間でタスクをフィルタリング - シンプル化
+// 選択された期間とフィルターでタスクをフィルタリング
 const filteredTasks = computed(() => {
   // まずは期間でフィルタリング
   const period = selectedPeriod.value;
@@ -209,20 +220,30 @@ const filteredTasks = computed(() => {
     );
   }
 
-  // 次に完了フラグでフィルタリング
-  if (!showCompletedTasks.value) {
-    return periodFilteredTasks.filter((task) => !task.is_finished);
+  // プライベート/パブリックフィルターを適用（サイドバーの状態を利用）
+  let privateFilteredTasks = periodFilteredTasks;
+  if (todoStore.taskFilter === "private") {
+    privateFilteredTasks = periodFilteredTasks.filter(
+      (task) => task.is_private === true
+    );
+  } else if (todoStore.taskFilter === "public") {
+    privateFilteredTasks = periodFilteredTasks.filter(
+      (task) => task.is_private === false
+    );
   }
 
-  return periodFilteredTasks;
+  // 次に完了フラグでフィルタリング
+  if (!showCompletedTasks.value) {
+    return privateFilteredTasks.filter((task) => !task.is_finished);
+  }
+
+  return privateFilteredTasks;
 });
 
 // 集計データ
 const totalTasks = computed(() => filteredTasks.value.length);
 const completedTasks = computed(
-  () =>
-    filteredTasks.value.filter((task) => task.status === TASK_STATUS.ARCHIVED)
-      .length
+  () => filteredTasks.value.filter((task) => task.is_finished).length
 );
 const totalTimeSpent = computed(() =>
   filteredTasks.value.reduce((sum, task) => {
@@ -261,6 +282,18 @@ onMounted(async () => {
     showCompletedTasks.value = event.detail.showCompletedTasks;
   });
 
+  // プライベート/パブリックフィルター変更を監視
+  watch(
+    () => todoStore.taskFilter,
+    () => {
+      // ストアのフィルターが変更されたら、データを再フィルタリング
+      console.log(
+        "Todoストアのフィルターが変更されました:",
+        todoStore.taskFilter
+      );
+    }
+  );
+
   // クリーンアップ
   onUnmounted(() => {
     window.removeEventListener(
@@ -292,20 +325,30 @@ const getStatusLabel = (status: string) => {
   );
 };
 
-const getStatusColor = (status: string) => {
-  switch (status) {
-    case TASK_STATUS.PRIORITY:
-      return "red";
-    case TASK_STATUS.NEXT:
-      return "blue";
-    case TASK_STATUS.ARCHIVED:
-      return "green";
-    default:
-      return "gray";
+// ステータスクラスを取得（他のページと同じ表示に）
+const getStatusClasses = (status: string) => {
+  const statusStyle = STATUS_COLORS[status as keyof typeof STATUS_COLORS];
+  if (statusStyle) {
+    return `${statusStyle.bg} ${statusStyle.border}`;
   }
+  return "bg-white/80 border border-gray-300";
 };
 
-const getStatusVariant = (status: string) => {
-  return status === TASK_STATUS.PRIORITY ? "solid" : "soft";
+// ステータスアイコン名を取得
+const getStatusIconName = (status: string) => {
+  const statusStyle = STATUS_COLORS[status as keyof typeof STATUS_COLORS];
+  if (statusStyle) {
+    return statusStyle.iconName;
+  }
+  return "i-heroicons-question-mark-circle";
+};
+
+// ステータスアイコンクラスを取得
+const getStatusIconClass = (status: string) => {
+  const statusStyle = STATUS_COLORS[status as keyof typeof STATUS_COLORS];
+  if (statusStyle) {
+    return statusStyle.icon;
+  }
+  return "text-gray-500";
 };
 </script>
