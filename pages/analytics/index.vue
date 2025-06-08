@@ -160,6 +160,7 @@ const tagStore = useTagStore();
 
 // 期間選択のオプション
 const selectedPeriod = ref("7days");
+const showCompletedTasks = ref(false); // 完了タスク表示/非表示
 
 // タスクとタグのデータ取得
 const tasks = ref<Todo[]>([]);
@@ -167,42 +168,53 @@ const tags = computed(() => tagStore.tags);
 
 // 選択された期間でタスクをフィルタリング - シンプル化
 const filteredTasks = computed(() => {
+  // まずは期間でフィルタリング
   const period = selectedPeriod.value;
+  let periodFilteredTasks;
 
   // 「すべて」の場合は全件表示
-  if (period === "all") return tasks.value;
+  if (period === "all") {
+    periodFilteredTasks = tasks.value;
+  } else {
+    // 期間に応じた日時の設定
+    const targetDate = new Date();
+    let daysToSubtract = 0;
 
-  // 期間に応じた日時の設定
-  const targetDate = new Date();
-  let daysToSubtract = 0;
+    switch (period) {
+      case "today":
+        // 今日の0時
+        targetDate.setHours(0, 0, 0, 0);
+        break;
+      case "7days":
+        // 7日前
+        daysToSubtract = 7;
+        break;
+      case "30days":
+        // 30日前
+        daysToSubtract = 30;
+        break;
+      default:
+        periodFilteredTasks = tasks.value; // 想定外の値は全件
+    }
 
-  switch (period) {
-    case "today":
-      // 今日の0時
+    // 日数を引く場合
+    if (daysToSubtract > 0) {
+      targetDate.setDate(targetDate.getDate() - daysToSubtract);
       targetDate.setHours(0, 0, 0, 0);
-      break;
-    case "7days":
-      // 7日前
-      daysToSubtract = 7;
-      break;
-    case "30days":
-      // 30日前
-      daysToSubtract = 30;
-      break;
-    default:
-      return tasks.value; // 想定外の値は全件
+    }
+
+    // 期間でフィルタリング
+    periodFilteredTasks = tasks.value.filter(
+      (task) => task.updated_at && new Date(task.updated_at) >= targetDate
+    );
   }
 
-  // 日数を引く場合
-  if (daysToSubtract > 0) {
-    targetDate.setDate(targetDate.getDate() - daysToSubtract);
-    targetDate.setHours(0, 0, 0, 0);
+  // 次に完了フラグでフィルタリング
+  if (!showCompletedTasks.value) {
+    return periodFilteredTasks.filter((task) => !task.is_finished);
   }
 
-  // フィルタリング
-  return tasks.value.filter(
-    (task) => task.updated_at && new Date(task.updated_at) >= targetDate
-  );
+  return periodFilteredTasks;
 });
 
 // 集計データ
@@ -237,6 +249,27 @@ onMounted(async () => {
   await Promise.all([todoStore.fetchTodos(), tagStore.fetchTags()]);
 
   tasks.value = todoStore.todos;
+
+  // 完了タスク表示状態を復元
+  const savedCompletedTasksState = localStorage.getItem("showCompletedTasks");
+  if (savedCompletedTasksState !== null) {
+    showCompletedTasks.value = savedCompletedTasksState === "true";
+  }
+
+  // 完了タスク表示切り替えイベントを監視
+  window.addEventListener("completedTasksVisibilityToggle", (event: any) => {
+    showCompletedTasks.value = event.detail.showCompletedTasks;
+  });
+
+  // クリーンアップ
+  onUnmounted(() => {
+    window.removeEventListener(
+      "completedTasksVisibilityToggle",
+      (event: any) => {
+        showCompletedTasks.value = event.detail.showCompletedTasks;
+      }
+    );
+  });
 });
 
 // 日付フォーマット

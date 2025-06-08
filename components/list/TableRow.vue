@@ -78,6 +78,7 @@
       </span>
     </td>
 
+    <!-- プライベートフラグ - 編集可能 -->
     <td class="px-4 py-3 text-sm">
       <span v-if="todo.is_private" class="text-pink-600 flex items-center">
         <UIcon name="i-heroicons-lock-closed" class="w-4 h-4 mr-1" />
@@ -89,12 +90,23 @@
       </span>
     </td>
 
+    <!-- 合計時間 -->
     <td class="px-4 py-3 text-sm">
       {{ formattedTime }}
     </td>
 
+    <!-- 更新日時 -->
     <td class="px-4 py-3 text-sm text-gray-600">
       {{ formattedDate }}
+    </td>
+
+    <!-- 完了 - 編集可能 -->
+    <td class="px-4 py-3 text-sm">
+      <UCheckbox
+        :modelValue="todo.is_finished"
+        @change="toggleFinished"
+        class="mx-auto"
+      />
     </td>
 
     <!-- タグ - 編集可能 -->
@@ -185,8 +197,8 @@
       </div>
     </td>
 
-    <!-- チェックボックスを右端に移動 -->
-    <td class="px-4 py-3 text-center">
+    <!-- 削除 -->
+    <td class="px-4 py-3 text-center flex items-center justify-center">
       <UCheckbox
         v-model="selected"
         @change="$emit('toggleSelect', todo.id, selected)"
@@ -494,6 +506,13 @@ function toggleTag(tagId: string) {
 function selectAndSaveStatus(status: TaskStatus) {
   editedStatus.value = status;
   saveStatus();
+}
+
+function toggleFinished(value: boolean) {
+  emit("updateTodo", {
+    id: props.todo.id,
+    is_finished: value,
+  });
 }
 </script>
 

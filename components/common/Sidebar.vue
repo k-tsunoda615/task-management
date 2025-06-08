@@ -200,8 +200,8 @@
         <div class="my-2 border-t border-gray-200" />
 
         <!-- 表示切り替え系ボタン群 -->
+        <!-- フィルター表示切り替え -->
         <div
-          v-if="isCurrentRoute('/board')"
           class="px-3 py-1.5"
           :class="{ 'text-center': !isOpen && !isMobile }"
         >
@@ -257,7 +257,6 @@
 
         <!-- 完了タスク表示切り替え -->
         <div
-          v-if="isCurrentRoute('/board')"
           class="px-3 py-1.5"
           :class="{ 'text-center': !isOpen && !isMobile }"
         >

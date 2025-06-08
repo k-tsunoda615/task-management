@@ -73,16 +73,46 @@
         </div>
       </th>
       <th
-        class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+        class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer"
+        @click="$emit('sort', 'is_finished')"
       >
-        タグ
+        <div class="flex items-center">
+          <UIcon
+            :name="getSortIcon('is_finished')"
+            class="inline ml-1 w-4 h-4"
+            :class="
+              sortColumn === 'is_finished'
+                ? 'text-primary-500'
+                : 'text-gray-300'
+            "
+          />
+          完了
+        </div>
       </th>
-      <th class="w-12 px-4 py-3 text-center">
+      <th
+        class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer"
+        @click="$emit('sort', 'tags')"
+      >
+        <div class="flex items-center">
+          タグ
+          <UIcon
+            :name="getSortIcon('tags')"
+            class="inline ml-1 w-4 h-4"
+            :class="
+              sortColumn === 'tags' ? 'text-primary-500' : 'text-gray-300'
+            "
+          />
+        </div>
+      </th>
+      <th
+        class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer flex items-center justify-center gap-1"
+      >
         <UCheckbox
           :checked="selectAll"
           @change="$emit('toggleSelectAll', $event)"
           class="mx-auto"
         />
+        削除
       </th>
     </tr>
   </thead>

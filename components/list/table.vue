@@ -106,7 +106,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, watch } from "vue";
+import { ref, computed, onMounted, watch, onUnmounted } from "vue";
 import { useTodoStore } from "../../stores/todo";
 import { useTagStore } from "../../stores/tag";
 import { TASK_STATUS } from "../../utils/constants";
@@ -126,6 +126,7 @@ const tagStore = useTagStore();
 const searchQuery = ref("");
 const statusFilter = ref("");
 const privateFilter = ref<boolean | null>(null);
+const showCompletedTasks = ref(false);
 const sortColumn = ref("sort_order");
 const sortDirection = ref<"asc" | "desc" | "none">("none");
 const selectedTodos = ref<string[]>([]);
@@ -155,6 +156,27 @@ onMounted(async () => {
 
   // ストアのtaskFilterが変更されたときに連携する
   watch(() => todoStore.taskFilter, updatePrivateFilterFromStore);
+
+  // 完了タスク表示状態を復元
+  const savedCompletedTasksState = localStorage.getItem("showCompletedTasks");
+  if (savedCompletedTasksState !== null) {
+    showCompletedTasks.value = savedCompletedTasksState === "true";
+  }
+
+  // 完了タスク表示切り替えイベントを監視
+  window.addEventListener("completedTasksVisibilityToggle", (event: any) => {
+    showCompletedTasks.value = event.detail.showCompletedTasks;
+  });
+
+  // クリーンアップ
+  onUnmounted(() => {
+    window.removeEventListener(
+      "completedTasksVisibilityToggle",
+      (event: any) => {
+        showCompletedTasks.value = event.detail.showCompletedTasks;
+      }
+    );
+  });
 });
 
 // ストアのtaskFilterからprivateFilterを更新
@@ -262,7 +284,12 @@ const filteredAndSortedTodos = computed<Todo[]>(() => {
     const matchesPrivate =
       privateFilter.value === null || todo.is_private === privateFilter.value;
 
-    return matchesSearch && matchesStatus && matchesPrivate;
+    // 完了タスクフィルター
+    const matchesCompletedState = showCompletedTasks.value || !todo.is_finished;
+
+    return (
+      matchesSearch && matchesStatus && matchesPrivate && matchesCompletedState
+    );
   });
 
   // ソートを適用（デフォルトは常にsort_orderの昇順）
@@ -284,6 +311,27 @@ const filteredAndSortedTodos = computed<Todo[]>(() => {
         };
         valueA = statusOrder[a.status as keyof typeof statusOrder] ?? 999;
         valueB = statusOrder[b.status as keyof typeof statusOrder] ?? 999;
+      }
+
+      // タグの場合は特別な処理を行う
+      if (sortColumn.value === "tags") {
+        // タグ名の配列を取得
+        const tagsA =
+          a.tags
+            ?.map((tag) => tag.name)
+            .sort()
+            .join(",") || "";
+        const tagsB =
+          b.tags
+            ?.map((tag) => tag.name)
+            .sort()
+            .join(",") || "";
+
+        if (sortDirection.value === "asc") {
+          return tagsA.localeCompare(tagsB);
+        } else {
+          return tagsB.localeCompare(tagsA);
+        }
       }
 
       // タイトルなど文字列の場合
