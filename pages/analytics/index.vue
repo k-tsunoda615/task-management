@@ -1,16 +1,19 @@
 <template>
-  <div class="analytics-container">
+  <div class="p-[1.5rem]">
     <UCard class="mb-6">
       <template #header>
         <div class="flex justify-between items-center">
           <h2 class="text-xl font-bold">タスク分析ダッシュボード</h2>
           <div class="flex gap-2">
-            <USelectMenu
+            <select
               v-model="selectedPeriod"
-              :options="periodOptions"
-              placeholder="期間を選択"
-              class="w-40"
-            />
+              class="w-40 rounded border border-gray-300 appearance-none px-3 py-2 focus:border-primary-500 focus:outline-none"
+            >
+              <option value="today">今日</option>
+              <option value="7days">過去7日間</option>
+              <option value="30days">過去30日間</option>
+              <option value="all">すべて</option>
+            </select>
           </div>
         </div>
       </template>
@@ -48,7 +51,7 @@
         <h3 class="text-lg font-bold">ステータス別タスク分布</h3>
       </template>
       <div class="h-64">
-        <AnalyticsStatusDistribution :tasks="tasks" />
+        <AnalyticsStatusDistribution :tasks="filteredTasks" />
       </div>
     </UCard>
 
@@ -59,7 +62,7 @@
           <h3 class="text-lg font-bold">タスク時間分析</h3>
         </template>
         <div class="h-64">
-          <AnalyticsTimeDistribution :tasks="tasks" />
+          <AnalyticsTimeDistribution :tasks="filteredTasks" />
         </div>
       </UCard>
 
@@ -69,7 +72,7 @@
           <h3 class="text-lg font-bold">タグ別タスク分布</h3>
         </template>
         <div class="h-64">
-          <AnalyticsTagDistribution :tasks="tasks" :tags="tags" />
+          <AnalyticsTagDistribution :tasks="filteredTasks" :tags="tags" />
         </div>
       </UCard>
     </div>
@@ -155,25 +158,61 @@ const todoStore = useTodoStore();
 const tagStore = useTagStore();
 
 // 期間選択のオプション
-const periodOptions = [
-  { label: "過去7日間", value: "7days" },
-  { label: "過去30日間", value: "30days" },
-  { label: "すべて", value: "all" },
-];
 const selectedPeriod = ref("7days");
 
 // タスクとタグのデータ取得
 const tasks = ref<Todo[]>([]);
 const tags = computed(() => tagStore.tags);
 
+// 選択された期間でタスクをフィルタリング - シンプル化
+const filteredTasks = computed(() => {
+  const period = selectedPeriod.value;
+
+  // 「すべて」の場合は全件表示
+  if (period === "all") return tasks.value;
+
+  // 期間に応じた日時の設定
+  const targetDate = new Date();
+  let daysToSubtract = 0;
+
+  switch (period) {
+    case "today":
+      // 今日の0時
+      targetDate.setHours(0, 0, 0, 0);
+      break;
+    case "7days":
+      // 7日前
+      daysToSubtract = 7;
+      break;
+    case "30days":
+      // 30日前
+      daysToSubtract = 30;
+      break;
+    default:
+      return tasks.value; // 想定外の値は全件
+  }
+
+  // 日数を引く場合
+  if (daysToSubtract > 0) {
+    targetDate.setDate(targetDate.getDate() - daysToSubtract);
+    targetDate.setHours(0, 0, 0, 0);
+  }
+
+  // フィルタリング
+  return tasks.value.filter(
+    (task) => task.updated_at && new Date(task.updated_at) >= targetDate
+  );
+});
+
 // 集計データ
-const totalTasks = computed(() => tasks.value.length);
+const totalTasks = computed(() => filteredTasks.value.length);
 const completedTasks = computed(
   () =>
-    tasks.value.filter((task) => task.status === TASK_STATUS.ARCHIVED).length
+    filteredTasks.value.filter((task) => task.status === TASK_STATUS.ARCHIVED)
+      .length
 );
 const totalTimeSpent = computed(() =>
-  tasks.value.reduce((sum, task) => {
+  filteredTasks.value.reduce((sum, task) => {
     const time = Array.isArray(task.total_time)
       ? task.total_time[0] || 0
       : task.total_time || 0;
@@ -183,7 +222,7 @@ const totalTimeSpent = computed(() =>
 
 // 最近のタスク
 const recentTasks = computed(() => {
-  return [...tasks.value]
+  return [...filteredTasks.value]
     .sort((a, b) => {
       const dateA = a.updated_at ? new Date(a.updated_at).getTime() : 0;
       const dateB = b.updated_at ? new Date(b.updated_at).getTime() : 0;
@@ -236,9 +275,3 @@ const getStatusVariant = (status: string) => {
   return status === TASK_STATUS.PRIORITY ? "solid" : "soft";
 };
 </script>
-
-<style scoped>
-.analytics-container {
-  padding: 1.5rem;
-}
-</style>
