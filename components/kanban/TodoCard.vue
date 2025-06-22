@@ -2,6 +2,7 @@
   <div
     class="group bg-white rounded-[6px] p-4 hover:shadow-md transition-all duration-200 relative"
     :class="[
+      { 'opacity-50 grayscale': todo.is_finished },
       todo.is_timing
         ? 'bg-blue-100 border border-blue-500'
         : 'border border-gray-200',
@@ -137,6 +138,7 @@ const props = defineProps({
       memo?: string;
       task_id?: string;
       is_private?: boolean;
+      is_finished?: boolean;
       total_time?: number | number[];
       is_timing?: boolean;
       tags?: { id: string; name: string; color?: string }[];
