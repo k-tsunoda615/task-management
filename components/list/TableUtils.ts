@@ -28,32 +28,15 @@ export function formatTime(totalSeconds: number): string {
 }
 
 /**
- * 日付を相対時間または日付形式でフォーマットする
+ * 日付が24時間以内であるかを判定する
  * @param dateString 日付文字列
- * @returns フォーマットされた日付文字列
+ * @returns 24時間以内であればtrue
  */
-export function formatDate(dateString: string | undefined): string {
-  if (!dateString) return "";
-
+export function isRecent(dateString?: string): boolean {
+  if (!dateString) return false;
   const date = new Date(dateString);
   const now = new Date();
-  const diff = now.getTime() - date.getTime();
-
-  // 24時間以内の場合は相対時間で表示
-  if (diff < 24 * 60 * 60 * 1000) {
-    if (diff < 60 * 60 * 1000) {
-      // 1時間以内
-      const minutes = Math.floor(diff / (60 * 1000));
-      return `${minutes}分前`;
-    } else {
-      // 24時間以内
-      const hours = Math.floor(diff / (60 * 60 * 1000));
-      return `${hours}時間前`;
-    }
-  } else {
-    // それ以外は日付で表示
-    return `${date.getFullYear()}/${(date.getMonth() + 1)
-      .toString()
-      .padStart(2, "0")}/${date.getDate().toString().padStart(2, "0")}`;
-  }
+  const diffInMs = now.getTime() - date.getTime();
+  const diffInHours = diffInMs / (1000 * 60 * 60);
+  return diffInHours < 24;
 }

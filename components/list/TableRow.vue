@@ -113,7 +113,15 @@
 
     <!-- 更新日時 -->
     <td class="px-4 py-3 text-sm text-gray-600">
-      {{ formattedDate }}
+      <NuxtTime
+        v-if="todo.updated_at"
+        :datetime="todo.updated_at"
+        :relative="isRecent(todo.updated_at)"
+        locale="ja-JP"
+        year="numeric"
+        month="numeric"
+        day="numeric"
+      />
     </td>
 
     <!-- 完了 - 編集可能 -->
@@ -231,7 +239,7 @@ import {
   STATUS_COLORS,
 } from "../../utils/constants";
 import type { Todo } from "../../types/todo";
-import { formatTime, formatDate } from "./TableUtils";
+import { formatTime, isRecent } from "./TableUtils";
 import { useTodoStore } from "../../stores/todo";
 import { useTagStore } from "../../stores/tag";
 
@@ -461,12 +469,10 @@ const statusColor = computed(() => {
 
 // 時間をフォーマット
 const formattedTime = computed(() => {
-  return formatTime(Number(props.todo.total_time) || 0);
-});
-
-// 日付をフォーマット
-const formattedDate = computed(() => {
-  return formatDate(props.todo.updated_at);
+  const totalSeconds = Array.isArray(props.todo.total_time)
+    ? props.todo.total_time[0] || 0
+    : props.todo.total_time || 0;
+  return formatTime(totalSeconds);
 });
 
 // ステータスアイコンを計算
@@ -531,7 +537,3 @@ function toggleFinished(value: boolean) {
   });
 }
 </script>
-
-<style scoped>
-/* 重複するスタイルはTable.vueに移動しました */
-</style>

@@ -147,7 +147,18 @@
                 {{ formatTime(task.total_time || 0) }}
               </td>
               <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                {{ formatDate(task.updated_at) }}
+                <NuxtTime
+                  v-if="task.updated_at"
+                  :datetime="task.updated_at"
+                  :relative="isRecent(task.updated_at)"
+                  locale="ja-JP"
+                  year="numeric"
+                  month="numeric"
+                  day="numeric"
+                  hour="numeric"
+                  minute="2-digit"
+                  second="2-digit"
+                />
               </td>
             </tr>
           </tbody>
@@ -166,6 +177,7 @@ import {
   STATUS_COLORS,
 } from "../../utils/constants";
 import { formatTime } from "../../utils/time";
+import { isRecent } from "../../components/list/TableUtils";
 import type { Todo } from "../../types/todo";
 import AnalyticsStatusDistribution from "../../components/analytics/StatusDistribution.vue";
 import AnalyticsTagDistribution from "../../components/analytics/TagDistribution.vue";
@@ -321,50 +333,28 @@ onMounted(async () => {
   });
 });
 
-// 日付フォーマット
-const formatDate = (dateString?: string) => {
-  if (!dateString) return "不明";
-  const date = new Date(dateString);
-  return date.toLocaleDateString("ja-JP", {
-    year: "numeric",
-    month: "short",
-    day: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
-  });
-};
-
-// ステータス関連のユーティリティ
+// ユーティリティ関数
 const getStatusLabel = (status: string) => {
   return (
-    TASK_STATUS_LABELS[status as keyof typeof TASK_STATUS_LABELS] || status
+    TASK_STATUS_LABELS[status as keyof typeof TASK_STATUS_LABELS] || "不明"
   );
 };
 
-// ステータスクラスを取得（他のページと同じ表示に）
-const getStatusClasses = (status: string) => {
-  const statusStyle = STATUS_COLORS[status as keyof typeof STATUS_COLORS];
-  if (statusStyle) {
-    return `${statusStyle.bg} ${statusStyle.border}`;
-  }
-  return "bg-white/80 border border-gray-300";
-};
-
-// ステータスアイコン名を取得
 const getStatusIconName = (status: string) => {
-  const statusStyle = STATUS_COLORS[status as keyof typeof STATUS_COLORS];
-  if (statusStyle) {
-    return statusStyle.iconName;
-  }
-  return "i-heroicons-question-mark-circle";
+  return (
+    STATUS_COLORS[status as keyof typeof STATUS_COLORS]?.iconName ||
+    "i-heroicons-question-mark-circle"
+  );
 };
 
-// ステータスアイコンクラスを取得
 const getStatusIconClass = (status: string) => {
-  const statusStyle = STATUS_COLORS[status as keyof typeof STATUS_COLORS];
-  if (statusStyle) {
-    return statusStyle.icon;
-  }
-  return "text-gray-500";
+  return STATUS_COLORS[status as keyof typeof STATUS_COLORS]?.icon || "";
+};
+
+const getStatusClasses = (status: string) => {
+  const color =
+    STATUS_COLORS[status as keyof typeof STATUS_COLORS] ||
+    STATUS_COLORS[TASK_STATUS.PRIORITY];
+  return `${color.bg} ${color.border}`;
 };
 </script>
