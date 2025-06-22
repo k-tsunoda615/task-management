@@ -1,3 +1,7 @@
+import dayjs from "dayjs";
+import duration from "dayjs/plugin/duration";
+dayjs.extend(duration);
+
 /**
  * total_timeを数値に変換する
  * @param time Todoのtotal_time（数値または配列）
@@ -16,15 +20,7 @@ export function extractTotalTime(time: number | number[] | undefined): number {
  * @returns フォーマットされた時間文字列
  */
 export function formatTime(totalSeconds: number): string {
-  const hours = Math.floor(totalSeconds / 3600);
-  const minutes = Math.floor((totalSeconds % 3600) / 60);
-  const seconds = Math.floor(totalSeconds % 60);
-
-  return [
-    hours.toString().padStart(2, "0"),
-    minutes.toString().padStart(2, "0"),
-    seconds.toString().padStart(2, "0"),
-  ].join(":");
+  return dayjs.duration(totalSeconds, "seconds").format("HH:mm:ss");
 }
 
 /**
@@ -34,9 +30,5 @@ export function formatTime(totalSeconds: number): string {
  */
 export function isRecent(dateString?: string): boolean {
   if (!dateString) return false;
-  const date = new Date(dateString);
-  const now = new Date();
-  const diffInMs = now.getTime() - date.getTime();
-  const diffInHours = diffInMs / (1000 * 60 * 60);
-  return diffInHours < 24;
+  return dayjs().diff(dayjs(dateString), "hour") < 24;
 }

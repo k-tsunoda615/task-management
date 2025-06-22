@@ -182,6 +182,7 @@ import type { Todo } from "../../types/todo";
 import AnalyticsStatusDistribution from "../../components/analytics/StatusDistribution.vue";
 import AnalyticsTagDistribution from "../../components/analytics/TagDistribution.vue";
 import AnalyticsTimeDistribution from "../../components/analytics/TimeDistribution.vue";
+import dayjs from "dayjs";
 
 definePageMeta({
   layout: "board",
@@ -209,43 +210,29 @@ const tags = computed(() => tagStore.tags);
 const filteredTasks = computed(() => {
   // まずは期間でフィルタリング
   const period = selectedPeriod.value;
-  let periodFilteredTasks;
+  let periodFilteredTasks: Todo[] = tasks.value;
 
-  // 「すべて」の場合は全件表示
-  if (period === "all") {
-    periodFilteredTasks = tasks.value;
-  } else {
-    // 期間に応じた日時の設定
-    const targetDate = new Date();
-    let daysToSubtract = 0;
-
+  // 「すべて」の場合は何もしない
+  if (period !== "all") {
+    let targetDate;
     switch (period) {
       case "today":
-        // 今日の0時
-        targetDate.setHours(0, 0, 0, 0);
+        targetDate = dayjs().startOf("day");
         break;
       case "7days":
-        // 7日前
-        daysToSubtract = 7;
+        targetDate = dayjs().subtract(7, "days").startOf("day");
         break;
       case "30days":
-        // 30日前
-        daysToSubtract = 30;
+        targetDate = dayjs().subtract(30, "days").startOf("day");
         break;
-      default:
-        periodFilteredTasks = tasks.value; // 想定外の値は全件
     }
 
-    // 日数を引く場合
-    if (daysToSubtract > 0) {
-      targetDate.setDate(targetDate.getDate() - daysToSubtract);
-      targetDate.setHours(0, 0, 0, 0);
+    if (targetDate) {
+      // 期間でフィルタリング
+      periodFilteredTasks = tasks.value.filter(
+        (task) => task.updated_at && dayjs(task.updated_at).isAfter(targetDate)
+      );
     }
-
-    // 期間でフィルタリング
-    periodFilteredTasks = tasks.value.filter(
-      (task) => task.updated_at && new Date(task.updated_at) >= targetDate
-    );
   }
 
   // プライベート/パブリックフィルターを適用（サイドバーの状態を利用）
