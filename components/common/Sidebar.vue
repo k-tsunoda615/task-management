@@ -255,6 +255,38 @@
           </UTooltip>
         </div>
 
+        <!-- タイマー表示切り替え -->
+        <div
+          v-if="isCurrentRoute('/board')"
+          class="px-3 py-1.5"
+          :class="{ 'text-center': !isOpen && !isMobile }"
+        >
+          <UTooltip
+            :text="
+              !isOpen ? (showTimer ? 'タイマー非表示' : 'タイマー表示') : ''
+            "
+            :ui="{ popper: { strategy: 'fixed' } }"
+            class="w-full"
+          >
+            <UButton
+              :block="isOpen || isMobile"
+              :color="showTimer ? 'green' : 'gray'"
+              :variant="'ghost'"
+              @click="toggleTimerVisibility"
+              class="justify-start hover:bg-gray-100"
+            >
+              <UIcon
+                name="i-heroicons-clock"
+                :class="showTimer ? 'text-green-500' : 'text-gray-400'"
+                class="w-5 h-5"
+              />
+              <span v-if="isOpen || isMobile" class="ml-2">
+                {{ showTimer ? "タイマー表示中" : "タイマー非表示" }}
+              </span>
+            </UButton>
+          </UTooltip>
+        </div>
+
         <!-- 完了タスク表示切り替え -->
         <div
           class="px-3 py-1.5"
@@ -287,38 +319,6 @@
                 {{
                   showCompletedTasks ? "完了タスク表示中" : "完了タスク非表示"
                 }}
-              </span>
-            </UButton>
-          </UTooltip>
-        </div>
-
-        <!-- タイマー表示切り替え -->
-        <div
-          v-if="isCurrentRoute('/board')"
-          class="px-3 py-1.5"
-          :class="{ 'text-center': !isOpen && !isMobile }"
-        >
-          <UTooltip
-            :text="
-              !isOpen ? (showTimer ? 'タイマー非表示' : 'タイマー表示') : ''
-            "
-            :ui="{ popper: { strategy: 'fixed' } }"
-            class="w-full"
-          >
-            <UButton
-              :block="isOpen || isMobile"
-              :color="showTimer ? 'green' : 'gray'"
-              :variant="'ghost'"
-              @click="toggleTimerVisibility"
-              class="justify-start hover:bg-gray-100"
-            >
-              <UIcon
-                name="i-heroicons-clock"
-                :class="showTimer ? 'text-green-500' : 'text-gray-400'"
-                class="w-5 h-5"
-              />
-              <span v-if="isOpen || isMobile" class="ml-2">
-                {{ showTimer ? "タイマー表示中" : "タイマー非表示" }}
               </span>
             </UButton>
           </UTooltip>

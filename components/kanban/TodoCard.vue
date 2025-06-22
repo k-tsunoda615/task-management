@@ -51,13 +51,6 @@
             {{ tag.name }}
           </UBadge>
         </div>
-
-        <!-- メモ -->
-        <div
-          v-if="todo.memo"
-          class="mt-2 text-sm prose prose-sm prose-gray max-h-[20em] w-full overflow-y-auto pr-2 break-all"
-          v-html="parsedMemo"
-        />
       </div>
 
       <!-- アクションボタン -->
@@ -88,10 +81,7 @@
     </div>
 
     <!-- タイマー表示 -->
-    <div
-      v-if="showTimerBar"
-      class="mt-3 pt-3 border-t border-gray-100 flex items-center justify-between"
-    >
+    <div v-if="showTimerBar" class="flex items-center justify-between">
       <div class="flex items-center text-sm text-gray-500">
         <UIcon name="i-heroicons-clock" class="w-4 h-4 mr-1.5" />
         {{ todo.is_timing ? "計測中..." : formatTime(todo.total_time || 0) }}
@@ -120,6 +110,12 @@
         />
       </div>
     </div>
+    <!-- メモ -->
+    <div
+      v-if="todo.memo"
+      class="border border-gray-200/50 rounded-[6px] p-2 mt-2 text-sm prose prose-sm prose-gray max-h-[20em] w-full overflow-y-auto pr-2 break-all"
+      v-html="parsedMemo"
+    />
   </div>
 </template>
 
