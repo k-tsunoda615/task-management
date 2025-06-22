@@ -21,10 +21,12 @@
     "deps:update-latest": "yarn up '*'",
     "deps:audit": "yarn npm audit",
     "deps:clean": "yarn install && yarn dedupe",
-    "deps:why": "yarn why"
+    "deps:why": "yarn why",
+    "analyze": "nuxi analyze"
   },
   "dependencies": {
-    "@nuxt/ui": "^2.14.2",
+    "@iconify-json/heroicons": "^1.1.21",
+    "@nuxt/ui": "^2.18.0",
     "@nuxtjs/supabase": "^1.1.7",
     "@pinia/nuxt": "^0.11.2",
     "@supabase/mcp-server-supabase": "^0.4.0",
