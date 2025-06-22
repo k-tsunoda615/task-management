@@ -575,6 +575,8 @@ import {
 import AnalogTimer from "./AnalogTimer.vue";
 import { calculateNewOrders } from "../../utils/todoUtils";
 import type { TimerNavigationEvent } from "../../plugins/timer-guard.global";
+// @ts-ignore
+import DOMPurify from "dompurify";
 
 const todoStore = useTodoStore();
 const tagStore = useTagStore();
@@ -662,25 +664,43 @@ const editingTodo = ref<EditingTodo>({
 
 // プレビュー用のマークダウンパース
 const parsedPreviewMemo = computed(() => {
-  // markedのレンダラーをカスタマイズ
-  const renderer = new marked.Renderer();
-  // リンクをカスタマイズ：すべてのリンクをtarget="_blank"で開く
-  renderer.link = ({
-    href,
-    title,
-    text,
-  }: {
-    href: string;
-    title?: string | null | undefined;
-    text: string;
-  }) => {
-    return `<a href="${href}" target="_blank" rel="noopener noreferrer" ${title ? `title="${title}"` : ""}>${text}</a>`;
-  };
-
-  // レンダラーを適用
-  marked.setOptions({ renderer });
-
-  return marked(editingTodo.value.memo || "");
+  if (editingTodo.value?.memo) {
+    const unsafeHtml = marked(editingTodo.value.memo, {
+      breaks: true,
+      gfm: true,
+    });
+    return DOMPurify.sanitize(unsafeHtml as string, {
+      ALLOWED_TAGS: [
+        "a",
+        "p",
+        "h1",
+        "h2",
+        "h3",
+        "h4",
+        "h5",
+        "h6",
+        "blockquote",
+        "code",
+        "em",
+        "i",
+        "strong",
+        "ul",
+        "ol",
+        "li",
+        "b",
+        "img",
+        "table",
+        "thead",
+        "tbody",
+        "tr",
+        "th",
+        "td",
+        "br",
+      ],
+      ALLOWED_ATTR: ["href", "title", "target", "rel", "class", "style"],
+    });
+  }
+  return "";
 });
 
 // 日付フォーマット関数

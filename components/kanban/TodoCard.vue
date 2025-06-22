@@ -126,6 +126,8 @@
 <script setup lang="ts">
 import { useTodoStore } from "../../stores/todo";
 import { marked } from "marked";
+// @ts-ignore
+import DOMPurify from "dompurify";
 import type { PropType } from "vue";
 import type { TaskStatus } from "../../utils/constants";
 import { formatTime } from "../../utils/time";
@@ -180,25 +182,37 @@ const handleDragStart = (event: any) => {
 const parsedMemo = computed(() => {
   if (!props.todo.memo) return "";
 
-  // markedのレンダラーをカスタマイズ
-  const renderer = new marked.Renderer();
-  // リンクをカスタマイズ：すべてのリンクをtarget="_blank"で開く
-  renderer.link = ({
-    href,
-    title,
-    text,
-  }: {
-    href: string;
-    title?: string | null | undefined;
-    text: string;
-  }) => {
-    return `<a href="${href}" target="_blank" rel="noopener noreferrer" ${title ? `title="${title}"` : ""}>${text}</a>`;
-  };
-
-  // レンダラーを適用
-  marked.setOptions({ renderer });
-
-  return marked(props.todo.memo);
+  const html = marked(props.todo.memo, { breaks: true, gfm: true });
+  return DOMPurify.sanitize(html as string, {
+    ALLOWED_TAGS: [
+      "a",
+      "p",
+      "h1",
+      "h2",
+      "h3",
+      "h4",
+      "h5",
+      "h6",
+      "blockquote",
+      "code",
+      "em",
+      "i",
+      "strong",
+      "ul",
+      "ol",
+      "li",
+      "b",
+      "img",
+      "table",
+      "thead",
+      "tbody",
+      "tr",
+      "th",
+      "td",
+      "br",
+    ],
+    ALLOWED_ATTR: ["href", "title", "target", "rel", "class", "style"],
+  });
 });
 
 // タイミング開始 - イベント伝播を明示的に停止

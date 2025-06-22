@@ -153,7 +153,7 @@ const isTaskCompleted = computed(() => {
 // Markdownレンダリング
 const renderedMarkdown = computed(() => {
   if (!editedTask.value.memo) return "";
-  const html = marked(editedTask.value.memo);
+  const html = marked(editedTask.value.memo, { breaks: true, gfm: true });
   return DOMPurify.sanitize(html as string, {
     ALLOWED_TAGS: [
       "a",
