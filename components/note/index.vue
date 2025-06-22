@@ -154,7 +154,7 @@ const isTaskCompleted = computed(() => {
 const renderedMarkdown = computed(() => {
   if (!editedTask.value.memo) return "";
   const html = marked(editedTask.value.memo);
-  return DOMPurify.sanitize(html, {
+  return DOMPurify.sanitize(html as string, {
     ALLOWED_TAGS: [
       "a",
       "b",

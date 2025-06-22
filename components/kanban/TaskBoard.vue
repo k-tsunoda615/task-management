@@ -468,22 +468,6 @@
                   {{ tag.name }}
                 </UBadge>
               </div>
-              <div class="flex gap-2">
-                <UInput
-                  v-model="newTagName"
-                  placeholder="新しいタグ名"
-                  size="sm"
-                  class="flex-1"
-                />
-                <UButton
-                  size="sm"
-                  color="primary"
-                  variant="soft"
-                  @click="addTag"
-                >
-                  追加
-                </UButton>
-              </div>
             </div>
           </UFormGroup>
         </form>

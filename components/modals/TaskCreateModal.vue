@@ -69,23 +69,6 @@
                 {{ tag.name }}
               </UBadge>
             </div>
-            <div class="flex gap-2">
-              <UInput
-                :model-value="newTagName"
-                @update:model-value="$emit('update:newTagName', $event)"
-                placeholder="新しいタグ名"
-                size="sm"
-                class="flex-1"
-              />
-              <UButton
-                size="sm"
-                color="primary"
-                variant="soft"
-                @click.prevent="$emit('add-tag')"
-              >
-                追加
-              </UButton>
-            </div>
           </div>
         </UFormGroup>
       </form>
@@ -118,12 +101,10 @@ defineProps({
   timeInput: String,
   tagStore: Object,
   isCreating: Boolean,
-  newTagName: String,
 });
 defineEmits([
   "close",
   "create",
-  "add-tag",
   "toggle-tag",
   "validate-time",
   "update:timeInput",

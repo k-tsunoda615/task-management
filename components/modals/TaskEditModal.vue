@@ -114,22 +114,6 @@
                 {{ tag.name }}
               </UBadge>
             </div>
-            <div class="flex gap-2">
-              <UInput
-                v-model="newTagName"
-                placeholder="新しいタグ名"
-                size="sm"
-                class="flex-1"
-              />
-              <UButton
-                size="sm"
-                color="primary"
-                variant="soft"
-                @click.prevent="$emit('addTag')"
-              >
-                追加
-              </UButton>
-            </div>
           </div>
         </UFormGroup>
       </form>
@@ -188,14 +172,12 @@ defineProps({
   editTimeInput: String,
   tagStore: Object,
   isUpdating: Boolean,
-  newTagName: String,
   showPreviewModal: Boolean,
   parsedPreviewMemo: String,
 });
 defineEmits([
   "close",
   "update",
-  "addTag",
   "toggleTag",
   "validateTime",
   "showPreview",
