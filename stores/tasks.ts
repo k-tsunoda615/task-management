@@ -1,6 +1,6 @@
 import { defineStore } from "pinia";
 import type { Todo } from "../types/todo";
-import { useTodoData } from "../app/composables/useTodoData";
+import { useTaskRepository } from "../app/composables/useTaskRepository";
 
 export const useTodoStore = defineStore("todo", {
   state: () => ({
@@ -28,7 +28,7 @@ export const useTodoStore = defineStore("todo", {
     async fetchTodos() {
       this.isLoaded = false;
       try {
-        const todoData = useTodoData();
+        const todoData = useTaskRepository();
         const todos = await todoData.fetchAllTodos();
         this.todos = todos;
         this.isLoaded = true;
@@ -41,7 +41,7 @@ export const useTodoStore = defineStore("todo", {
 
     async createTodo(todo: Partial<Todo>) {
       try {
-        const todoData = useTodoData();
+        const todoData = useTaskRepository();
         const newTodo = await todoData.createTodo(todo);
         this.todos.unshift(newTodo);
         return newTodo;
@@ -54,7 +54,7 @@ export const useTodoStore = defineStore("todo", {
     async updateTodo(todo: Partial<Todo>) {
       if (!todo.id) throw new Error("Todo IDが指定されていません");
       try {
-        const todoData = useTodoData();
+        const todoData = useTaskRepository();
         const updatedData = await todoData.updateTodo(todo);
 
         // ローカルストアのデータ更新
@@ -85,7 +85,7 @@ export const useTodoStore = defineStore("todo", {
 
     async deleteTodo(id: string) {
       try {
-        const todoData = useTodoData();
+        const todoData = useTaskRepository();
         await todoData.deleteTodo(id);
 
         // ストアからも削除
@@ -104,7 +104,7 @@ export const useTodoStore = defineStore("todo", {
     async updateTodoOrder(todo: { id: string; sort_order: number }) {
       try {
         console.log("[updateTodoOrder] サーバー更新開始:", todo);
-        const todoData = useTodoData();
+        const todoData = useTaskRepository();
         const result = await todoData.updateTodoOrder(todo);
         console.log("[updateTodoOrder] サーバー更新結果:", result);
 

@@ -117,7 +117,7 @@
 </template>
 
 <script setup lang="ts">
-import { useTodoStore } from "../../../stores/todo";
+import { useTodoStore } from "../../../stores/tasks";
 import { TASK_STATUS, TASK_STATUS_LABELS } from "../../utils/constants";
 import { useTaskTimer } from "../../composables/useTaskTimer";
 import { formatTime } from "../../utils/time";

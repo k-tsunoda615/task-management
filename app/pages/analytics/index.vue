@@ -168,8 +168,8 @@
 </template>
 
 <script setup lang="ts">
-import { useTodoStore } from "../../../stores/todo";
-import { useTagStore } from "../../../stores/tag";
+import { useTodoStore } from "../../../stores/tasks";
+import { useTagStore } from "../../../stores/tags";
 import {
   TASK_STATUS,
   TASK_STATUS_LABELS,

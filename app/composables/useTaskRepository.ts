@@ -2,7 +2,7 @@ import { TASK_STATUS } from "../utils/constants";
 import type { Todo } from "../../types/todo";
 import { normalizeTodo, convertTodoForDB } from "../utils/todoUtils";
 
-export function useTodoData() {
+export function useTaskRepository() {
   // Supabaseクライアント
   const client = useSupabaseClient();
   const user = useSupabaseUser();
@@ -159,11 +159,11 @@ export function useTodoData() {
    */
   const updateTodoOrder = async (todo: { id: string; sort_order: number }) => {
     try {
-      console.log("[useTodoData] 順序更新リクエスト:", todo);
+      console.log("[useTaskRepository] 順序更新リクエスト:", todo);
 
       // データが正しい形式かチェック
       if (!todo.id) {
-        console.error("[useTodoData] IDが指定されていません");
+        console.error("[useTaskRepository] IDが指定されていません");
         throw new Error("Todo IDが指定されていません");
       }
 
@@ -174,14 +174,14 @@ export function useTodoData() {
         .select();
 
       if (error) {
-        console.error("[useTodoData] 順序更新エラー:", error);
+        console.error("[useTaskRepository] 順序更新エラー:", error);
         throw error;
       }
 
-      console.log("[useTodoData] 順序更新成功:", data);
+      console.log("[useTaskRepository] 順序更新成功:", data);
       return data;
     } catch (error) {
-      console.error("[useTodoData] Todo順序更新中にエラー:", error);
+      console.error("[useTaskRepository] Todo順序更新中にエラー:", error);
       throw error;
     }
   };

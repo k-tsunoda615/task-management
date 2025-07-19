@@ -404,12 +404,12 @@
 </template>
 
 <script setup lang="ts">
-import { useProjectStore } from "../../../stores/project";
-import { useTodoStore } from "../../../stores/todo";
-import { useTagStore } from "../../../stores/tag";
+import { useTodoStore } from "../../../stores/tasks";
+import { useTagStore } from "../../../stores/tags";
+import { useProjectStore } from "../../../stores/projects";
 import { useEventBus } from "@vueuse/core";
 import TagManageModal from "../modals/TagManageModal.vue";
-import { useTags } from "../../composables/useTags";
+import { useTagOperations } from "../../composables/useTagOperations";
 
 defineProps({
   isMobile: {
@@ -423,7 +423,7 @@ const emit = defineEmits(["close-mobile-menu", "open-new-task-modal"]);
 const projectStore = useProjectStore();
 const todoStore = useTodoStore();
 const { tagStore, newTagName, newTagColor, addTag, deleteTag, updateTag } =
-  useTags();
+  useTagOperations();
 
 const trashEventBus = useEventBus("trash-drop");
 const isDragOver = ref(false);

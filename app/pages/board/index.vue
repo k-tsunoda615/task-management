@@ -24,7 +24,7 @@
 </template>
 
 <script setup lang="ts">
-import { useInitialSampleData } from "../../composables/useInitialSampleData";
+import { useOnboardingSetup } from "../../composables/useOnboardingSetup";
 
 definePageMeta({
   layout: "board",
@@ -41,6 +41,6 @@ const user = useSupabaseUser();
 const showHelpModal = ref(false);
 
 onMounted(async () => {
-  await useInitialSampleData();
+  await useOnboardingSetup();
 });
 </script>
