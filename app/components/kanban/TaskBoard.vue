@@ -540,12 +540,12 @@
 </template>
 
 <script setup lang="ts">
-import { useTodoStore } from "../../stores/todo";
-import { useTagStore } from "../../stores/tag";
+import { useTodoStore } from "../../../stores/todo";
+import { useTagStore } from "../../../stores/tag";
 import draggable from "vuedraggable";
 import { marked } from "marked";
 import { useEventBus } from "@vueuse/core";
-import type { Todo, Tag } from "../../types/todo";
+import type { Todo, Tag } from "../../../types/todo";
 import TheSidebar from "../common/Sidebar.vue";
 import TaskCreateModal from "../modals/TaskCreateModal.vue";
 import DeleteConfirmModal from "../modals/DeleteConfirmModal.vue";

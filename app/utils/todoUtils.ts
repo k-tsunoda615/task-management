@@ -4,7 +4,7 @@ import {
   DB_STATUS_MAPPING,
 } from "./constants";
 import type { TaskStatus } from "./constants";
-import type { Todo } from "../types/todo";
+import type { Todo } from "../../types/todo";
 
 /**
  * ステータスを正規化するヘルパー関数

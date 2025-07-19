@@ -168,8 +168,8 @@
 </template>
 
 <script setup lang="ts">
-import { useTodoStore } from "../../stores/todo";
-import { useTagStore } from "../../stores/tag";
+import { useTodoStore } from "../../../stores/todo";
+import { useTagStore } from "../../../stores/tag";
 import {
   TASK_STATUS,
   TASK_STATUS_LABELS,
@@ -177,7 +177,7 @@ import {
 } from "../../utils/constants";
 import { formatTime } from "../../utils/time";
 import { isRecent } from "../../components/list/TableUtils";
-import type { Todo } from "../../types/todo";
+import type { Todo } from "../../../types/todo";
 import AnalyticsStatusDistribution from "../../components/analytics/StatusDistribution.vue";
 import AnalyticsTagDistribution from "../../components/analytics/TagDistribution.vue";
 import AnalyticsTimeDistribution from "../../components/analytics/TimeDistribution.vue";

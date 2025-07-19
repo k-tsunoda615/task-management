@@ -1,5 +1,5 @@
-import { useTodoStore } from "../stores/todo";
-import { useTagStore } from "../stores/tag";
+import { useTodoStore } from "../../stores/todo";
+import { useTagStore } from "../../stores/tag";
 import { TASK_STATUS } from "../utils/constants";
 
 /**
