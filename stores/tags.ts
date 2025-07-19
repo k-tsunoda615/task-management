@@ -6,6 +6,7 @@ export const useTagStore = defineStore("tag", {
   state: () => ({
     tags: [] as Tag[],
     isLoaded: false,
+    isLoading: false,
   }),
   getters: {
     totalTagCount(): number {
@@ -17,12 +18,25 @@ export const useTagStore = defineStore("tag", {
   },
   actions: {
     async fetchTags() {
-      this.isLoaded = false;
       try {
         const tagRepository = useTagRepository();
-        const tags = await tagRepository.fetchAllTags();
-        this.tags = tags;
-        this.isLoaded = true;
+        const {
+          data: tags,
+          pending,
+          error,
+        } = await tagRepository.fetchAllTags();
+
+        this.isLoading = pending.value;
+
+        if (error.value) {
+          console.error("Tagの取得中にエラーが発生しました:", error.value);
+          throw error.value;
+        }
+
+        if (tags.value) {
+          this.tags = tags.value;
+          this.isLoaded = true;
+        }
       } catch (error) {
         console.error("Tagの取得中にエラーが発生しました:", error);
         throw error;

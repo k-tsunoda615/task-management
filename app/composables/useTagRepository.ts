@@ -3,22 +3,30 @@ export function useTagRepository() {
   const user = useSupabaseUser();
 
   /**
-   * 全タグを取得する
+   * 全タグを取得する（キャッシュ付き）
    */
-  const fetchAllTags = async () => {
-    try {
-      const { data: tags, error } = await client
-        .from("tags")
-        .select("*")
-        .order("sort_order", { ascending: true });
+  const fetchAllTags = () => {
+    return useAsyncData(
+      "tags",
+      async () => {
+        try {
+          const { data: tags, error } = await client
+            .from("tags")
+            .select("*")
+            .order("sort_order", { ascending: true });
 
-      if (error) throw error;
+          if (error) throw error;
 
-      return tags || [];
-    } catch (error) {
-      console.error("Tagの取得中にエラーが発生しました:", error);
-      throw error;
-    }
+          return tags || [];
+        } catch (error) {
+          console.error("Tagの取得中にエラーが発生しました:", error);
+          throw error;
+        }
+      },
+      {
+        server: false, // クライアントサイドのみで実行（認証が必要なため）
+      }
+    );
   };
 
   /**
@@ -44,6 +52,9 @@ export function useTagRepository() {
 
       if (error) throw error;
 
+      // キャッシュを無効化
+      await refreshCookie("tags");
+
       return { data, error: null };
     } catch (error) {
       console.error("Tag作成中にエラー:", error);
@@ -68,6 +79,9 @@ export function useTagRepository() {
 
       if (error) throw error;
 
+      // キャッシュを無効化
+      await refreshCookie("tags");
+
       return { data, error: null };
     } catch (error) {
       console.error("Tag更新中にエラー:", error);
@@ -83,6 +97,9 @@ export function useTagRepository() {
       const { error } = await client.from("tags").delete().eq("id", tagId);
 
       if (error) throw error;
+
+      // キャッシュを無効化
+      await refreshCookie("tags");
 
       return true;
     } catch (error) {

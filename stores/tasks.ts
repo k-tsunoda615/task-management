@@ -6,6 +6,7 @@ export const useTodoStore = defineStore("todo", {
   state: () => ({
     todos: [] as Todo[],
     isLoaded: false,
+    isLoading: false,
     taskFilter: "public" as "all" | "private" | "public",
   }),
 
@@ -26,13 +27,22 @@ export const useTodoStore = defineStore("todo", {
 
   actions: {
     async fetchTodos() {
-      this.isLoaded = false;
       try {
         const todoData = useTaskRepository();
-        const todos = await todoData.fetchAllTodos();
-        this.todos = todos;
-        this.isLoaded = true;
-        console.log("[fetchTodos] データ取得完了:", this.todos.length);
+        const { data: todos, pending, error } = await todoData.fetchAllTodos();
+
+        this.isLoading = pending.value;
+
+        if (error.value) {
+          console.error("Todoの取得中にエラーが発生しました:", error.value);
+          throw error.value;
+        }
+
+        if (todos.value) {
+          this.todos = todos.value;
+          this.isLoaded = true;
+          console.log("[fetchTodos] データ取得完了:", this.todos.length);
+        }
       } catch (error) {
         console.error("Todoの取得中にエラーが発生しました:", error);
         throw error;
@@ -43,7 +53,12 @@ export const useTodoStore = defineStore("todo", {
       try {
         const todoData = useTaskRepository();
         const newTodo = await todoData.createTodo(todo);
-        this.todos.unshift(newTodo);
+
+        if (newTodo) {
+          // 新しく作成されたTodoを配列の先頭に追加
+          this.todos = [newTodo, ...this.todos];
+        }
+
         return newTodo;
       } catch (error) {
         console.error("Todo作成中にエラーが発生しました:", error);
