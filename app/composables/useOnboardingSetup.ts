@@ -1,11 +1,11 @@
-import { useTodoStore } from "../../stores/todo";
-import { useTagStore } from "../../stores/tag";
+import { useTodoStore } from "../../stores/tasks";
+import { useTagStore } from "../../stores/tags";
 import { TASK_STATUS } from "../utils/constants";
 
 /**
  * 初回ログイン時にサンプルタスク・タグを追加するcomposable
  */
-export async function useInitialSampleData() {
+export async function useOnboardingSetup() {
   const todoStore = useTodoStore();
   const tagStore = useTagStore();
   const user = typeof useSupabaseUser === "function" ? useSupabaseUser() : null;

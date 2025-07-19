@@ -540,7 +540,7 @@
 </template>
 
 <script setup lang="ts">
-import { useTodoStore } from "../../../stores/todo";
+import { useTodoStore } from "../../../stores/tasks";
 import { useTagStore } from "../../../stores/tag";
 import draggable from "vuedraggable";
 import { marked } from "marked";

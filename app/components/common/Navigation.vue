@@ -66,11 +66,11 @@
 </template>
 
 <script setup lang="ts">
-import { useAuth } from "../../composables/useAuth";
+import { useAuthService } from "../../composables/useAuthService";
 
 const client = useSupabaseClient();
 const router = useRouter();
-const { user } = useAuth();
+const { user } = useAuthService();
 const props = defineProps({
   title: {
     type: String,

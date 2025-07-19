@@ -240,8 +240,8 @@ import {
 } from "../../utils/constants";
 import type { Todo } from "../../../types/todo";
 import { formatTime, isRecent } from "./TableUtils";
-import { useTodoStore } from "../../../stores/todo";
-import { useTagStore } from "../../../stores/tag";
+import { useTodoStore } from "../../../stores/tasks";
+import { useTagStore } from "../../../stores/tags";
 
 const props = defineProps({
   todo: {

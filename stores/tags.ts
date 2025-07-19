@@ -45,7 +45,7 @@ export const useTagStore = defineStore("tag", {
       // 最大のsort_orderを取得
       const maxSortOrder = this.tags.reduce(
         (max, t) => Math.max(max, t.sort_order || 0),
-        0,
+        0
       );
 
       // 存在しない場合は新規作成
@@ -65,7 +65,7 @@ export const useTagStore = defineStore("tag", {
     },
     async updateTag(
       tagId: string,
-      updates: { name?: string; color?: string; sort_order?: number },
+      updates: { name?: string; color?: string; sort_order?: number }
     ) {
       const client = useSupabaseClient();
       const { data, error } = await client

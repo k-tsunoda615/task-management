@@ -1,6 +1,6 @@
 import type { AuthError, Session } from "@supabase/supabase-js";
 
-export function useAuth() {
+export function useAuthService() {
   const client = useSupabaseClient();
   const user = useSupabaseUser();
   const router = useRouter();
@@ -54,7 +54,7 @@ export function useAuth() {
   async function loginWithPassword(
     email: string,
     password: string,
-    redirectUrl: string = "/board",
+    redirectUrl: string = "/board"
   ) {
     loading.value = true;
     errorMessage.value = "";
@@ -192,7 +192,7 @@ export function useAuth() {
 
   // 認証状態変更を監視
   function watchAuthState(
-    callback: (event: string, session: Session | null) => void,
+    callback: (event: string, session: Session | null) => void
   ) {
     const { data } = client.auth.onAuthStateChange(callback);
 
