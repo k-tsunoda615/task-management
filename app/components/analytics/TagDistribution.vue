@@ -3,7 +3,7 @@
 </template>
 
 <script setup lang="ts">
-import type { Todo, Tag } from "../../types/todo";
+import type { Todo, Tag } from "../../../types/todo";
 import type { TooltipItem } from "chart.js";
 
 const props = defineProps<{
@@ -28,7 +28,7 @@ const getTagCounts = () => {
             color: tag.color || "#3b82f6", // デフォルト色
           };
         }
-        counts[tag.id].count++;
+        counts[tag.id]!.count++;
       });
     }
   });

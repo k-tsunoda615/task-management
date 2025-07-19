@@ -28,7 +28,7 @@ import {
   TASK_STATUS_LABELS,
   STATUS_COLORS,
 } from "../../utils/constants";
-import type { Todo } from "../../types/todo";
+import type { Todo } from "../../../types/todo";
 import type { ChartData, ChartOptions, TooltipItem } from "chart.js";
 
 const props = defineProps<{
