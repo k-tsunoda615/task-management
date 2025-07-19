@@ -3,6 +3,17 @@ import { gtmNoscript, gtmScript } from "./app/utils/gtm";
 export default defineNuxtConfig({
   modules: ["@nuxt/ui", "@nuxtjs/supabase", "@pinia/nuxt", "@vueuse/nuxt"],
 
+  // エイリアス設定を追加
+  alias: {
+    "@": "./app",
+    "~": "./app",
+    "@components": "./app/components",
+    "@utils": "./app/utils",
+    "@composables": "./app/composables",
+    "@stores": "./stores",
+    "@types": "./types",
+  },
+
   supabase: {
     redirectOptions: {
       login: "/auth",
