@@ -14,6 +14,17 @@ export default defineNuxtConfig({
     "@types": "./types",
   },
 
+  // PostCSS設定をNuxt内に移動
+  postcss: {
+    plugins: {
+      tailwindcss: {},
+      autoprefixer: {},
+    },
+  },
+
+  // TailwindCSS設定を追加
+  css: ["~/assets/css/main.css"],
+
   supabase: {
     redirectOptions: {
       login: "/auth",
