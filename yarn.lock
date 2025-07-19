@@ -12195,7 +12195,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"tailwindcss@npm:^3.4.0, tailwindcss@npm:^3.4.17, tailwindcss@npm:~3.4.17":
+"tailwindcss@npm:^3.4.17, tailwindcss@npm:~3.4.17":
   version: 3.4.17
   resolution: "tailwindcss@npm:3.4.17"
   dependencies:
@@ -12225,6 +12225,13 @@ __metadata:
     tailwind: lib/cli.js
     tailwindcss: lib/cli.js
   checksum: 10c0/cc42c6e7fdf88a5507a0d7fea37f1b4122bec158977f8c017b2ae6828741f9e6f8cb90282c6bf2bd5951fd1220a53e0a50ca58f5c1c00eb7f5d9f8b80dc4523c
+  languageName: node
+  linkType: hard
+
+"tailwindcss@npm:^4.1.11":
+  version: 4.1.11
+  resolution: "tailwindcss@npm:4.1.11"
+  checksum: 10c0/e23eed0a0d6557b3aff8ba320b82758988ca67c351ee9b33dfc646e83a64f6eaeca6183dfc97e931f7b2fab46e925090066edd697d2ede3f396c9fdeb4af24c1
   languageName: node
   linkType: hard
 
@@ -12286,7 +12293,7 @@ __metadata:
     pinia: "npm:^2.1.7"
     playwright-core: "npm:^1.54.1"
     prettier: "npm:^3.2.5"
-    tailwindcss: "npm:^3.4.0"
+    tailwindcss: "npm:^4.1.11"
     tailwindcss-animate: "npm:^1.0.7"
     typescript: "npm:^5.4.2"
     vue: "npm:^3.4.21"
