@@ -117,11 +117,11 @@
 </template>
 
 <script setup lang="ts">
-import { useTodoStore } from "../../stores/todo";
+import { useTodoStore } from "../../../stores/todo";
 import { TASK_STATUS, TASK_STATUS_LABELS } from "../../utils/constants";
 import { useTaskTimer } from "../../composables/useTaskTimer";
 import { formatTime } from "../../utils/time";
-import type { Todo } from "../../types/todo";
+import type { Todo } from "../../../types/todo";
 import AnalogTimer from "../kanban/AnalogTimer.vue";
 import { marked } from "marked";
 // @ts-ignore

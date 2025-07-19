@@ -1,4 +1,4 @@
-import { useTodoStore } from "../stores/todo";
+import { useTodoStore } from "../../stores/todo";
 
 export type TimerNavigationEvent = {
   action: "stop-timer";

@@ -1,4 +1,4 @@
-import type { Todo } from "../types/todo";
+import type { Todo } from "../../types/todo";
 
 /**
  * タスク検索用composable

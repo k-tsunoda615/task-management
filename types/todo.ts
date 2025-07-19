@@ -1,4 +1,4 @@
-import type { TaskStatus } from "../utils/constants";
+import type { TaskStatus } from "../app/utils/constants";
 
 export type Tag = {
   id: string;

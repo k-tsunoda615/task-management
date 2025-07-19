@@ -1,5 +1,5 @@
 import { TASK_STATUS } from "../utils/constants";
-import type { Todo } from "../types/todo";
+import type { Todo } from "../../types/todo";
 import { normalizeTodo, convertTodoForDB } from "../utils/todoUtils";
 
 export function useTodoData() {

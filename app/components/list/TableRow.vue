@@ -238,10 +238,10 @@ import {
   TASK_STATUS_LABELS,
   STATUS_COLORS,
 } from "../../utils/constants";
-import type { Todo } from "../../types/todo";
+import type { Todo } from "../../../types/todo";
 import { formatTime, isRecent } from "./TableUtils";
-import { useTodoStore } from "../../stores/todo";
-import { useTagStore } from "../../stores/tag";
+import { useTodoStore } from "../../../stores/todo";
+import { useTagStore } from "../../../stores/tag";
 
 const props = defineProps({
   todo: {

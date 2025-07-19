@@ -107,10 +107,10 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted, watch, onUnmounted } from "vue";
-import { useTodoStore } from "../../stores/todo";
-import { useTagStore } from "../../stores/tag";
+import { useTodoStore } from "../../../stores/todo";
+import { useTagStore } from "../../../stores/tag";
 import { TASK_STATUS } from "../../utils/constants";
-import type { Todo } from "../../types/todo";
+import type { Todo } from "../../../types/todo";
 import TableHeader from "./TableHeader.vue";
 import TableRow from "./TableRow.vue";
 import TableActions from "./TableActions.vue";

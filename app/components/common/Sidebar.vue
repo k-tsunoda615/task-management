@@ -404,9 +404,9 @@
 </template>
 
 <script setup lang="ts">
-import { useProjectStore } from "../../stores/project";
-import { useTodoStore } from "../../stores/todo";
-import { useTagStore } from "../../stores/tag";
+import { useProjectStore } from "../../../stores/project";
+import { useTodoStore } from "../../../stores/todo";
+import { useTagStore } from "../../../stores/tag";
 import { useEventBus } from "@vueuse/core";
 import TagManageModal from "../modals/TagManageModal.vue";
 import { useTags } from "../../composables/useTags";

@@ -1,6 +1,6 @@
 import { defineStore } from "pinia";
 import type { Todo } from "../types/todo";
-import { useTodoData } from "../composables/useTodoData";
+import { useTodoData } from "../app/composables/useTodoData";
 
 export const useTodoStore = defineStore("todo", {
   state: () => ({
