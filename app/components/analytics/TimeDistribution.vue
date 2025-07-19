@@ -3,7 +3,7 @@
 </template>
 
 <script setup lang="ts">
-import type { Todo } from "../../types/todo";
+import type { Todo } from "../../../types/todo";
 import { formatTime } from "../../utils/time";
 import type { TooltipItem } from "chart.js";
 
