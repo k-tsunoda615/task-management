@@ -23,7 +23,7 @@
     "dayjs": "^1.11.13",
     "dompurify": "^3.2.6",
     "marked": "^15.0.12",
-    "nuxt": "^3.10.3",
+    "nuxt": "^4.0.0",
     "pinia": "^2.1.7",
     "tailwindcss-animate": "^1.0.7",
     "vue": "^3.4.21",
