@@ -92,7 +92,7 @@ function interpolateColor(color1: string, color2: string, ratio: number) {
     "#" + rgb.map((v) => v.toString(16).padStart(2, "0")).join("");
   const rgb1 = hexToRgb(color1);
   const rgb2 = hexToRgb(color2);
-  const rgb = rgb1.map((v, i) => Math.round(v + (rgb2[i] - v) * ratio));
+  const rgb = rgb1.map((v, i) => Math.round(v + (rgb2[i] || 0 - v) * ratio));
   return rgbToHex(rgb);
 }
 

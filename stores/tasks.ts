@@ -1,11 +1,12 @@
 import { defineStore } from "pinia";
 import type { Todo } from "../types/todo";
-import { useTodoData } from "../app/composables/useTodoData";
+import { useTaskRepository } from "../app/composables/useTaskRepository";
 
 export const useTodoStore = defineStore("todo", {
   state: () => ({
     todos: [] as Todo[],
     isLoaded: false,
+    isLoading: false,
     taskFilter: "public" as "all" | "private" | "public",
   }),
 
@@ -26,13 +27,22 @@ export const useTodoStore = defineStore("todo", {
 
   actions: {
     async fetchTodos() {
-      this.isLoaded = false;
       try {
-        const todoData = useTodoData();
-        const todos = await todoData.fetchAllTodos();
-        this.todos = todos;
-        this.isLoaded = true;
-        console.log("[fetchTodos] データ取得完了:", this.todos.length);
+        const todoData = useTaskRepository();
+        const { data: todos, pending, error } = await todoData.fetchAllTodos();
+
+        this.isLoading = pending.value;
+
+        if (error.value) {
+          console.error("Todoの取得中にエラーが発生しました:", error.value);
+          throw error.value;
+        }
+
+        if (todos.value) {
+          this.todos = todos.value;
+          this.isLoaded = true;
+          console.log("[fetchTodos] データ取得完了:", this.todos.length);
+        }
       } catch (error) {
         console.error("Todoの取得中にエラーが発生しました:", error);
         throw error;
@@ -41,9 +51,14 @@ export const useTodoStore = defineStore("todo", {
 
     async createTodo(todo: Partial<Todo>) {
       try {
-        const todoData = useTodoData();
+        const todoData = useTaskRepository();
         const newTodo = await todoData.createTodo(todo);
-        this.todos.unshift(newTodo);
+
+        if (newTodo) {
+          // 新しく作成されたTodoを配列の先頭に追加
+          this.todos = [newTodo, ...this.todos];
+        }
+
         return newTodo;
       } catch (error) {
         console.error("Todo作成中にエラーが発生しました:", error);
@@ -54,7 +69,7 @@ export const useTodoStore = defineStore("todo", {
     async updateTodo(todo: Partial<Todo>) {
       if (!todo.id) throw new Error("Todo IDが指定されていません");
       try {
-        const todoData = useTodoData();
+        const todoData = useTaskRepository();
         const updatedData = await todoData.updateTodo(todo);
 
         // ローカルストアのデータ更新
@@ -70,12 +85,12 @@ export const useTodoStore = defineStore("todo", {
     // ローカルTodoデータを更新する内部メソッド
     _updateLocalTodo(todo: Partial<Todo>) {
       const index = this.todos.findIndex((t) => t.id === todo.id);
-      if (index !== -1) {
+      if (index !== -1 && this.todos[index] && todo.id) {
         // 既存のTodoを更新
         this.todos[index] = {
-          ...this.todos[index],
+          ...this.todos[index]!,
           ...todo,
-        };
+        } as Todo;
         console.log("[updateTodo] ローカルデータ更新:", this.todos[index]);
       } else {
         // 見つからない場合は全てのデータを再取得
@@ -85,7 +100,7 @@ export const useTodoStore = defineStore("todo", {
 
     async deleteTodo(id: string) {
       try {
-        const todoData = useTodoData();
+        const todoData = useTaskRepository();
         await todoData.deleteTodo(id);
 
         // ストアからも削除
@@ -104,14 +119,14 @@ export const useTodoStore = defineStore("todo", {
     async updateTodoOrder(todo: { id: string; sort_order: number }) {
       try {
         console.log("[updateTodoOrder] サーバー更新開始:", todo);
-        const todoData = useTodoData();
+        const todoData = useTaskRepository();
         const result = await todoData.updateTodoOrder(todo);
         console.log("[updateTodoOrder] サーバー更新結果:", result);
 
         // ローカルのtodosも更新
         const index = this.todos.findIndex((t) => t.id === todo.id);
-        if (index !== -1) {
-          this.todos[index].sort_order = todo.sort_order;
+        if (index !== -1 && this.todos[index]) {
+          this.todos[index]!.sort_order = todo.sort_order;
           console.log(
             "[updateTodoOrder] ローカルデータ更新成功:",
             this.todos[index]

@@ -540,8 +540,8 @@
 </template>
 
 <script setup lang="ts">
-import { useTodoStore } from "../../../stores/todo";
-import { useTagStore } from "../../../stores/tag";
+import { useTodoStore } from "../../../stores/tasks";
+import { useTagStore } from "../../../stores/tags";
 import draggable from "vuedraggable";
 import { marked } from "marked";
 import { useEventBus } from "@vueuse/core";
@@ -721,9 +721,9 @@ const formatTime = (seconds: number | number[]) => {
   // 配列の場合は最初の要素を使用
   let totalSeconds = 0;
   if (Array.isArray(seconds) && seconds.length > 0) {
-    totalSeconds = seconds[0];
+    totalSeconds = seconds[0] || 0;
   } else if (typeof seconds === "number") {
-    totalSeconds = seconds;
+    totalSeconds = seconds || 0;
   }
 
   if (totalSeconds === undefined) return "00:00:00";
@@ -752,19 +752,19 @@ const parseTimeToSeconds = (timeStr: string): number => {
     const parts = timeStr.split(":").map((part) => parseInt(part, 10));
     if (
       parts.length === 3 &&
-      !isNaN(parts[0]) &&
-      !isNaN(parts[1]) &&
-      !isNaN(parts[2])
+      !isNaN(parts[0] || 0) &&
+      !isNaN(parts[1] || 0) &&
+      !isNaN(parts[2] || 0)
     ) {
-      return parts[0] * 3600 + parts[1] * 60 + parts[2];
+      return (parts[0] || 0) * 3600 + (parts[1] || 0) * 60 + (parts[2] || 0);
     }
     console.warn("不正な時間形式:", timeStr);
     return 0;
   }
 
-  const hours = parseInt(match[1], 10);
-  const minutes = parseInt(match[2], 10);
-  const seconds = parseInt(match[3], 10);
+  const hours = parseInt(match[1] || "0", 10);
+  const minutes = parseInt(match[2] || "0", 10);
+  const seconds = parseInt(match[3] || "0", 10);
 
   return hours * 3600 + minutes * 60 + seconds;
 };
@@ -1314,8 +1314,11 @@ const handleDragChange = async (evt: any) => {
         (t) => t.id === mainTodoUpdate.id
       );
       if (mainIndex !== -1) {
-        todoStore.todos[mainIndex].sort_order = mainTodoUpdate.sort_order;
-        todoStore.todos[mainIndex].status = newStatus;
+        if (todoStore.todos[mainIndex]) {
+          todoStore.todos[mainIndex].sort_order =
+            mainTodoUpdate.sort_order || 0;
+          todoStore.todos[mainIndex].status = newStatus;
+        }
       }
 
       // メインのTodoはupdateTodoで更新（ステータスも一緒に更新）
@@ -1334,7 +1337,7 @@ const handleDragChange = async (evt: any) => {
         // ローカルStoraを先に更新
         otherTodosUpdates.forEach((update) => {
           const index = todoStore.todos.findIndex((t) => t.id === update.id);
-          if (index !== -1) {
+          if (index !== -1 && todoStore.todos[index]) {
             todoStore.todos[index].sort_order = update.sort_order || 0;
           }
         });
@@ -1521,13 +1524,13 @@ const updateTimingTodoInLists = (
   // 各リスト内のタスクを検索して更新
   const updateInList = (list: Todo[]) => {
     const index = list.findIndex((t) => t.id === todoId);
-    if (index !== -1) {
+    if (index !== -1 && list[index]) {
       // 新しいオブジェクトを作成して置き換え（リアクティブな更新のため）
       list[index] = {
         ...list[index],
         total_time: newTotalTime,
         is_timing: isTimingValue,
-      };
+      } as Todo;
     }
   };
 
@@ -1687,7 +1690,10 @@ const toggleLayout = () => {
   const layouts: LayoutType[] = ["4-1", "3-2", "1-1", "1-col"];
   const currentIndex = layouts.indexOf(currentLayout.value);
   const nextIndex = (currentIndex + 1) % layouts.length;
-  currentLayout.value = layouts[nextIndex];
+  const nextLayout = layouts[nextIndex];
+  if (nextLayout) {
+    currentLayout.value = nextLayout;
+  }
 
   // アナリティクスイベント送信
   trackLayoutChanged(currentLayout.value);
@@ -1697,19 +1703,19 @@ const toggleLayout = () => {
 };
 
 // 色を暗くするユーティリティ関数
-function darkenColor(hex: string, amount = 0.2) {
-  // hex: #RRGGBB
-  let c = hex.replace("#", "");
-  if (c.length === 3) c = c[0] + c[0] + c[1] + c[1] + c[2] + c[2];
-  const num = parseInt(c, 16);
-  let r = (num >> 16) & 0xff;
-  let g = (num >> 8) & 0xff;
-  let b = num & 0xff;
-  r = Math.max(0, Math.floor(r * (1 - amount)));
-  g = Math.max(0, Math.floor(g * (1 - amount)));
-  b = Math.max(0, Math.floor(b * (1 - amount)));
-  return `#${r.toString(16).padStart(2, "0")}${g.toString(16).padStart(2, "0")}${b.toString(16).padStart(2, "0")}`;
-}
+// function darkenColor(hex: string, amount = 0.2) {
+//   // hex: #RRGGBB
+//   let c = hex.replace("#", "");
+//   if (c.length === 3) c = c[0] + c[0] + c[1] + c[1] + c[2] + c[2];
+//   const num = parseInt(c, 16);
+//   let r = (num >> 16) & 0xff;
+//   let g = (num >> 8) & 0xff;
+//   let b = num & 0xff;
+//   r = Math.max(0, Math.floor(r * (1 - amount)));
+//   g = Math.max(0, Math.floor(g * (1 - amount)));
+//   b = Math.max(0, Math.floor(b * (1 - amount)));
+//   return `#${r.toString(16).padStart(2, "0")}${g.toString(16).padStart(2, "0")}${b.toString(16).padStart(2, "0")}`;
+// }
 
 // タグのON/OFF切り替え用関数を追加
 const toggleTagOnNewTodo = (tag: Tag) => {

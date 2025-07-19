@@ -107,8 +107,8 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted, watch, onUnmounted } from "vue";
-import { useTodoStore } from "../../../stores/todo";
-import { useTagStore } from "../../../stores/tag";
+import { useTodoStore } from "../../../stores/tasks";
+import { useTagStore } from "../../../stores/tags";
 import { TASK_STATUS } from "../../utils/constants";
 import type { Todo } from "../../../types/todo";
 import TableHeader from "./TableHeader.vue";

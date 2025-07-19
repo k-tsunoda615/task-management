@@ -95,9 +95,9 @@
 
 <script setup lang="ts">
 import TheSidebar from "../components/common/Sidebar.vue";
-import { useAuth } from "../composables/useAuth";
+import { useAuthService } from "../composables/useAuthService";
 
-const { user } = useAuth();
+const { user } = useAuthService();
 const loading = useState("auth-loading", () => true);
 const initialized = ref(false);
 
