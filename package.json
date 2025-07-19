@@ -13,7 +13,15 @@
     "test:e2e:ui": "playwright test --ui",
     "test:e2e:headed": "playwright test --headed",
     "test:e2e:debug": "playwright test --debug",
-    "test:e2e:report": "playwright show-report"
+    "test:e2e:report": "playwright show-report",
+    "deps:check": "yarn workspaces list",
+    "deps:info": "yarn info",
+    "deps:update": "yarn up",
+    "deps:update-interactive": "yarn up -i",
+    "deps:update-latest": "yarn up '*'",
+    "deps:audit": "yarn npm audit",
+    "deps:clean": "yarn install && yarn dedupe",
+    "deps:why": "yarn why"
   },
   "dependencies": {
     "@nuxt/ui": "^2.14.2",
