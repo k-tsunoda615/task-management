@@ -85,12 +85,12 @@ export const useTodoStore = defineStore("todo", {
     // ローカルTodoデータを更新する内部メソッド
     _updateLocalTodo(todo: Partial<Todo>) {
       const index = this.todos.findIndex((t) => t.id === todo.id);
-      if (index !== -1) {
+      if (index !== -1 && this.todos[index] && todo.id) {
         // 既存のTodoを更新
         this.todos[index] = {
-          ...this.todos[index],
+          ...this.todos[index]!,
           ...todo,
-        };
+        } as Todo;
         console.log("[updateTodo] ローカルデータ更新:", this.todos[index]);
       } else {
         // 見つからない場合は全てのデータを再取得
@@ -125,8 +125,8 @@ export const useTodoStore = defineStore("todo", {
 
         // ローカルのtodosも更新
         const index = this.todos.findIndex((t) => t.id === todo.id);
-        if (index !== -1) {
-          this.todos[index].sort_order = todo.sort_order;
+        if (index !== -1 && this.todos[index]) {
+          this.todos[index]!.sort_order = todo.sort_order;
           console.log(
             "[updateTodoOrder] ローカルデータ更新成功:",
             this.todos[index]
