@@ -2252,13 +2252,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@pinia/nuxt@npm:^0.5.1":
-  version: 0.5.5
-  resolution: "@pinia/nuxt@npm:0.5.5"
+"@pinia/nuxt@npm:^0.11.2":
+  version: 0.11.2
+  resolution: "@pinia/nuxt@npm:0.11.2"
   dependencies:
     "@nuxt/kit": "npm:^3.9.0"
-    pinia: "npm:^2.2.3"
-  checksum: 10c0/be38b7d8d148dd12632649496138105a9956c42ce2b99fad35d277aaca46b252fb26d66b984fad8ccf2c1cd3b9407f66816816fa21cab2e60f0b304734a4d677
+  peerDependencies:
+    pinia: ^3.0.3
+  checksum: 10c0/baf0c496ce81043f2881d5d00124517b14983638d1ee28061786d3a26d23a2f3b899a841b348ab8ebaaca65613640ddbaa560cefecda4f4f9ca0cf7a5815c750
   languageName: node
   linkType: hard
 
@@ -10178,7 +10179,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"pinia@npm:^2.1.7, pinia@npm:^2.2.3":
+"pinia@npm:^2.1.7":
   version: 2.3.1
   resolution: "pinia@npm:2.3.1"
   dependencies:
@@ -12263,7 +12264,7 @@ __metadata:
     "@nuxtjs/eslint-config-typescript": "npm:^12.1.0"
     "@nuxtjs/supabase": "npm:^1.1.7"
     "@nuxtjs/tailwindcss": "npm:^6.11.4"
-    "@pinia/nuxt": "npm:^0.5.1"
+    "@pinia/nuxt": "npm:^0.11.2"
     "@playwright/test": "npm:^1.54.1"
     "@supabase/mcp-server-supabase": "npm:^0.4.0"
     "@supabase/supabase-js": "npm:^2.49.4"
