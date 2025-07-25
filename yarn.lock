@@ -1790,15 +1790,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@nuxtjs/supabase@npm:^1.1.7":
-  version: 1.5.3
-  resolution: "@nuxtjs/supabase@npm:1.5.3"
+"@nuxtjs/supabase@npm:^1.6.0":
+  version: 1.6.0
+  resolution: "@nuxtjs/supabase@npm:1.6.0"
   dependencies:
     "@supabase/ssr": "npm:^0.6.1"
-    "@supabase/supabase-js": "npm:^2.50.2"
+    "@supabase/supabase-js": "npm:^2.52.0"
     defu: "npm:^6.1.4"
     pathe: "npm:^2.0.3"
-  checksum: 10c0/fad72922e89af84b87db758c845796dede4a2ab3674c184d758d33b0e3c28dff6949c7c545d9c44de1b877a66522ab518ec1eee752ee0871033fbeeebc65bb52
+  checksum: 10c0/f6b1f00def2d1004f3fe8d8b73bc614dbe4faf461d6792d4d49fc58c2f37f997bfb3d986978840910f18ea598339aaf392cb5d90aab6df31eed7377922f46906
   languageName: node
   linkType: hard
 
@@ -2808,7 +2808,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@supabase/supabase-js@npm:^2.49.4, @supabase/supabase-js@npm:^2.50.2":
+"@supabase/supabase-js@npm:^2.49.4":
   version: 2.52.0
   resolution: "@supabase/supabase-js@npm:2.52.0"
   dependencies:
@@ -2819,6 +2819,20 @@ __metadata:
     "@supabase/realtime-js": "npm:2.11.15"
     "@supabase/storage-js": "npm:2.7.1"
   checksum: 10c0/5cd9e999afee018fd97dfc8e8a8338f67c3130f27fb8489df5ee4dede2bea42e3374de00dbea18880d68d94bdb11b15943e99935c41b1c71cdb5b07cdae194e5
+  languageName: node
+  linkType: hard
+
+"@supabase/supabase-js@npm:^2.52.0":
+  version: 2.52.1
+  resolution: "@supabase/supabase-js@npm:2.52.1"
+  dependencies:
+    "@supabase/auth-js": "npm:2.71.1"
+    "@supabase/functions-js": "npm:2.4.5"
+    "@supabase/node-fetch": "npm:2.6.15"
+    "@supabase/postgrest-js": "npm:1.19.4"
+    "@supabase/realtime-js": "npm:2.11.15"
+    "@supabase/storage-js": "npm:2.7.1"
+  checksum: 10c0/94122c084741ad1f3849050c295094c759a2e670a65f7e0296f671e0ce20b66c32dcb9ac9c04b8a9c1e791244fbcaf36d3034de5388a5417bc1de2bc902b40aa
   languageName: node
   linkType: hard
 
@@ -12335,7 +12349,7 @@ __metadata:
     "@nuxt/test-utils": "npm:^3.19.2"
     "@nuxt/ui": "npm:^2.14.2"
     "@nuxtjs/eslint-config-typescript": "npm:^12.1.0"
-    "@nuxtjs/supabase": "npm:^1.1.7"
+    "@nuxtjs/supabase": "npm:^1.6.0"
     "@nuxtjs/tailwindcss": "npm:^6.11.4"
     "@pinia/nuxt": "npm:^0.11.2"
     "@playwright/test": "npm:^1.54.1"
