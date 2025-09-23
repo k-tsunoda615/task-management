@@ -437,7 +437,10 @@ async function handleDragChange(evt: any) {
         (t) => t.id === todo.id
       );
       if (todoIndex !== -1) {
-        internalDraggedTodos.value[todoIndex].sort_order = tempSortOrder;
+        const target = internalDraggedTodos.value[todoIndex];
+        if (target) {
+          target.sort_order = tempSortOrder;
+        }
       }
 
       // 新しいソート順を計算（バックグラウンドで実行）
@@ -452,7 +455,10 @@ async function handleDragChange(evt: any) {
         (t) => t.id === mainTodoUpdate.id
       );
       if (mainIndex !== -1) {
-        todoStore.todos[mainIndex].sort_order = mainTodoUpdate.sort_order;
+        const target = todoStore.todos[mainIndex];
+        if (target) {
+          target.sort_order = mainTodoUpdate.sort_order ?? 0;
+        }
       }
 
       // メインのTodoのサーバー更新
@@ -471,7 +477,10 @@ async function handleDragChange(evt: any) {
         otherTodosUpdates.forEach((update) => {
           const index = todoStore.todos.findIndex((t) => t.id === update.id);
           if (index !== -1) {
-            todoStore.todos[index].sort_order = update.sort_order || 0;
+            const item = todoStore.todos[index];
+            if (item) {
+              item.sort_order = update.sort_order || 0;
+            }
           }
         });
 
@@ -481,8 +490,10 @@ async function handleDragChange(evt: any) {
             (t) => t.id === update.id
           );
           if (index !== -1) {
-            internalDraggedTodos.value[index].sort_order =
-              update.sort_order || 0;
+            const item = internalDraggedTodos.value[index];
+            if (item) {
+              item.sort_order = update.sort_order || 0;
+            }
           }
         });
 
