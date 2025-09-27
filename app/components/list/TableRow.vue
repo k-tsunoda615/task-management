@@ -32,7 +32,7 @@
           <UTooltip text="詳細へ移動">
             <UIcon
               name="i-heroicons-arrow-up-right"
-              class="w-4 h-4 text-gray-400 hover:text-primary-600 hidden md:block"
+              class="w-4 h-4 text-gray-400 hover:text-primary-600"
             />
           </UTooltip>
         </NuxtLink>
