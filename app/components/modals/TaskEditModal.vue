@@ -165,7 +165,7 @@
 </template>
 
 <script setup lang="ts">
-import type { Tag } from "../../types/todo";
+import type { Tag } from "../../../types/todo";
 defineProps({
   show: Boolean,
   editingTodo: Object,
