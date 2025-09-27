@@ -2,51 +2,68 @@ import { TASK_STATUS } from "../utils/constants";
 import type { Todo } from "../../types/todo";
 import { normalizeTodo, convertTodoForDB } from "../utils/todoUtils";
 
-export function useTodoData() {
+export function useTaskRepository() {
   // Supabaseクライアント
   const client = useSupabaseClient();
   const user = useSupabaseUser();
 
   /**
-   * 全Todoを取得する
+   * 全Todoを取得する（キャッシュ付き）
    */
-  const fetchAllTodos = async () => {
-    try {
-      const { data: todos, error } = await client
-        .from("todos")
-        .select("*, todo_tags:todo_tags(*, tag:tag_id(*))")
-        .order("sort_order", { ascending: true })
-        .order("updated_at", { ascending: false });
+  const fetchAllTodos = () => {
+    return useAsyncData(
+      "todos",
+      async () => {
+        try {
+          const { data: todos, error } = await client
+            .from("todos")
+            .select("*, todo_tags:todo_tags(*, tag:tag_id(*))")
+            .order("sort_order", { ascending: true })
+            .order("updated_at", { ascending: false });
 
-      if (error) throw error;
+          if (error) throw error;
 
-      // データの正規化
-      const normalizedTodos = todos?.map((todo) => normalizeTodo(todo)) || [];
-      return normalizedTodos;
-    } catch (error) {
-      console.error("Todoの取得中にエラーが発生しました:", error);
-      throw error;
-    }
+          // データの正規化
+          const normalizedTodos =
+            todos?.map((todo) => normalizeTodo(todo)) || [];
+          return normalizedTodos;
+        } catch (error) {
+          console.error("Todoの取得中にエラーが発生しました:", error);
+          throw error;
+        }
+      },
+      {
+        server: false, // クライアントサイドのみで実行（認証が必要なため）
+      }
+    );
   };
 
   /**
-   * 単一のTodoを取得する
+   * 単一のTodoを取得する（キャッシュ付き）
    */
-  const fetchTodoById = async (id: string) => {
-    try {
-      const { data, error } = await client
-        .from("todos")
-        .select("*, todo_tags:todo_tags(*, tag:tag_id(*))")
-        .eq("id", id)
-        .single();
+  const fetchTodoById = (id: string) => {
+    return useAsyncData(
+      `todo-${id}`,
+      async () => {
+        try {
+          const { data, error } = await client
+            .from("todos")
+            .select("*, todo_tags:todo_tags(*, tag:tag_id(*))")
+            .eq("id", id)
+            .single();
 
-      if (error) throw error;
+          if (error) throw error;
 
-      return normalizeTodo(data);
-    } catch (error) {
-      console.error(`ID: ${id} のTodo取得中にエラー:`, error);
-      throw error;
-    }
+          return normalizeTodo(data);
+        } catch (error) {
+          console.error(`ID: ${id} のTodo取得中にエラー:`, error);
+          throw error;
+        }
+      },
+      {
+        server: false,
+      }
+    );
   };
 
   /**
@@ -81,8 +98,12 @@ export function useTodoData() {
         await client.from("todo_tags").insert(todoTags);
       }
 
+      // キャッシュを無効化
+      await refreshCookie("todos");
+
       // 作成したTodoを取得して返す
-      return fetchTodoById(data.id);
+      const { data: newTodo } = await fetchTodoById(data.id);
+      return newTodo.value;
     } catch (error) {
       console.error("Todo作成中にエラー:", error);
       throw error;
@@ -120,6 +141,10 @@ export function useTodoData() {
         }
       }
 
+      // キャッシュを無効化
+      await refreshCookie("todos");
+      await refreshCookie(`todo-${todo.id}`);
+
       return data;
     } catch (error) {
       console.error("Todo更新中にエラー:", error);
@@ -147,6 +172,10 @@ export function useTodoData() {
 
       if (error) throw error;
 
+      // キャッシュを無効化
+      await refreshCookie("todos");
+      await refreshCookie(`todo-${id}`);
+
       return true;
     } catch (error) {
       console.error(`Todo ID:${id} の削除でエラー:`, error);
@@ -159,11 +188,11 @@ export function useTodoData() {
    */
   const updateTodoOrder = async (todo: { id: string; sort_order: number }) => {
     try {
-      console.log("[useTodoData] 順序更新リクエスト:", todo);
+      console.log("[useTaskRepository] 順序更新リクエスト:", todo);
 
       // データが正しい形式かチェック
       if (!todo.id) {
-        console.error("[useTodoData] IDが指定されていません");
+        console.error("[useTaskRepository] IDが指定されていません");
         throw new Error("Todo IDが指定されていません");
       }
 
@@ -174,14 +203,18 @@ export function useTodoData() {
         .select();
 
       if (error) {
-        console.error("[useTodoData] 順序更新エラー:", error);
+        console.error("[useTaskRepository] 順序更新エラー:", error);
         throw error;
       }
 
-      console.log("[useTodoData] 順序更新成功:", data);
+      console.log("[useTaskRepository] 順序更新成功:", data);
+
+      // キャッシュを無効化
+      await refreshCookie("todos");
+
       return data;
     } catch (error) {
-      console.error("[useTodoData] Todo順序更新中にエラー:", error);
+      console.error("[useTaskRepository] Todo順序更新中にエラー:", error);
       throw error;
     }
   };

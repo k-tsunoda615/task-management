@@ -185,6 +185,7 @@
 
 <script setup lang="ts">
 import { useRoute } from "vue-router";
+import { mapAuthErrorToMessage } from "../../utils/auth";
 
 definePageMeta({
   middleware: ["auth"],
@@ -222,46 +223,6 @@ onMounted(() => {
     unsubscribe.data.subscription.unsubscribe();
   });
 });
-
-// エラーメッセージ日本語化関数
-function getAuthErrorMessage(error: any): string {
-  if (!error || !error.message) return "認証に失敗しました";
-  const msg = error.message;
-  if (msg.includes("Invalid login credentials")) {
-    return "メールアドレスまたはパスワードが正しくありません";
-  }
-  if (msg.includes("Email not confirmed")) {
-    return "メールアドレスの確認が完了していません。メールボックスをご確認ください。";
-  }
-  if (
-    msg.includes("User already registered") ||
-    msg.includes("User already exists")
-  ) {
-    return "このメールアドレスは既に登録されています";
-  }
-  if (msg.match(/Password should be at least (\d+) characters/)) {
-    return "パスワードが短すぎます。8文字以上で入力してください。";
-  }
-  if (msg.includes("Password should contain at least one special character")) {
-    return "パスワードには記号を1つ以上含めてください。";
-  }
-  if (msg.includes("Password should contain at least one number")) {
-    return "パスワードには数字を1つ以上含めてください。";
-  }
-  if (msg.includes("Password should contain at least one uppercase letter")) {
-    return "パスワードには大文字を1つ以上含めてください。";
-  }
-  if (msg.includes("Email is invalid") || msg.includes("Invalid email")) {
-    return "メールアドレスの形式が正しくありません";
-  }
-  if (msg.includes("Rate limit exceeded")) {
-    return "リクエストが多すぎます。しばらくしてから再度お試しください。";
-  }
-  if (msg.includes("network error")) {
-    return "ネットワークエラーが発生しました。接続環境をご確認ください。";
-  }
-  return msg; // その他は原文表示
-}
 
 async function handleSubmit() {
   if (!email.value || !password.value) return;
@@ -310,14 +271,14 @@ async function handleSubmit() {
         password: password.value,
       });
       if (error) {
-        errorMessage.value = getAuthErrorMessage(error);
+        errorMessage.value = mapAuthErrorToMessage(error);
       } else {
         router.push("/board");
       }
     }
   } catch (error: any) {
     console.error("認証エラー:", error);
-    errorMessage.value = getAuthErrorMessage(error);
+    errorMessage.value = mapAuthErrorToMessage(error);
   } finally {
     loading.value = false;
   }
@@ -333,7 +294,7 @@ async function handleResetPassword() {
   try {
     const { error } = await client.auth.resetPasswordForEmail(resetEmail.value);
     if (error) {
-      resetMessage.value = getAuthErrorMessage(error);
+      resetMessage.value = mapAuthErrorToMessage(error);
     } else {
       resetMessage.value =
         "パスワードリセット用のメールを送信しました。メールボックスをご確認ください。";

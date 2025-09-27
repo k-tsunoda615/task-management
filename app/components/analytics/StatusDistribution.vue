@@ -28,7 +28,7 @@ import {
   TASK_STATUS_LABELS,
   STATUS_COLORS,
 } from "../../utils/constants";
-import type { Todo } from "../../types/todo";
+import type { Todo } from "../../../types/todo";
 import type { ChartData, ChartOptions, TooltipItem } from "chart.js";
 
 const props = defineProps<{
@@ -40,6 +40,13 @@ const completionChartContainer = ref<HTMLElement | null>(null);
 let statusChart: any = null;
 let completionChart: any = null;
 const showCompletedTasks = ref(false);
+
+const handleCompletedTasksVisibilityToggle = (event: Event) => {
+  const detail = (event as CustomEvent<{ showCompletedTasks: boolean }>).detail;
+  if (typeof detail?.showCompletedTasks === "boolean") {
+    showCompletedTasks.value = detail.showCompletedTasks;
+  }
+};
 
 // 完了タスク表示状態をlocalStorageから取得
 onMounted(() => {
@@ -296,9 +303,10 @@ onMounted(() => {
   initCompletionChart();
 
   // 完了タスク表示切り替えイベントを監視
-  window.addEventListener("completedTasksVisibilityToggle", (event: any) => {
-    showCompletedTasks.value = event.detail.showCompletedTasks;
-  });
+  window.addEventListener(
+    "completedTasksVisibilityToggle",
+    handleCompletedTasksVisibilityToggle,
+  );
 });
 
 // コンポーネントのアンマウント時にグラフを破棄
@@ -315,7 +323,7 @@ onUnmounted(() => {
   // イベントリスナーを削除
   window.removeEventListener(
     "completedTasksVisibilityToggle",
-    (event: any) => {}
+    handleCompletedTasksVisibilityToggle,
   );
 });
 </script>

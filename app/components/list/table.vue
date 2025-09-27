@@ -107,8 +107,8 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted, watch, onUnmounted } from "vue";
-import { useTodoStore } from "../../../stores/todo";
-import { useTagStore } from "../../../stores/tag";
+import { useTodoStore } from "../../../stores/tasks";
+import { useTagStore } from "../../../stores/tags";
 import { TASK_STATUS } from "../../utils/constants";
 import type { Todo } from "../../../types/todo";
 import TableHeader from "./TableHeader.vue";
@@ -127,6 +127,13 @@ const searchQuery = ref("");
 const statusFilter = ref("");
 const privateFilter = ref<boolean | null>(null);
 const showCompletedTasks = ref(false);
+
+const handleCompletedTasksVisibilityToggle = (event: Event) => {
+  const detail = (event as CustomEvent<{ showCompletedTasks: boolean }>).detail;
+  if (typeof detail?.showCompletedTasks === "boolean") {
+    showCompletedTasks.value = detail.showCompletedTasks;
+  }
+};
 const sortColumn = ref("sort_order");
 const sortDirection = ref<"asc" | "desc" | "none">("none");
 const selectedTodos = ref<string[]>([]);
@@ -164,17 +171,16 @@ onMounted(async () => {
   }
 
   // 完了タスク表示切り替えイベントを監視
-  window.addEventListener("completedTasksVisibilityToggle", (event: any) => {
-    showCompletedTasks.value = event.detail.showCompletedTasks;
-  });
+  window.addEventListener(
+    "completedTasksVisibilityToggle",
+    handleCompletedTasksVisibilityToggle,
+  );
 
   // クリーンアップ
   onUnmounted(() => {
     window.removeEventListener(
       "completedTasksVisibilityToggle",
-      (event: any) => {
-        showCompletedTasks.value = event.detail.showCompletedTasks;
-      }
+      handleCompletedTasksVisibilityToggle,
     );
   });
 });
@@ -437,7 +443,10 @@ async function handleDragChange(evt: any) {
         (t) => t.id === todo.id
       );
       if (todoIndex !== -1) {
-        internalDraggedTodos.value[todoIndex].sort_order = tempSortOrder;
+        const target = internalDraggedTodos.value[todoIndex];
+        if (target) {
+          target.sort_order = tempSortOrder;
+        }
       }
 
       // 新しいソート順を計算（バックグラウンドで実行）
@@ -452,7 +461,10 @@ async function handleDragChange(evt: any) {
         (t) => t.id === mainTodoUpdate.id
       );
       if (mainIndex !== -1) {
-        todoStore.todos[mainIndex].sort_order = mainTodoUpdate.sort_order;
+        const target = todoStore.todos[mainIndex];
+        if (target) {
+          target.sort_order = mainTodoUpdate.sort_order ?? 0;
+        }
       }
 
       // メインのTodoのサーバー更新
@@ -471,7 +483,10 @@ async function handleDragChange(evt: any) {
         otherTodosUpdates.forEach((update) => {
           const index = todoStore.todos.findIndex((t) => t.id === update.id);
           if (index !== -1) {
-            todoStore.todos[index].sort_order = update.sort_order || 0;
+            const item = todoStore.todos[index];
+            if (item) {
+              item.sort_order = update.sort_order || 0;
+            }
           }
         });
 
@@ -481,8 +496,10 @@ async function handleDragChange(evt: any) {
             (t) => t.id === update.id
           );
           if (index !== -1) {
-            internalDraggedTodos.value[index].sort_order =
-              update.sort_order || 0;
+            const item = internalDraggedTodos.value[index];
+            if (item) {
+              item.sort_order = update.sort_order || 0;
+            }
           }
         });
 

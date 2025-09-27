@@ -1,8 +1,8 @@
 import { ref, onMounted } from "vue";
-import { useTagStore } from "../../stores/tag";
+import { useTagStore } from "../../stores/tags";
 import type { Tag } from "../../types/todo";
 
-export function useTags() {
+export function useTagOperations() {
   const tagStore = useTagStore();
   const newTagName = ref("");
   const newTagColor = ref("#3b82f6");

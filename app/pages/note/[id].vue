@@ -9,7 +9,7 @@
 
 <script setup>
 import { useRoute } from "vue-router";
-import { useTodoStore } from "../../../stores/todo";
+import { useTodoStore } from "../../../stores/tasks";
 
 definePageMeta({
   layout: "board",

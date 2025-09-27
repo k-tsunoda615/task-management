@@ -1,0 +1,68 @@
+version: 2
+updates:
+  # Yarn依存関係の更新
+  - package-ecosystem: "npm"
+    directory: "/"
+    # 特定のブランチをターゲットにしたい場合は以下を追加
+    # target-branch: "main"
+    schedule:
+      interval: "weekly"
+      day: "friday"
+      time: "10:00"
+      timezone: "Asia/Tokyo"
+    open-pull-requests-limit: 10
+    reviewers:
+      - "k-tsunoda"
+    assignees:
+      - "k-tsunoda"
+    commit-message:
+      prefix: "deps"
+      include: "scope"
+    # Yarnのlock fileを適切に処理
+    versioning-strategy: "increase"
+    groups:
+      # 開発依存関係をグループ化
+      dev-dependencies:
+        patterns:
+          - "@types/*"
+          - "@typescript-eslint/*"
+          - "eslint*"
+          - "prettier"
+          - "playwright*"
+          - "@playwright/*"
+      # Vue/Nuxt関連をグループ化
+      vue-nuxt:
+        patterns:
+          - "vue*"
+          - "nuxt*"
+          - "@nuxt/*"
+          - "@vue*"
+      # Supabase関連をグループ化
+      supabase:
+        patterns:
+          - "@supabase/*"
+      # UI/スタイリング関連
+      ui-styling:
+        patterns:
+          - "tailwind*"
+          - "@tailwindcss/*"
+          - "@nuxt/ui"
+
+  # GitHub Actions ワークフローの更新
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    # 特定のブランチをターゲットにしたい場合は以下を追加
+    # target-branch: "main"
+    schedule:
+      interval: "weekly"
+      day: "friday"
+      time: "10:00"
+      timezone: "Asia/Tokyo"
+    open-pull-requests-limit: 5
+    reviewers:
+      - "k-tsunoda"
+    assignees:
+      - "k-tsunoda"
+    commit-message:
+      prefix: "ci"
+      include: "scope"

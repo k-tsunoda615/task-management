@@ -67,7 +67,7 @@ export function useTaskTimer() {
   // total_timeから数値を抽出
   function extractTotalTime(time: number | number[] | undefined): number {
     if (Array.isArray(time) && time.length > 0) {
-      return time[0];
+      return time[0] ?? 0;
     }
     return typeof time === "number" ? time : 0;
   }

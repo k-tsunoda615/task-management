@@ -168,8 +168,8 @@
 </template>
 
 <script setup lang="ts">
-import { useTodoStore } from "../../../stores/todo";
-import { useTagStore } from "../../../stores/tag";
+import { useTodoStore } from "../../../stores/tasks";
+import { useTagStore } from "../../../stores/tags";
 import {
   TASK_STATUS,
   TASK_STATUS_LABELS,
@@ -200,6 +200,13 @@ const tagStore = useTagStore();
 // 期間選択のオプション
 const selectedPeriod = ref("7days");
 const showCompletedTasks = ref(false); // 完了タスク表示/非表示
+
+const handleCompletedTasksVisibilityToggle = (event: Event) => {
+  const detail = (event as CustomEvent<{ showCompletedTasks: boolean }>).detail;
+  if (typeof detail?.showCompletedTasks === "boolean") {
+    showCompletedTasks.value = detail.showCompletedTasks;
+  }
+};
 
 // タスクとタグのデータ取得
 const tasks = ref<Todo[]>([]);
@@ -292,9 +299,10 @@ onMounted(async () => {
   }
 
   // 完了タスク表示切り替えイベントを監視
-  window.addEventListener("completedTasksVisibilityToggle", (event: any) => {
-    showCompletedTasks.value = event.detail.showCompletedTasks;
-  });
+  window.addEventListener(
+    "completedTasksVisibilityToggle",
+    handleCompletedTasksVisibilityToggle,
+  );
 
   // プライベート/パブリックフィルター変更を監視
   watch(
@@ -312,9 +320,7 @@ onMounted(async () => {
   onUnmounted(() => {
     window.removeEventListener(
       "completedTasksVisibilityToggle",
-      (event: any) => {
-        showCompletedTasks.value = event.detail.showCompletedTasks;
-      }
+      handleCompletedTasksVisibilityToggle,
     );
   });
 });

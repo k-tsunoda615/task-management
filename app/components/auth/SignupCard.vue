@@ -79,6 +79,8 @@
 </template>
 
 <script setup lang="ts">
+import { mapAuthErrorToMessage } from "../../utils/auth";
+
 const props = defineProps({
   redirectUrl: {
     type: String,
@@ -113,34 +115,6 @@ const password = ref("");
 const loading = ref(false);
 const errorMessage = ref("");
 const agreeTerms = ref(false);
-
-// エラーメッセージ日本語化関数
-function getAuthErrorMessage(error: any): string {
-  if (!error || !error.message) return "認証に失敗しました";
-  const msg = error.message;
-  if (
-    msg.includes("User already registered") ||
-    msg.includes("User already exists")
-  ) {
-    return "このメールアドレスは既に登録されています";
-  }
-  if (msg.match(/Password should be at least (\d+) characters/)) {
-    return "パスワードが短すぎます。8文字以上で入力してください。";
-  }
-  if (msg.includes("Password should contain at least one special character")) {
-    return "パスワードには記号を1つ以上含めてください。";
-  }
-  if (msg.includes("Password should contain at least one number")) {
-    return "パスワードには数字を1つ以上含めてください。";
-  }
-  if (msg.includes("Password should contain at least one uppercase letter")) {
-    return "パスワードには大文字を1つ以上含めてください。";
-  }
-  if (msg.includes("Email is invalid") || msg.includes("Invalid email")) {
-    return "メールアドレスの形式が正しくありません";
-  }
-  return msg; // その他は原文表示
-}
 
 async function handleSubmit() {
   if (!email.value || !password.value) return;
@@ -177,7 +151,7 @@ async function handleSubmit() {
     }
   } catch (error: any) {
     console.error("認証エラー:", error);
-    errorMessage.value = getAuthErrorMessage(error);
+    errorMessage.value = mapAuthErrorToMessage(error);
   } finally {
     loading.value = false;
   }

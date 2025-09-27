@@ -3,14 +3,37 @@ import { gtmNoscript, gtmScript } from "./app/utils/gtm";
 export default defineNuxtConfig({
   modules: ["@nuxt/ui", "@nuxtjs/supabase", "@pinia/nuxt", "@vueuse/nuxt"],
 
+  // エイリアス設定を追加
+  alias: {
+    "@": "./app",
+    "~": "./app",
+    "@components": "./app/components",
+    "@utils": "./app/utils",
+    "@composables": "./app/composables",
+    "@stores": "./stores",
+    "@types": "./types",
+  },
+
+  // PostCSS設定をNuxt内に移動
+  postcss: {
+    plugins: {
+      tailwindcss: {},
+      autoprefixer: {},
+    },
+  },
+
+  // TailwindCSS設定を追加
+  css: ["~/assets/css/main.css"],
+
   supabase: {
     redirectOptions: {
       login: "/auth",
       callback: "/confirm",
       exclude: ["/*"],
     },
-    url: process.env.NUXT_SUPABASE_URL,
-    key: process.env.NUXT_SUPABASE_ANON_KEY,
+    // テスト環境やCI環境でのデフォルト値を設定
+    url: process.env.NUXT_SUPABASE_URL || "https://dummy.supabase.co",
+    key: process.env.NUXT_SUPABASE_ANON_KEY || "dummy-anon-key",
   },
 
   devtools: {
