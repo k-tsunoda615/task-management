@@ -29,10 +29,12 @@
           class="text-gray-500 hover:text-primary-600 transition-colors mr-2"
           @click.stop
         >
-          <UIcon
-            name="i-heroicons-document-text"
-            class="w-4 h-4 text-gray-400 hover:text-primary-600"
-          />
+          <UTooltip text="詳細へ移動">
+            <UIcon
+              name="i-heroicons-arrow-up-right"
+              class="w-4 h-4 text-gray-400 hover:text-primary-600 hidden md:block"
+            />
+          </UTooltip>
         </NuxtLink>
         <span class="truncate">{{ todo.title }}</span>
         <UIcon

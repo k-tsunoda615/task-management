@@ -62,11 +62,11 @@
           :to="`/note/${todo.id}`"
           class="text-gray-500 hover:text-primary-600 transition-colors"
         >
-          <UTooltip text="詳細ページへ移動">
+          <UTooltip text="詳細へ移動">
             <UButton
               color="gray"
               variant="ghost"
-              icon="i-heroicons-arrow-top-right-on-square"
+              icon="i-heroicons-arrow-up-right"
               size="xs"
               class="hover:bg-gray-100"
             />
