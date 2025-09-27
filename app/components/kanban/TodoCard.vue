@@ -62,22 +62,26 @@
           :to="`/note/${todo.id}`"
           class="text-gray-500 hover:text-primary-600 transition-colors"
         >
+          <UTooltip text="詳細ページへ移動">
+            <UButton
+              color="gray"
+              variant="ghost"
+              icon="i-heroicons-arrow-top-right-on-square"
+              size="xs"
+              class="hover:bg-gray-100"
+            />
+          </UTooltip>
+        </NuxtLink>
+        <UTooltip text="編集モーダルを表示">
           <UButton
             color="gray"
             variant="ghost"
-            icon="i-heroicons-document-text"
+            icon="i-heroicons-pencil-square"
             size="xs"
             class="hover:bg-gray-100"
+            @click="editTodo"
           />
-        </NuxtLink>
-        <UButton
-          color="gray"
-          variant="ghost"
-          icon="i-heroicons-pencil-square"
-          size="xs"
-          class="hover:bg-gray-100"
-          @click="editTodo"
-        />
+        </UTooltip>
       </div>
     </div>
 
@@ -89,26 +93,28 @@
       </div>
 
       <div class="flex items-center gap-1">
-        <UButton
-          v-if="!todo.is_timing"
-          color="gray"
-          variant="ghost"
-          icon="i-heroicons-play"
-          size="xs"
-          :loading="timerLoading"
-          class="hover:bg-gray-100"
-          @click="startTiming"
-        />
-        <UButton
-          v-else
-          color="red"
-          variant="ghost"
-          icon="i-heroicons-pause"
-          size="xs"
-          :loading="timerLoading"
-          class="hover:bg-red-100"
-          @click="stopTiming"
-        />
+        <UTooltip :text="!todo.is_timing ? 'タイマー開始' : 'タイマー停止'">
+          <UButton
+            v-if="!todo.is_timing"
+            color="gray"
+            variant="ghost"
+            icon="i-heroicons-play"
+            size="xs"
+            :loading="timerLoading"
+            class="hover:bg-gray-100"
+            @click="startTiming"
+          />
+          <UButton
+            v-else
+            color="red"
+            variant="ghost"
+            icon="i-heroicons-pause"
+            size="xs"
+            :loading="timerLoading"
+            class="hover:bg-red-100"
+            @click="stopTiming"
+          />
+        </UTooltip>
       </div>
     </div>
     <!-- メモ -->
