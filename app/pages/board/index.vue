@@ -18,8 +18,6 @@
       </div>
     </div>
 
-    <!-- ヘルプモーダル -->
-    <ModalsHelpModal v-model="showHelpModal" />
   </div>
 </template>
 
@@ -38,7 +36,6 @@ useHead({
 });
 
 const user = useSupabaseUser();
-const showHelpModal = ref(false);
 
 onMounted(async () => {
   await useOnboardingSetup();
