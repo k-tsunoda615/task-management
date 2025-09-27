@@ -1,5 +1,18 @@
 <template>
   <div v-if="task" class="note-container">
+    <!-- 戻るボタン -->
+    <div class="mb-6 flex items-center justify-between">
+      <UButton
+        color="gray"
+        variant="ghost"
+        icon="i-heroicons-arrow-small-left"
+        class="hover:bg-gray-100"
+        @click="goBack"
+      >
+        戻る
+      </UButton>
+    </div>
+
     <!-- タイマー部分 - 上部に固定 -->
     <div class="mb-6 bg-gray-50 p-4 rounded-lg shadow-sm">
       <div class="flex items-center justify-between">
@@ -85,30 +98,59 @@
 
     <!-- メモ (Markdown) -->
     <div class="mb-6">
-      <label class="block text-sm font-medium text-gray-700 mb-1">メモ</label>
-      <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
-        <div class="lg:col-span-1">
-          <textarea
-            v-model="editedTask.memo"
-            class="w-full h-[500px] px-4 py-3 border border-gray-300 rounded-md shadow-sm focus:border-primary-500 focus:ring focus:ring-primary-200 font-mono text-sm"
-            placeholder="Markdownでメモを入力できます..."
-            @change="updateTask('memo')"
-          ></textarea>
-        </div>
-        <div
-          class="lg:col-span-1 bg-gray-50 p-6 rounded-lg overflow-auto h-[500px]"
+      <label class="block text-sm font-medium text-gray-700 mb-3">メモ</label>
+      <div class="flex gap-2">
+        <UButton
+          :color="memoViewMode === 'edit' ? 'primary' : 'gray'"
+          :variant="memoViewMode === 'edit' ? 'soft' : 'ghost'"
+          class="px-3 py-1 text-sm"
+          icon="i-heroicons-pencil-square"
+          @click="memoViewMode = 'edit'"
         >
-          <div
-            class="prose prose-sm max-w-none"
-            v-html="renderedMarkdown"
-          ></div>
-        </div>
+          Markdown
+        </UButton>
+        <UButton
+          :color="memoViewMode === 'preview' ? 'primary' : 'gray'"
+          :variant="memoViewMode === 'preview' ? 'soft' : 'ghost'"
+          class="px-3 py-1 text-sm"
+          icon="i-heroicons-eye"
+          @click="memoViewMode = 'preview'"
+        >
+          プレビュー
+        </UButton>
+      </div>
+
+      <div v-if="memoViewMode === 'edit'" class="mt-4">
+        <textarea
+          v-model="editedTask.memo"
+          class="w-full h-[500px] px-4 py-3 border border-gray-300 rounded-md shadow-sm focus:border-primary-500 focus:ring focus:ring-primary-200 font-mono text-sm"
+          placeholder="Markdownでメモを入力できます..."
+          @change="updateTask('memo')"
+        ></textarea>
+      </div>
+      <div
+        v-else
+        class="mt-4 bg-gray-50 p-6 rounded-lg overflow-auto h-[500px]"
+      >
+        <div class="prose prose-sm max-w-none" v-html="renderedMarkdown"></div>
       </div>
     </div>
 
     <!-- 最終更新日時 -->
     <div class="text-right text-sm text-gray-500">
       最終更新: {{ formattedUpdateDate }}
+    </div>
+    <!-- 戻るボタン -->
+    <div class="mb-6 flex items-center justify-between">
+      <UButton
+        color="gray"
+        variant="ghost"
+        icon="i-heroicons-arrow-small-left"
+        class="hover:bg-gray-100"
+        @click="goBack"
+      >
+        戻る
+      </UButton>
     </div>
   </div>
   <div v-else class="flex justify-center items-center h-64">
@@ -135,6 +177,8 @@ const todoStore = useTodoStore();
 const task = ref<Todo | null>(null);
 const editedTask = ref<Partial<Todo>>({});
 const isLoading = ref(true);
+
+const memoViewMode = ref<"edit" | "preview">("edit");
 
 // タイマー関連
 const {
@@ -197,6 +241,15 @@ const formattedUpdateDate = computed(() => {
   const date = new Date(task.value.updated_at);
   return date.toLocaleString("ja-JP");
 });
+
+const goBack = () => {
+  if (window.history.length > 1) {
+    window.history.back();
+    return;
+  }
+
+  return navigateTo("/board");
+};
 
 // タスクの取得
 async function fetchTask() {
