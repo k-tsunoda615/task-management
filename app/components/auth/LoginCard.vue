@@ -160,6 +160,8 @@
 </template>
 
 <script setup lang="ts">
+import { mapAuthErrorToMessage } from "../../utils/auth";
+
 const props = defineProps({
   redirectUrl: {
     type: String,
@@ -181,25 +183,6 @@ const resetEmail = ref("");
 const resetMessage = ref("");
 const resetLoading = ref(false);
 
-// エラーメッセージ日本語化関数
-function getAuthErrorMessage(error: any): string {
-  if (!error || !error.message) return "認証に失敗しました";
-  const msg = error.message;
-  if (msg.includes("Invalid login credentials")) {
-    return "メールアドレスまたはパスワードが正しくありません";
-  }
-  if (msg.includes("Email not confirmed")) {
-    return "メールアドレスの確認が完了していません。メールボックスをご確認ください。";
-  }
-  if (msg.includes("Rate limit exceeded")) {
-    return "リクエストが多すぎます。しばらくしてから再度お試しください。";
-  }
-  if (msg.includes("network error")) {
-    return "ネットワークエラーが発生しました。接続環境をご確認ください。";
-  }
-  return msg; // その他は原文表示
-}
-
 async function handleSubmit() {
   if (!email.value || !password.value) return;
   loading.value = true;
@@ -210,7 +193,7 @@ async function handleSubmit() {
       password: password.value,
     });
     if (error) {
-      errorMessage.value = getAuthErrorMessage(error);
+      errorMessage.value = mapAuthErrorToMessage(error);
     } else {
       emit("login-success");
       if (props.redirectUrl) {
@@ -219,7 +202,7 @@ async function handleSubmit() {
     }
   } catch (error: any) {
     console.error("認証エラー:", error);
-    errorMessage.value = getAuthErrorMessage(error);
+    errorMessage.value = mapAuthErrorToMessage(error);
   } finally {
     loading.value = false;
   }
@@ -235,7 +218,7 @@ async function handleResetPassword() {
   try {
     const { error } = await client.auth.resetPasswordForEmail(resetEmail.value);
     if (error) {
-      resetMessage.value = getAuthErrorMessage(error);
+      resetMessage.value = mapAuthErrorToMessage(error);
     } else {
       resetMessage.value =
         "パスワードリセット用のメールを送信しました。メールボックスをご確認ください。";
@@ -254,7 +237,7 @@ async function handleGuestLogin() {
   try {
     const { error } = await client.auth.signInAnonymously();
     if (error) {
-      errorMessage.value = getAuthErrorMessage(error);
+      errorMessage.value = mapAuthErrorToMessage(error);
     } else {
       emit("guest-login");
       if (props.redirectUrl) {
@@ -282,7 +265,7 @@ async function handleGoogleSignIn() {
       },
     });
     if (error) {
-      errorMessage.value = getAuthErrorMessage(error);
+      errorMessage.value = mapAuthErrorToMessage(error);
     }
     // 通常、リダイレクトされるのでここでの処理は不要
   } catch (e) {

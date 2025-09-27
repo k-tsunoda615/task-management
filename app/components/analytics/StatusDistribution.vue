@@ -41,6 +41,13 @@ let statusChart: any = null;
 let completionChart: any = null;
 const showCompletedTasks = ref(false);
 
+const handleCompletedTasksVisibilityToggle = (event: Event) => {
+  const detail = (event as CustomEvent<{ showCompletedTasks: boolean }>).detail;
+  if (typeof detail?.showCompletedTasks === "boolean") {
+    showCompletedTasks.value = detail.showCompletedTasks;
+  }
+};
+
 // 完了タスク表示状態をlocalStorageから取得
 onMounted(() => {
   const savedCompletedTasksState = localStorage.getItem("showCompletedTasks");
@@ -296,9 +303,10 @@ onMounted(() => {
   initCompletionChart();
 
   // 完了タスク表示切り替えイベントを監視
-  window.addEventListener("completedTasksVisibilityToggle", (event: any) => {
-    showCompletedTasks.value = event.detail.showCompletedTasks;
-  });
+  window.addEventListener(
+    "completedTasksVisibilityToggle",
+    handleCompletedTasksVisibilityToggle,
+  );
 });
 
 // コンポーネントのアンマウント時にグラフを破棄
@@ -315,7 +323,7 @@ onUnmounted(() => {
   // イベントリスナーを削除
   window.removeEventListener(
     "completedTasksVisibilityToggle",
-    (event: any) => {}
+    handleCompletedTasksVisibilityToggle,
   );
 });
 </script>

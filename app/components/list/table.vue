@@ -127,6 +127,13 @@ const searchQuery = ref("");
 const statusFilter = ref("");
 const privateFilter = ref<boolean | null>(null);
 const showCompletedTasks = ref(false);
+
+const handleCompletedTasksVisibilityToggle = (event: Event) => {
+  const detail = (event as CustomEvent<{ showCompletedTasks: boolean }>).detail;
+  if (typeof detail?.showCompletedTasks === "boolean") {
+    showCompletedTasks.value = detail.showCompletedTasks;
+  }
+};
 const sortColumn = ref("sort_order");
 const sortDirection = ref<"asc" | "desc" | "none">("none");
 const selectedTodos = ref<string[]>([]);
@@ -164,17 +171,16 @@ onMounted(async () => {
   }
 
   // 完了タスク表示切り替えイベントを監視
-  window.addEventListener("completedTasksVisibilityToggle", (event: any) => {
-    showCompletedTasks.value = event.detail.showCompletedTasks;
-  });
+  window.addEventListener(
+    "completedTasksVisibilityToggle",
+    handleCompletedTasksVisibilityToggle,
+  );
 
   // クリーンアップ
   onUnmounted(() => {
     window.removeEventListener(
       "completedTasksVisibilityToggle",
-      (event: any) => {
-        showCompletedTasks.value = event.detail.showCompletedTasks;
-      }
+      handleCompletedTasksVisibilityToggle,
     );
   });
 });

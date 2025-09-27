@@ -1,4 +1,5 @@
 import type { AuthError, Session } from "@supabase/supabase-js";
+import { mapAuthErrorToMessage } from "../utils/auth";
 
 export function useAuthService() {
   const client = useSupabaseClient();
@@ -7,48 +8,6 @@ export function useAuthService() {
 
   const loading = ref(false);
   const errorMessage = ref("");
-
-  // エラーメッセージ日本語化関数
-  function getAuthErrorMessage(error: AuthError): string {
-    if (!error || !error.message) return "認証に失敗しました";
-    const msg = error.message;
-    if (msg.includes("Invalid login credentials")) {
-      return "メールアドレスまたはパスワードが正しくありません";
-    }
-    if (msg.includes("Email not confirmed")) {
-      return "メールアドレスの確認が完了していません。メールボックスをご確認ください。";
-    }
-    if (
-      msg.includes("User already registered") ||
-      msg.includes("User already exists")
-    ) {
-      return "このメールアドレスは既に登録されています";
-    }
-    if (msg.match(/Password should be at least (\d+) characters/)) {
-      return "パスワードが短すぎます。8文字以上で入力してください。";
-    }
-    if (
-      msg.includes("Password should contain at least one special character")
-    ) {
-      return "パスワードには記号を1つ以上含めてください。";
-    }
-    if (msg.includes("Password should contain at least one number")) {
-      return "パスワードには数字を1つ以上含めてください。";
-    }
-    if (msg.includes("Password should contain at least one uppercase letter")) {
-      return "パスワードには大文字を1つ以上含めてください。";
-    }
-    if (msg.includes("Email is invalid") || msg.includes("Invalid email")) {
-      return "メールアドレスの形式が正しくありません";
-    }
-    if (msg.includes("Rate limit exceeded")) {
-      return "リクエストが多すぎます。しばらくしてから再度お試しください。";
-    }
-    if (msg.includes("network error")) {
-      return "ネットワークエラーが発生しました。接続環境をご確認ください。";
-    }
-    return msg; // その他は原文表示
-  }
 
   // 通常のログイン処理
   async function loginWithPassword(
@@ -64,7 +23,7 @@ export function useAuthService() {
         password,
       });
       if (error) {
-        errorMessage.value = getAuthErrorMessage(error);
+        errorMessage.value = mapAuthErrorToMessage(error);
         return { success: false, error: errorMessage.value };
       } else {
         if (redirectUrl) {
@@ -74,7 +33,7 @@ export function useAuthService() {
       }
     } catch (error) {
       console.error("認証エラー:", error);
-      errorMessage.value = getAuthErrorMessage(error as AuthError);
+      errorMessage.value = mapAuthErrorToMessage(error as AuthError);
       return { success: false, error: errorMessage.value };
     } finally {
       loading.value = false;
@@ -122,7 +81,7 @@ export function useAuthService() {
       }
     } catch (error) {
       console.error("認証エラー:", error);
-      errorMessage.value = getAuthErrorMessage(error as AuthError);
+      errorMessage.value = mapAuthErrorToMessage(error as AuthError);
       return { success: false, error: errorMessage.value };
     } finally {
       loading.value = false;
@@ -136,7 +95,7 @@ export function useAuthService() {
     try {
       const { error } = await client.auth.signInAnonymously();
       if (error) {
-        errorMessage.value = getAuthErrorMessage(error);
+        errorMessage.value = mapAuthErrorToMessage(error);
         return { success: false, error: errorMessage.value };
       } else {
         if (redirectUrl) {
@@ -158,7 +117,7 @@ export function useAuthService() {
     try {
       const { error } = await client.auth.resetPasswordForEmail(email);
       if (error) {
-        return { success: false, error: getAuthErrorMessage(error) };
+        return { success: false, error: mapAuthErrorToMessage(error) };
       } else {
         return {
           success: true,
@@ -186,7 +145,7 @@ export function useAuthService() {
       }
       return { success: true };
     } catch (error: unknown) {
-      return { success: false, error: getAuthErrorMessage(error as AuthError) };
+      return { success: false, error: mapAuthErrorToMessage(error as AuthError) };
     }
   }
 
@@ -212,6 +171,6 @@ export function useAuthService() {
     resetPassword,
     signOut,
     watchAuthState,
-    getAuthErrorMessage,
+    mapAuthErrorToMessage,
   };
 }

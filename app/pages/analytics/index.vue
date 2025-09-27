@@ -201,6 +201,13 @@ const tagStore = useTagStore();
 const selectedPeriod = ref("7days");
 const showCompletedTasks = ref(false); // 完了タスク表示/非表示
 
+const handleCompletedTasksVisibilityToggle = (event: Event) => {
+  const detail = (event as CustomEvent<{ showCompletedTasks: boolean }>).detail;
+  if (typeof detail?.showCompletedTasks === "boolean") {
+    showCompletedTasks.value = detail.showCompletedTasks;
+  }
+};
+
 // タスクとタグのデータ取得
 const tasks = ref<Todo[]>([]);
 const tags = computed(() => tagStore.tags);
@@ -292,9 +299,10 @@ onMounted(async () => {
   }
 
   // 完了タスク表示切り替えイベントを監視
-  window.addEventListener("completedTasksVisibilityToggle", (event: any) => {
-    showCompletedTasks.value = event.detail.showCompletedTasks;
-  });
+  window.addEventListener(
+    "completedTasksVisibilityToggle",
+    handleCompletedTasksVisibilityToggle,
+  );
 
   // プライベート/パブリックフィルター変更を監視
   watch(
@@ -312,9 +320,7 @@ onMounted(async () => {
   onUnmounted(() => {
     window.removeEventListener(
       "completedTasksVisibilityToggle",
-      (event: any) => {
-        showCompletedTasks.value = event.detail.showCompletedTasks;
-      }
+      handleCompletedTasksVisibilityToggle,
     );
   });
 });
