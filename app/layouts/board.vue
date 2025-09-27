@@ -81,6 +81,8 @@
         >
           <slot />
         </main>
+
+        <ModalsHelpModal v-model="helpModal" />
       </div>
 
       <!-- フォールバックコンテンツ -->
@@ -95,11 +97,13 @@
 
 <script setup lang="ts">
 import TheSidebar from "../components/common/Sidebar.vue";
+import ModalsHelpModal from "../components/modals/HelpModal.vue";
 import { useAuthService } from "../composables/useAuthService";
 
 const { user } = useAuthService();
 const loading = useState("auth-loading", () => true);
 const initialized = ref(false);
+const helpModal = useState("help-modal", () => false);
 
 // サイドバーの状態を監視
 const sidebarOpen = ref(true);

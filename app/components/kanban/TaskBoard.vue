@@ -74,16 +74,32 @@
         <div
           class="rounded-[6px] p-4 h-full flex flex-col shadow-md border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900"
         >
-          <h2
-            class="mb-4 font-medium text-gray-900 dark:text-gray-100 flex items-center gap-2"
+          <div
+            class="mb-4 flex items-center justify-between gap-2 text-gray-900 dark:text-gray-100"
           >
-            <UIcon
-              :name="STATUS_COLORS[TASK_STATUS.PRIORITY].iconName"
-              class="w-5 h-5"
-              :class="STATUS_COLORS[TASK_STATUS.PRIORITY].icon"
-            />
-            {{ TASK_STATUS_LABELS[TASK_STATUS.PRIORITY] }}
-          </h2>
+            <div class="flex items-center gap-2 font-medium">
+              <UIcon
+                :name="STATUS_COLORS[TASK_STATUS.PRIORITY].iconName"
+                class="w-5 h-5"
+                :class="STATUS_COLORS[TASK_STATUS.PRIORITY].icon"
+              />
+              {{ TASK_STATUS_LABELS[TASK_STATUS.PRIORITY] }}
+            </div>
+            <UTooltip text="Priority にタスクを追加">
+              <UButton
+                color="gray"
+                variant="ghost"
+                size="xs"
+                class="hover:bg-gray-100"
+                @click="openNewTaskModal(TASK_STATUS.PRIORITY)"
+              >
+                <UIcon
+                  name="i-heroicons-plus-circle"
+                  class="w-5 h-5 text-primary-500"
+                />
+              </UButton>
+            </UTooltip>
+          </div>
           <div class="flex-1 min-h-[300px]">
             <draggable
               v-model="todosByStatus[TASK_STATUS.PRIORITY]"
@@ -133,16 +149,32 @@
         <div
           class="rounded-[6px] p-4 h-full shadow-md border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900"
         >
-          <h2
-            class="mb-4 font-medium text-gray-900 dark:text-gray-100 flex items-center gap-2"
+          <div
+            class="mb-4 flex items-center justify-between gap-2 text-gray-900 dark:text-gray-100"
           >
-            <UIcon
-              :name="STATUS_COLORS[TASK_STATUS.NEXT].iconName"
-              class="w-5 h-5"
-              :class="STATUS_COLORS[TASK_STATUS.NEXT].icon"
-            />
-            {{ TASK_STATUS_LABELS[TASK_STATUS.NEXT] }}
-          </h2>
+            <div class="flex items-center gap-2 font-medium">
+              <UIcon
+                :name="STATUS_COLORS[TASK_STATUS.NEXT].iconName"
+                class="w-5 h-5"
+                :class="STATUS_COLORS[TASK_STATUS.NEXT].icon"
+              />
+              {{ TASK_STATUS_LABELS[TASK_STATUS.NEXT] }}
+            </div>
+            <UTooltip text="Next にタスクを追加">
+              <UButton
+                color="blue"
+                variant="ghost"
+                size="xs"
+                class="hover:bg-gray-100"
+                @click="openNewTaskModal(TASK_STATUS.NEXT)"
+              >
+                <UIcon
+                  name="i-heroicons-plus-circle"
+                  class="w-5 h-5 text-blue-500"
+                />
+              </UButton>
+            </UTooltip>
+          </div>
           <draggable
             v-model="todosByStatus[TASK_STATUS.NEXT]"
             :group="{ name: 'todos', pull: true, put: true }"
@@ -609,9 +641,10 @@ const timeInput = ref("00:00:00");
 const editTimeInput = ref("00:00:00");
 
 // 新規タスクモーダルを開く時に現在のフィルター状態に基づいて初期値を設定
-const openNewTaskModal = () => {
+const openNewTaskModal = (status?: TaskStatus) => {
   // フィルターがプライベートの場合はチェックを入れる
   newTodo.value.is_private = todoStore.taskFilter === "private";
+  newTodo.value.status = status || TASK_STATUS.PRIORITY;
   timeInput.value = "00:00:00";
   showNewTaskModal.value = true;
 };

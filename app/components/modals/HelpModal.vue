@@ -15,7 +15,7 @@
                 class="mr-2 text-blue-500 flex-shrink-0 mt-1"
               />
               <span
-                >「新しいタスク」ボタンやサイドバーの「＋」からタスクを作成できます</span
+                >Priority / Next カラム右上の「＋」ボタン、またはサイドバーの「新しいタスク」からタスクを登録できます。</span
               >
             </li>
             <li class="flex items-start">
@@ -23,15 +23,17 @@
                 name="i-heroicons-pencil-square"
                 class="mr-2 text-blue-500 flex-shrink-0 mt-1"
               />
-              <span>各タスクの編集ボタンをクリックして内容を変更できます</span>
+              <span
+                >カード右上の編集ボタンでタスク内容を即時更新できます。変更は自動保存されます。</span
+              >
             </li>
             <li class="flex items-start">
               <UIcon
                 name="i-heroicons-arrows-right-left"
-                class="mr-2 text-blue-500 flex-shrink-0 mt-1"
+                class="mr-2 text-purple-500 flex-shrink-0 mt-1"
               />
               <span
-                >タスクをドラッグ＆ドロップで別のカラムやゴミ箱に移動できます</span
+                >ドラッグ＆ドロップでカラム間を移動したり、同じカラム内で優先順位を並べ替えられます。</span
               >
             </li>
             <li class="flex items-start">
@@ -40,15 +42,53 @@
                 class="mr-2 text-red-500 flex-shrink-0 mt-1"
               />
               <span
-                >タスクをサイドバーのゴミ箱にドラッグすると削除できます（削除は元に戻せません）</span
+                >削除したいタスクはサイドバー下部のゴミ箱にドロップしてください（削除は取り消せません）。</span
               >
             </li>
           </ul>
         </div>
 
-        <!-- タイマー機能 -->
+        <!-- カンバン表示・フィルタ -->
         <div>
-          <h4 class="text-base font-medium border-b pb-1 mb-2">タイマー機能</h4>
+          <h4 class="text-base font-medium border-b pb-1 mb-2">
+            カンバン表示・フィルタ
+          </h4>
+          <ul class="space-y-2 text-gray-600">
+            <li class="flex items-start">
+              <UIcon
+                name="i-heroicons-magnifying-glass"
+                class="mr-2 text-gray-600 flex-shrink-0 mt-1"
+              />
+              <span
+                >画面右上の検索バーでタイトル・メモを横断検索できます。タグプルダウンで絞り込みも可能です。</span
+              >
+            </li>
+            <li class="flex items-start">
+              <UIcon
+                name="i-heroicons-funnel"
+                class="mr-2 text-green-500 flex-shrink-0 mt-1"
+              />
+              <span
+                >サイドバーから「全て / パブリック / プライベート」「完了タスク表示」など視界を切り替えられます。</span
+              >
+            </li>
+            <li class="flex items-start">
+              <UIcon
+                name="i-heroicons-view-columns"
+                class="mr-2 text-blue-500 flex-shrink-0 mt-1"
+              />
+              <span
+                >PC ではレイアウト切り替えボタンから Priority と Next を並列 / 均等レイアウトに変更できます。</span
+              >
+            </li>
+          </ul>
+        </div>
+
+        <!-- タイマーと作業記録 -->
+        <div>
+          <h4 class="text-base font-medium border-b pb-1 mb-2">
+            タイマーと作業記録
+          </h4>
           <ul class="space-y-2 text-gray-600">
             <li class="flex items-start">
               <UIcon
@@ -56,81 +96,45 @@
                 class="mr-2 text-blue-600 flex-shrink-0 mt-1"
               />
               <span
-                >タスクごとに作業時間を計測できます。タイマーは一時停止・再開が可能です。</span
+                >カードの再生 / 一時停止ボタンで作業時間を計測できます。計測中のタスクは画面上部に表示されます。</span
               >
             </li>
             <li class="flex items-start">
               <UIcon
-                name="i-heroicons-eye"
-                class="mr-2 text-gray-500 flex-shrink-0 mt-1"
+                name="i-heroicons-exclamation-circle"
+                class="mr-2 text-amber-500 flex-shrink-0 mt-1"
               />
               <span
-                >サイドバーの「タイマー表示」ボタンでタイマーの表示/非表示を切り替えられます。</span
+                >タイマーが動作中に他ページへ移動しようとすると確認ダイアログが表示され、計測忘れを防ぎます。</span
               >
             </li>
           </ul>
         </div>
 
-        <!-- タグ管理・フィルタ -->
+        <!-- 詳細ページとメモ -->
         <div>
-          <h4 class="text-base font-medium border-b pb-1 mb-2">
-            タグ管理・フィルタ
-          </h4>
+          <h4 class="text-base font-medium border-b pb-1 mb-2">詳細ページとメモ</h4>
           <ul class="space-y-2 text-gray-600">
             <li class="flex items-start">
               <UIcon
-                name="i-heroicons-tag"
-                class="mr-2 text-purple-500 flex-shrink-0 mt-1"
+                name="i-heroicons-document-text"
+                class="mr-2 text-indigo-500 flex-shrink-0 mt-1"
               />
               <span
-                >サイドバーの「タグ編集」からタグの追加・編集・削除ができます</span
+                >カードのタイトルをクリックすると詳細ページが開き、タイトル・ステータス・完了フラグを編集できます。</span
               >
             </li>
             <li class="flex items-start">
               <UIcon
-                name="i-heroicons-filter"
-                class="mr-2 text-green-500 flex-shrink-0 mt-1"
+                name="i-heroicons-adjustments-horizontal"
+                class="mr-2 text-indigo-500 flex-shrink-0 mt-1"
               />
               <span
-                >サイドバーのフィルターボタンで「全て」「パブリック」「プライベート」タスクを切り替えられます</span
-              >
-            </li>
-            <li class="flex items-start">
-              <UIcon
-                name="i-heroicons-eye"
-                class="mr-2 text-gray-500 flex-shrink-0 mt-1"
-              />
-              <span>タグバーの表示/非表示もサイドバーから切り替え可能です</span>
-            </li>
-          </ul>
-        </div>
-
-        <!-- レイアウト切り替え -->
-        <div>
-          <h4 class="text-base font-medium border-b pb-1 mb-2">
-            レイアウト切り替え
-          </h4>
-          <ul class="space-y-2 text-gray-600">
-            <li class="flex items-start">
-              <UIcon
-                name="i-heroicons-view-columns"
-                class="mr-2 text-blue-500 flex-shrink-0 mt-1"
-              />
-              <span
-                >サイドバーの「レイアウト切り替え」ボタンでカンバンのカラム構成を変更できます</span
+                >メモ欄は Markdown とプレビューをタブで切り替えながら編集できます。詳細ページでもタイマー操作が可能です。</span
               >
             </li>
           </ul>
-        </div>
-
-        <!-- マークダウン対応 -->
-        <div>
-          <h4 class="text-base font-medium border-b pb-1 mb-2">
-            マークダウン対応
-          </h4>
-          <p class="mb-2 text-gray-600">
-            タスクのメモ欄では以下のマークダウン記法が使えます：
-          </p>
+          <p class="mt-3 mb-2 text-gray-600">メモ欄で使える主な Markdown 記法：</p>
           <div class="bg-gray-50 p-3 rounded-md">
             <table class="w-full text-sm border-collapse">
               <thead>
@@ -249,49 +253,28 @@
           </div>
         </div>
 
-        <!-- 優先度管理 -->
+        <!-- 他ビューへの導線 -->
         <div>
           <h4 class="text-base font-medium border-b pb-1 mb-2">
-            優先度・カンバン管理
+            他ビューへの導線
           </h4>
           <ul class="space-y-2 text-gray-600">
             <li class="flex items-start">
               <UIcon
-                name="i-heroicons-inbox"
-                class="mr-2 text-gray-700 flex-shrink-0 mt-1"
+                name="i-heroicons-table-cells"
+                class="mr-2 text-slate-600 flex-shrink-0 mt-1"
               />
               <div>
-                <span class="font-medium">Priority</span> -
-                優先的に対応すべきタスクを配置します。
+                サイドバーの「リストビュー」では表形式でソートや一括削除ができます。
               </div>
             </li>
             <li class="flex items-start">
               <UIcon
-                name="i-heroicons-clock"
-                class="mr-2 text-blue-700 flex-shrink-0 mt-1"
+                name="i-heroicons-chart-bar"
+                class="mr-2 text-emerald-600 flex-shrink-0 mt-1"
               />
               <div>
-                <span class="font-medium">Next Up</span> -
-                何らかの理由で待ち状態のタスクを配置します。
-              </div>
-            </li>
-            <li class="flex items-start">
-              <UIcon
-                name="i-heroicons-check-circle"
-                class="mr-2 text-green-700 flex-shrink-0 mt-1"
-              />
-              <div>
-                <span class="font-medium">Archived</span> -
-                完了したタスクなどを参照用に保管します。
-              </div>
-            </li>
-            <li class="flex items-start mt-2">
-              <UIcon
-                name="i-heroicons-arrows-up-down"
-                class="mr-2 text-purple-600 flex-shrink-0 mt-1"
-              />
-              <div class="font-bold">
-                同じカラム内でタスクをドラッグして並べ替えると、優先順位を変更できます。上にあるタスクほど優先度が高くなります。
+                「アナリティクスビュー」では期間別サマリー、タグ分布、時間分析を確認できます。
               </div>
             </li>
           </ul>

@@ -77,7 +77,7 @@ const props = defineProps({
     default: "",
   },
 });
-const showHelpModal = ref(false);
+const showHelpModal = useState("help-modal", () => false);
 const showAnonymousBanner = ref(true);
 const logout = async () => {
   await client.auth.signOut();
