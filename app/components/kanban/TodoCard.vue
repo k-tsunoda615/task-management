@@ -27,6 +27,20 @@
           >
             {{ todo.title }}
           </NuxtLink>
+          <UTooltip
+            v-if="todo.assets && todo.assets.length > 0"
+            text="添付ファイルあり"
+          >
+            <UBadge
+              color="primary"
+              variant="soft"
+              size="xs"
+              class="ml-2 flex items-center gap-1"
+            >
+              <UIcon name="i-heroicons-paper-clip" class="w-3 h-3" />
+              {{ todo.assets.length }}
+            </UBadge>
+          </UTooltip>
         </div>
 
         <!-- タグ -->
@@ -148,6 +162,7 @@ const props = defineProps({
       total_time?: number | number[];
       is_timing?: boolean;
       tags?: { id: string; name: string; color?: string }[];
+      assets?: { id: string }[];
     }>,
     required: true,
   },

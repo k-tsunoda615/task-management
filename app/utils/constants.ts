@@ -67,8 +67,13 @@ export const TASK_ASSET_BUCKET = "task-assets";
 export const TASK_ASSET_MAX_SIZE = 10 * 1024 * 1024; // 10MB
 export const TASK_ASSET_ACCEPTED_TYPES = [
   "image/*",
+  "video/*",
+  "audio/*",
   "application/pdf",
   "text/plain",
+  "text/markdown",
+  "text/csv",
+  "application/json",
 ] as const;
 
 export type TaskStatus = (typeof TASK_STATUS)[keyof typeof TASK_STATUS];

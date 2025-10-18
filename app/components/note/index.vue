@@ -11,6 +11,17 @@
       >
         戻る
       </UButton>
+      <UTooltip v-if="assetCount > 0" text="添付ファイル">
+        <UBadge
+          color="primary"
+          variant="soft"
+          size="sm"
+          class="flex items-center gap-1"
+        >
+          <UIcon name="i-heroicons-paper-clip" class="w-4 h-4" />
+          {{ assetCount }}
+        </UBadge>
+      </UTooltip>
     </div>
 
     <!-- タイマー部分 - 上部に固定 -->
@@ -188,6 +199,7 @@ const editedTask = ref<Partial<Todo>>({});
 const isLoading = ref(true);
 
 const memoViewMode = ref<"edit" | "preview">("edit");
+const assetCount = computed(() => task.value?.assets?.length || 0);
 
 // タイマー関連
 const {

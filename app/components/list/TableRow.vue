@@ -37,6 +37,20 @@
           </UTooltip>
         </NuxtLink>
         <span class="truncate">{{ todo.title }}</span>
+        <UTooltip
+          v-if="todo.assets && todo.assets.length > 0"
+          text="添付ファイルあり"
+        >
+          <UBadge
+            color="primary"
+            variant="soft"
+            size="xs"
+            class="ml-2 flex items-center gap-1"
+          >
+            <UIcon name="i-heroicons-paper-clip" class="w-3 h-3" />
+            {{ todo.assets.length }}
+          </UBadge>
+        </UTooltip>
         <UIcon
           name="i-heroicons-pencil-square"
           class="w-4 h-4 text-gray-400 ml-1 opacity-0 group-hover:opacity-100 transition-opacity"
