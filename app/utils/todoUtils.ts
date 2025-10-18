@@ -4,7 +4,7 @@ import {
   DB_STATUS_MAPPING,
 } from "./constants";
 import type { TaskStatus } from "./constants";
-import type { Todo } from "../../types/todo";
+import type { Todo, TodoAsset } from "../../types/todo";
 
 /**
  * ステータスを正規化するヘルパー関数
@@ -40,6 +40,15 @@ export function normalizeTodo(todo: Record<string, unknown>): Todo {
     ? todo.todo_tags.map((tt: { tag: unknown }) => tt.tag).filter(Boolean)
     : [];
 
+  // 添付アセットの正規化
+  if (Array.isArray(todo.todo_assets)) {
+    todo.assets = (todo.todo_assets as TodoAsset[]).map((asset) => ({
+      ...asset,
+    }));
+  } else {
+    todo.assets = [];
+  }
+
   return todo as Todo;
 }
 
@@ -51,6 +60,9 @@ export function convertTodoForDB(todo: Partial<Todo>): Record<string, unknown> {
 
   // tags属性を除外
   delete dbData.tags;
+  delete dbData.assets;
+  delete (dbData as Record<string, unknown>).todo_tags;
+  delete (dbData as Record<string, unknown>).todo_assets;
 
   // ステータスをDB形式に変換
   if (todo.status) {

@@ -7,6 +7,17 @@ export type Tag = {
   sort_order: number;
 };
 
+export type TodoAsset = {
+  id: string;
+  todo_id: string;
+  file_name: string;
+  storage_path: string;
+  mime_type: string;
+  size: number;
+  created_at?: string;
+  created_by?: string;
+};
+
 export type Todo = {
   id: string;
   title: string;
@@ -21,4 +32,5 @@ export type Todo = {
   total_time?: number | number[];
   is_timing?: boolean;
   tags?: Tag[];
+  assets?: TodoAsset[];
 };

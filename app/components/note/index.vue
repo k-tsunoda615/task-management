@@ -96,6 +96,14 @@
       </div>
     </div>
 
+    <AssetManager
+      :todo-id="task.id"
+      :assets="task.assets || []"
+      :is-disabled="isTaskCompleted"
+      @uploaded="handleAssetUploaded"
+      @deleted="handleAssetDeleted"
+    />
+
     <!-- メモ (Markdown) -->
     <div class="mb-6">
       <label class="block text-sm font-medium text-gray-700 mb-3">メモ</label>
@@ -163,8 +171,9 @@ import { useTodoStore } from "../../../stores/tasks";
 import { TASK_STATUS, TASK_STATUS_LABELS } from "../../utils/constants";
 import { useTaskTimer } from "../../composables/useTaskTimer";
 import { formatTime } from "../../utils/time";
-import type { Todo } from "../../../types/todo";
+import type { Todo, TodoAsset } from "../../../types/todo";
 import AnalogTimer from "../kanban/AnalogTimer.vue";
+import AssetManager from "./AssetManager.vue";
 import { marked } from "marked";
 // @ts-ignore
 import DOMPurify from "dompurify";
@@ -361,6 +370,24 @@ async function stopTimer() {
   } catch (error) {
     console.error("時間の保存に失敗しました:", error);
   }
+}
+
+function handleAssetUploaded(asset: TodoAsset) {
+  if (!task.value) return;
+  const currentAssets = task.value.assets ? [...task.value.assets] : [];
+  const existingIndex = currentAssets.findIndex((item) => item.id === asset.id);
+  if (existingIndex !== -1) {
+    currentAssets[existingIndex] = asset;
+  } else {
+    currentAssets.push(asset);
+  }
+  task.value.assets = currentAssets;
+}
+
+function handleAssetDeleted(assetId: string) {
+  if (!task.value) return;
+  const currentAssets = task.value.assets || [];
+  task.value.assets = currentAssets.filter((asset) => asset.id !== assetId);
 }
 
 // タスクIDが変わったら再取得
