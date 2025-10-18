@@ -64,7 +64,7 @@ export const STATUS_ORDER = [
 ] as const;
 
 export const TASK_ASSET_BUCKET = "task-assets";
-export const TASK_ASSET_MAX_SIZE = 10 * 1024 * 1024; // 10MB
+export const TASK_ASSET_MAX_SIZE = 100 * 1024 * 1024; // 100MB
 export const TASK_ASSET_ACCEPTED_TYPES = [
   "image/*",
   "video/*",
