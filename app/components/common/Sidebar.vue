@@ -368,12 +368,24 @@
             :ui="{ popper: { strategy: 'fixed' } }"
             class="w-full"
           >
-            <div class="flex items-center justify-center">
-              <span class="text-xs text-gray-600" v-if="!isOpen && !isMobile">
-                {{ totalItemCount }}%
+            <div
+              v-if="!isOpen && !isMobile"
+              class="flex flex-col items-center justify-center gap-1"
+            >
+              <span class="text-[11px] text-gray-500">
+                {{ totalItemCount }}件
               </span>
-              <span v-else class="text-xs text-gray-600">
+              <hr class="w-full border-gray-200" />
+              <span class="text-[11px] text-gray-500">
+                {{ formattedStorageUsage }}
+              </span>
+            </div>
+            <div v-else class="flex flex-col items-center justify-center gap-1">
+              <span class="text-[11px] text-gray-500">
                 アイテム数: {{ totalItemCount }} / 100
+              </span>
+              <span class="text-[11px] text-gray-500">
+                ストレージ容量: {{ formattedStorageUsage }} / 1GB
               </span>
             </div>
           </UTooltip>
@@ -439,11 +451,42 @@ const directTagStore = useTagStore();
 // コンピューテッドプロパティを追加 - アイテム数(todo + tag)を計算
 const totalItemCount = computed(() => {
   const todoCount = todoStore.totalTodoCount || 0;
-  // useTags()から取得したtagStoreではなく、直接インポートしたものを使用
   const tagCount = directTagStore.totalTagCount || 0;
-  console.log("todoCount:", todoCount, "tagCount:", tagCount);
   return todoCount + tagCount;
 });
+
+const totalAssetSize = computed(() => {
+  return todoStore.todos.reduce((sum, todo) => {
+    const assets = todo.assets || [];
+    const assetSize = assets.reduce(
+      (assetSum, asset) => assetSum + (asset.size || 0),
+      0
+    );
+    return sum + assetSize;
+  }, 0);
+});
+
+const formattedStorageUsage = computed(() => formatBytes(totalAssetSize.value));
+
+function formatBytes(bytes: number) {
+  if (!bytes || bytes <= 0) {
+    return "0MB";
+  }
+  const units = ["B", "KB", "MB", "GB"];
+  let size = bytes;
+  let unitIndex = 0;
+
+  while (size >= 1024 && unitIndex < units.length - 1) {
+    size /= 1024;
+    unitIndex += 1;
+  }
+
+  const decimals = unitIndex <= 1 ? 0 : 1;
+  const value = size.toFixed(decimals);
+  return `${decimals === 0 ? value : value.replace(/\.0$/, "")}${
+    units[unitIndex]
+  }`;
+}
 
 // 現在のルートをチェックするメソッド
 function isCurrentRoute(path: string): boolean {
