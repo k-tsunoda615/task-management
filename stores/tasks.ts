@@ -1,5 +1,5 @@
 import { defineStore } from "pinia";
-import type { Todo } from "../types/todo";
+import type { Todo, TodoAsset } from "../types/todo";
 import { useTaskRepository } from "../app/composables/useTaskRepository";
 
 export const useTodoStore = defineStore("todo", {
@@ -112,6 +112,46 @@ export const useTodoStore = defineStore("todo", {
       }
     },
 
+    async uploadTodoAsset(todoId: string, file: File) {
+      try {
+        const repository = useTaskRepository();
+        const asset = await repository.uploadTodoAsset(todoId, file);
+        this._appendAsset(todoId, asset);
+        return asset;
+      } catch (error) {
+        console.error("[useTodoStore] 添付アップロード中にエラー:", error);
+        throw error;
+      }
+    },
+
+    async deleteTodoAsset(asset: TodoAsset) {
+      try {
+        const repository = useTaskRepository();
+        await repository.deleteTodoAsset(asset);
+        this._removeAsset(asset);
+        return true;
+      } catch (error) {
+        console.error("[useTodoStore] 添付削除中にエラー:", error);
+        throw error;
+      }
+    },
+
+    async refreshTodo(todoId: string) {
+      try {
+        const repository = useTaskRepository();
+        const { data, error } = await repository.fetchTodoById(todoId);
+        if (error.value) {
+          throw error.value;
+        }
+        if (data.value) {
+          this._replaceTodo(data.value);
+        }
+      } catch (error) {
+        console.error("[useTodoStore] Todo再取得中にエラー:", error);
+        throw error;
+      }
+    },
+
     setTaskFilter(filter: "all" | "private" | "public") {
       this.taskFilter = filter;
     },
@@ -143,6 +183,41 @@ export const useTodoStore = defineStore("todo", {
       } catch (error) {
         console.error("[updateTodoOrder] 更新エラー:", error);
         throw error;
+      }
+    },
+
+    _appendAsset(todoId: string, asset: TodoAsset) {
+      const index = this.todos.findIndex((t) => t.id === todoId);
+      if (index !== -1 && this.todos[index]) {
+        const target = this.todos[index]!;
+        const updatedAssets = target.assets ? [...target.assets, asset] : [asset];
+        this.todos[index] = {
+          ...target,
+          assets: updatedAssets,
+        };
+      }
+    },
+
+    _removeAsset(asset: TodoAsset) {
+      const index = this.todos.findIndex((t) => t.id === asset.todo_id);
+      if (index !== -1 && this.todos[index]) {
+        const target = this.todos[index]!;
+        const updatedAssets = (target.assets || []).filter(
+          (current) => current.id !== asset.id
+        );
+        this.todos[index] = {
+          ...target,
+          assets: updatedAssets,
+        };
+      }
+    },
+
+    _replaceTodo(todo: Todo) {
+      const index = this.todos.findIndex((t) => t.id === todo.id);
+      if (index !== -1) {
+        this.todos[index] = todo;
+      } else {
+        this.todos = [todo, ...this.todos];
       }
     },
   },

@@ -1,6 +1,22 @@
-import { TASK_STATUS } from "../utils/constants";
-import type { Todo } from "../../types/todo";
+import { TASK_STATUS, TASK_ASSET_BUCKET } from "../utils/constants";
+import type { Todo, TodoAsset } from "../../types/todo";
 import { normalizeTodo, convertTodoForDB } from "../utils/todoUtils";
+
+const TODO_SELECT_BASE =
+  "*, todo_tags:todo_tags(*, tag:tag_id(*))";
+const TODO_SELECT_WITH_ASSETS = `${TODO_SELECT_BASE}, todo_assets:todo_assets(*)`;
+
+function isMissingAssetsRelationship(error: unknown) {
+  if (!error || typeof error !== "object") {
+    return false;
+  }
+
+  const maybeError = error as { message?: string };
+  return (
+    typeof maybeError.message === "string" &&
+    maybeError.message.includes("todo_assets")
+  );
+}
 
 export function useTaskRepository() {
   // Supabaseクライアント
@@ -15,11 +31,28 @@ export function useTaskRepository() {
       "todos",
       async () => {
         try {
-          const { data: todos, error } = await client
+          let {
+            data: todos,
+            error,
+          } = await client
             .from("todos")
-            .select("*, todo_tags:todo_tags(*, tag:tag_id(*))")
+            .select(TODO_SELECT_WITH_ASSETS)
             .order("sort_order", { ascending: true })
             .order("updated_at", { ascending: false });
+
+          if (error && isMissingAssetsRelationship(error)) {
+            console.warn(
+              "[useTaskRepository] 添付ファイル用リレーションが未設定のため、添付を含まないクエリにフォールバックします。"
+            );
+            ({
+              data: todos,
+              error,
+            } = await client
+              .from("todos")
+              .select(TODO_SELECT_BASE)
+              .order("sort_order", { ascending: true })
+              .order("updated_at", { ascending: false }));
+          }
 
           if (error) throw error;
 
@@ -46,11 +79,29 @@ export function useTaskRepository() {
       `todo-${id}`,
       async () => {
         try {
-          const { data, error } = await client
+          let {
+            data,
+            error,
+          } = await client
             .from("todos")
-            .select("*, todo_tags:todo_tags(*, tag:tag_id(*))")
+            .select(TODO_SELECT_WITH_ASSETS)
             .eq("id", id)
             .single();
+
+          if (error && isMissingAssetsRelationship(error)) {
+            console.warn(
+              `[useTaskRepository] 添付ファイル用リレーションが未設定のため、タスク(${id})の単一取得でフォールバックします。`
+            );
+
+            ({
+              data,
+              error,
+            } = await client
+              .from("todos")
+              .select(TODO_SELECT_BASE)
+              .eq("id", id)
+              .single());
+          }
 
           if (error) throw error;
 
@@ -157,6 +208,47 @@ export function useTaskRepository() {
    */
   const deleteTodo = async (id: string) => {
     try {
+      // 添付アセットを先に削除
+      const { data: assets, error: assetsFetchError } = await client
+        .from("todo_assets")
+        .select("storage_path")
+        .eq("todo_id", id);
+
+      if (assetsFetchError) {
+        console.warn(
+          `[useTaskRepository] Todo ID:${id} の添付取得でエラー:`,
+          assetsFetchError
+        );
+      }
+
+      if (assets && assets.length > 0) {
+        const storagePaths = assets
+          .map((asset) => asset.storage_path)
+          .filter((path): path is string => Boolean(path));
+        if (storagePaths.length > 0) {
+          const { error: removeError } = await client.storage
+            .from(TASK_ASSET_BUCKET)
+            .remove(storagePaths);
+          if (removeError) {
+            console.warn(
+              `[useTaskRepository] Todo ID:${id} の添付削除でエラー:`,
+              removeError
+            );
+          }
+        }
+
+        const { error: assetDeleteError } = await client
+          .from("todo_assets")
+          .delete()
+          .eq("todo_id", id);
+        if (assetDeleteError) {
+          console.warn(
+            `[useTaskRepository] Todo ID:${id} の添付レコード削除でエラー:`,
+            assetDeleteError
+          );
+        }
+      }
+
       // 関連するtodo_tagsレコードを先に削除
       const { error: tagsError } = await client
         .from("todo_tags")
@@ -219,6 +311,121 @@ export function useTaskRepository() {
     }
   };
 
+  /**
+   * Todoに添付ファイルをアップロードする
+   */
+  const uploadTodoAsset = async (todoId: string, file: File) => {
+    if (!todoId) throw new Error("Todo IDが指定されていません");
+    if (!file) throw new Error("アップロードするファイルが指定されていません");
+
+    const currentUserId = user.value?.id;
+    if (!currentUserId) throw new Error("ユーザー情報が取得できませんでした");
+
+    const storage = client.storage.from(TASK_ASSET_BUCKET);
+    const uniqueId = typeof crypto !== "undefined" && crypto.randomUUID
+      ? crypto.randomUUID()
+      : `${Date.now()}-${Math.random().toString(16).slice(2)}`;
+    const sanitizedFileName = file.name.replace(/[^\w.\-()]/g, "_");
+    const storagePath = `${currentUserId}/${todoId}/${uniqueId}-${sanitizedFileName}`;
+
+    const { error: uploadError } = await storage.upload(storagePath, file, {
+      contentType: file.type || "application/octet-stream",
+      cacheControl: "3600",
+      upsert: false,
+    });
+
+    if (uploadError) {
+      console.error("[useTaskRepository] 添付アップロードに失敗:", uploadError);
+      throw uploadError;
+    }
+
+    const { data: insertedAsset, error: insertError } = await client
+      .from("todo_assets")
+      .insert({
+        todo_id: todoId,
+        file_name: file.name,
+        storage_path: storagePath,
+        mime_type: file.type,
+        size: file.size,
+        created_by: currentUserId,
+      })
+      .select()
+      .single();
+
+    if (insertError) {
+      console.error(
+        "[useTaskRepository] 添付メタデータ挿入に失敗:",
+        insertError
+      );
+      await storage.remove([storagePath]);
+      throw insertError;
+    }
+
+    await refreshCookie("todos");
+    await refreshCookie(`todo-${todoId}`);
+
+    return insertedAsset as TodoAsset;
+  };
+
+  /**
+   * 添付ファイルのサイン付きURLを生成する
+   */
+  const getTodoAssetUrl = async (asset: TodoAsset, expiresIn = 60) => {
+    const storage = client.storage.from(TASK_ASSET_BUCKET);
+    const { data, error } = await storage.createSignedUrl(
+      asset.storage_path,
+      expiresIn
+    );
+
+    if (error) {
+      console.error(
+        "[useTaskRepository] 添付ファイルURL生成に失敗:",
+        error
+      );
+      throw error;
+    }
+
+    return data.signedUrl;
+  };
+
+  /**
+   * 添付ファイルを削除する
+   */
+  const deleteTodoAsset = async (asset: TodoAsset) => {
+    if (!asset?.storage_path) {
+      throw new Error("削除対象の添付ファイルが不正です");
+    }
+
+    const storage = client.storage.from(TASK_ASSET_BUCKET);
+
+    const { error: removeError } = await storage.remove([asset.storage_path]);
+    if (removeError) {
+      console.error(
+        "[useTaskRepository] 添付ファイル削除に失敗:",
+        removeError
+      );
+      throw removeError;
+    }
+
+    const { error: deleteError } = await client
+      .from("todo_assets")
+      .delete()
+      .eq("id", asset.id);
+
+    if (deleteError) {
+      console.error(
+        "[useTaskRepository] 添付メタデータ削除に失敗:",
+        deleteError
+      );
+      throw deleteError;
+    }
+
+    await refreshCookie("todos");
+    await refreshCookie(`todo-${asset.todo_id}`);
+
+    return true;
+  };
+
   return {
     fetchAllTodos,
     fetchTodoById,
@@ -226,5 +433,8 @@ export function useTaskRepository() {
     updateTodo,
     deleteTodo,
     updateTodoOrder,
+    uploadTodoAsset,
+    deleteTodoAsset,
+    getTodoAssetUrl,
   };
 }
