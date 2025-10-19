@@ -193,6 +193,35 @@
                 </span>
               </UButton>
             </UTooltip>
+
+            <!-- 管理ページ if(isAdmin)はあとで実装 -->
+            <UTooltip
+              :text="!isOpen ? '管理ダッシュボード' : ''"
+              :ui="{ popper: { strategy: 'fixed' } }"
+              class="w-full"
+              v-if="isAdmin"
+            >
+              <UButton
+                :block="isOpen || isMobile"
+                :color="isCurrentRoute('/admin') ? 'primary' : 'gray'"
+                :variant="isCurrentRoute('/admin') ? 'soft' : 'ghost'"
+                @click="navigateTo('/admin')"
+                class="justify-start hover:bg-gray-100"
+              >
+                <UIcon
+                  name="i-heroicons-shield-check"
+                  class="w-5 h-5"
+                  :class="
+                    isCurrentRoute('/admin')
+                      ? 'text-primary-500'
+                      : 'text-gray-500'
+                  "
+                />
+                <span v-if="isOpen || isMobile" class="ml-2">
+                  管理ダッシュボード
+                </span>
+              </UButton>
+            </UTooltip>
           </div>
         </div>
 
@@ -472,6 +501,7 @@ function formatBytes(bytes: number) {
   if (!bytes || bytes <= 0) {
     return "0MB";
   }
+
   const units = ["B", "KB", "MB", "GB"];
   let size = bytes;
   let unitIndex = 0;
@@ -483,9 +513,7 @@ function formatBytes(bytes: number) {
 
   const decimals = unitIndex <= 1 ? 0 : 1;
   const value = size.toFixed(decimals);
-  return `${decimals === 0 ? value : value.replace(/\.0$/, "")}${
-    units[unitIndex]
-  }`;
+  return `${decimals === 0 ? value : value.replace(/\.0$/, "")}${units[unitIndex]}`;
 }
 
 // 現在のルートをチェックするメソッド
