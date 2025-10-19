@@ -20,7 +20,7 @@
       </template>
 
       <p class="text-sm text-gray-500">
-        Supabase の `profiles` テーブルから取得したユーザー情報を表示します。
+        Supabase の `admin_user_metrics` ビューから取得した利用状況サマリーを表示します。
       </p>
 
       <UAlert
@@ -37,9 +37,8 @@
             <tr>
               <th class="px-4 py-3 text-left font-medium text-gray-500">表示名</th>
               <th class="px-4 py-3 text-left font-medium text-gray-500">メール</th>
-              <th class="px-4 py-3 text-left font-medium text-gray-500">区分</th>
-              <th class="px-4 py-3 text-left font-medium text-gray-500">作成日</th>
-              <th class="px-4 py-3 text-left font-medium text-gray-500">最終ログイン</th>
+              <th class="px-4 py-3 text-left font-medium text-gray-500">ToDo件数</th>
+              <th class="px-4 py-3 text-left font-medium text-gray-500">使用ストレージ</th>
             </tr>
           </thead>
           <tbody class="divide-y divide-gray-100 bg-white">
@@ -68,18 +67,11 @@
               <td class="px-4 py-3 text-gray-700">
                 {{ user.email ?? "未設定" }}
               </td>
-              <td class="px-4 py-3">
-                <UBadge
-                  :label="user.accountType === 'anonymous' ? 'ゲスト' : '登録済み'"
-                  :color="user.accountType === 'anonymous' ? 'amber' : 'gray'"
-                  variant="subtle"
-                />
+              <td class="px-4 py-3 text-gray-700">
+                {{ user.todoCount.toLocaleString() }}件
               </td>
               <td class="px-4 py-3 text-gray-700">
-                {{ formatDate(user.createdAt) }}
-              </td>
-              <td class="px-4 py-3 text-gray-700">
-                {{ formatDate(user.lastLoginAt) }}
+                {{ formatStorage(user.storageBytes) }}
               </td>
             </tr>
           </tbody>
@@ -95,7 +87,6 @@
 
 <script setup lang="ts">
 import { computed } from "vue";
-import dayjs from "dayjs";
 
 definePageMeta({
   layout: "board",
@@ -115,78 +106,30 @@ type AdminUserSummary = {
   id: string;
   email: string | null;
   displayName: string;
-  accountType: "anonymous" | "registered";
-  createdAt: string | null;
-  lastLoginAt: string | null;
+  todoCount: number;
+  storageBytes: number;
 };
 
-type ProfileRow = {
-  id?: string | number;
-  email?: string | null;
-  display_name?: string | null;
-  username?: string | null;
-  full_name?: string | null;
-  account_type?: string | null;
-  is_anonymous?: boolean | null;
-  created_at?: string | null;
-  inserted_at?: string | null;
-  updated_at?: string | null;
-  last_login_at?: string | null;
-};
+const { fetchAdminMetrics } = useAdminMetricsRepository();
+const { data, pending, error, refresh } = await fetchAdminMetrics();
 
-const { fetchProfiles } = useProfileRepository();
-const { data, pending, error, refresh } = await fetchProfiles();
+const users = computed<AdminUserSummary[]>(() => data.value ?? []);
 
-const users = computed<AdminUserSummary[]>(() => {
-  const rows = data.value as ProfileRow[] | undefined;
-  if (!rows) {
-    return [];
+const formatStorage = (bytes: number) => {
+  if (!bytes || bytes <= 0) {
+    return "0 MB";
   }
 
-  return rows.map((profile) => {
-    const fallbackId =
-      typeof profile.id !== "undefined"
-        ? String(profile.id)
-        : globalThis.crypto?.randomUUID?.() ?? `profile-${Math.random().toString(36).slice(2, 10)}`;
+  const units = ["B", "KB", "MB", "GB", "TB"];
+  let size = bytes;
+  let unitIndex = 0;
 
-    return {
-      id: fallbackId,
-      email: typeof profile.email === "string" ? profile.email : null,
-      displayName:
-        (typeof profile.display_name === "string" && profile.display_name) ||
-        (typeof profile.username === "string" && profile.username) ||
-        (typeof profile.full_name === "string" && profile.full_name) ||
-        (typeof profile.email === "string" && profile.email) ||
-        "未設定",
-      accountType:
-        typeof profile.account_type === "string"
-          ? profile.account_type === "anonymous"
-            ? "anonymous"
-            : "registered"
-          : profile.is_anonymous === true
-            ? "anonymous"
-            : "registered",
-      createdAt:
-        typeof profile.created_at === "string"
-          ? profile.created_at
-          : typeof profile.inserted_at === "string"
-            ? profile.inserted_at
-            : null,
-      lastLoginAt:
-        typeof profile.last_login_at === "string"
-          ? profile.last_login_at
-          : typeof profile.updated_at === "string"
-            ? profile.updated_at
-            : null,
-    } satisfies AdminUserSummary;
-  });
-});
-
-const formatDate = (value: string | null) => {
-  if (!value) {
-    return "未記録";
+  while (size >= 1024 && unitIndex < units.length - 1) {
+    size /= 1024;
+    unitIndex += 1;
   }
-  const parsed = dayjs(value);
-  return parsed.isValid() ? parsed.format("YYYY/MM/DD HH:mm") : "未記録";
+
+  const decimals = unitIndex <= 1 ? 0 : 1;
+  return `${size.toFixed(decimals)} ${units[unitIndex]}`;
 };
 </script>
