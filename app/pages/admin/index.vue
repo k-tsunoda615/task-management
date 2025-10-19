@@ -20,74 +20,107 @@
       </template>
 
       <p class="text-sm text-gray-500">
-        Supabase の `admin_user_metrics` ビューから取得した利用状況サマリーを表示します。
+        Supabase の `admin_user_metrics`
+        ビューから取得した利用状況サマリーを表示
       </p>
 
+      <div
+        v-if="adminCheckPending"
+        class="flex items-center justify-center gap-3 py-6 text-gray-500"
+      >
+        <USpinner size="sm" />
+        権限を確認しています…
+      </div>
+
       <UAlert
-        v-if="error"
+        v-else-if="adminCheckError"
         color="red"
         variant="soft"
-        title="データ取得に失敗しました"
-        :description="error.message"
+        title="権限確認に失敗しました"
+        :description="adminCheckError"
       />
 
-      <div class="overflow-x-auto">
-        <table class="min-w-full divide-y divide-gray-200 text-sm">
-          <thead class="bg-gray-50">
-            <tr>
-              <th class="px-4 py-3 text-left font-medium text-gray-500">表示名</th>
-              <th class="px-4 py-3 text-left font-medium text-gray-500">メール</th>
-              <th class="px-4 py-3 text-left font-medium text-gray-500">ToDo件数</th>
-              <th class="px-4 py-3 text-left font-medium text-gray-500">使用ストレージ</th>
-            </tr>
-          </thead>
-          <tbody class="divide-y divide-gray-100 bg-white">
-            <tr v-if="pending">
-              <td colspan="5" class="px-4 py-6">
-                <div class="flex items-center justify-center gap-3 text-gray-500">
-                  <USpinner size="sm" />
-                  読み込み中です…
-                </div>
-              </td>
-            </tr>
-            <tr v-else-if="users.length === 0">
-              <td colspan="5" class="px-4 py-6 text-center text-gray-500">
-                表示できるユーザーがありません。
-              </td>
-            </tr>
-            <tr
-              v-else
-              v-for="user in users"
-              :key="user.id"
-              class="transition hover:bg-gray-50"
-            >
-              <td class="px-4 py-3 text-gray-900 font-medium">
-                {{ user.displayName }}
-              </td>
-              <td class="px-4 py-3 text-gray-700">
-                {{ user.email ?? "未設定" }}
-              </td>
-              <td class="px-4 py-3 text-gray-700">
-                {{ user.todoCount.toLocaleString() }}件
-              </td>
-              <td class="px-4 py-3 text-gray-700">
-                {{ formatStorage(user.storageBytes) }}
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
+      <UAlert
+        v-else-if="!isAdmin"
+        color="amber"
+        variant="soft"
+        title="管理者専用のページです"
+        description="権限が確認できなかったため、内容は表示されませんでした。"
+      />
 
-      <div class="text-xs text-gray-500">
-        表示件数: {{ users.length }} 件
-      </div>
+      <template v-else>
+        <UAlert
+          v-if="error"
+          color="red"
+          variant="soft"
+          title="データ取得に失敗しました"
+          :description="error.message"
+        />
+
+        <div class="overflow-x-auto">
+          <table class="min-w-full divide-y divide-gray-200 text-sm">
+            <thead class="bg-gray-50">
+              <tr>
+                <th class="px-4 py-3 text-left font-medium text-gray-500">
+                  表示名
+                </th>
+                <th class="px-4 py-3 text-left font-medium text-gray-500">
+                  メール
+                </th>
+                <th class="px-4 py-3 text-left font-medium text-gray-500">
+                  ToDo件数
+                </th>
+                <th class="px-4 py-3 text-left font-medium text-gray-500">
+                  使用ストレージ
+                </th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-100 bg-white">
+              <tr v-if="pending">
+                <td colspan="5" class="px-4 py-6">
+                  <div
+                    class="flex items-center justify-center gap-3 text-gray-500"
+                  >
+                    <USpinner size="sm" />
+                    読み込み中です…
+                  </div>
+                </td>
+              </tr>
+              <tr v-else-if="users.length === 0">
+                <td colspan="5" class="px-4 py-6 text-center text-gray-500">
+                  表示できるユーザーがありません。
+                </td>
+              </tr>
+              <tr
+                v-else
+                v-for="user in users"
+                :key="user.id"
+                class="transition hover:bg-gray-50"
+              >
+                <td class="px-4 py-3 text-gray-900 font-medium">
+                  {{ user.displayName }}
+                </td>
+                <td class="px-4 py-3 text-gray-700">
+                  {{ user.email ?? "未設定" }}
+                </td>
+                <td class="px-4 py-3 text-gray-700">
+                  {{ user.todoCount.toLocaleString() }}件
+                </td>
+                <td class="px-4 py-3 text-gray-700">
+                  {{ formatStorage(user.storageBytes) }}
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="text-xs text-gray-500">表示件数: {{ users.length }} 件</div>
+      </template>
     </UCard>
   </div>
 </template>
 
 <script setup lang="ts">
-import { computed } from "vue";
-
 definePageMeta({
   layout: "board",
 });
@@ -110,10 +143,49 @@ type AdminUserSummary = {
   storageBytes: number;
 };
 
-const { fetchAdminMetrics } = useAdminMetricsRepository();
-const { data, pending, error, refresh } = await fetchAdminMetrics();
+const usersData = ref<AdminUserSummary[] | null>(null);
+const pending = ref(false);
+const error = ref<Error | null>(null);
+const adminCheckError = ref<string | null>(null);
+const isAdmin = ref(false);
 
-const users = computed<AdminUserSummary[]>(() => data.value ?? []);
+const refresh = async () => {
+  pending.value = true;
+  error.value = null;
+  adminCheckError.value = null;
+
+  try {
+    const { data, error: fetchError } = await useFetch<AdminUserSummary[]>(
+      "/api/admin/users",
+      {
+        server: false,
+        key: "admin-user-metrics",
+      }
+    );
+
+    if (fetchError.value) {
+      throw fetchError.value;
+    }
+
+    usersData.value = data.value ?? [];
+    isAdmin.value = true;
+  } catch (err) {
+    if (err instanceof Error && err.message === "Forbidden") {
+      isAdmin.value = false;
+      adminCheckError.value = null;
+      usersData.value = [];
+    } else {
+      error.value = err as Error;
+      adminCheckError.value = err instanceof Error ? err.message : String(err);
+    }
+  } finally {
+    pending.value = false;
+  }
+};
+
+await refresh();
+
+const users = computed<AdminUserSummary[]>(() => usersData.value ?? []);
 
 const formatStorage = (bytes: number) => {
   if (!bytes || bytes <= 0) {

@@ -194,11 +194,12 @@
               </UButton>
             </UTooltip>
 
-            <!-- 管理ページ -->
+            <!-- 管理ページ if(isAdmin)はあとで実装 -->
             <UTooltip
               :text="!isOpen ? '管理ダッシュボード' : ''"
               :ui="{ popper: { strategy: 'fixed' } }"
               class="w-full"
+              v-if="isAdmin"
             >
               <UButton
                 :block="isOpen || isMobile"
@@ -217,7 +218,7 @@
                   "
                 />
                 <span v-if="isOpen || isMobile" class="ml-2">
-                  管理ページ
+                  管理ダッシュボード
                 </span>
               </UButton>
             </UTooltip>
