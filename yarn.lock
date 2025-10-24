@@ -343,33 +343,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@deno/eszip@npm:^0.84.0":
-  version: 0.84.0
-  resolution: "@deno/eszip@npm:0.84.0"
-  dependencies:
-    "@deno/shim-deno": "npm:~0.18.0"
-    undici: "npm:^6.0.0"
-  checksum: 10c0/70636a6c61bbe452e96e7418b230fab9f6070766488fca1a3b0cf030b355913eb6f1c2120750f0c9f2f1d96dec5c8410662642736170efa1cc0838fa2af11f3b
-  languageName: node
-  linkType: hard
-
-"@deno/shim-deno-test@npm:^0.5.0":
-  version: 0.5.0
-  resolution: "@deno/shim-deno-test@npm:0.5.0"
-  checksum: 10c0/6d8b0739056468f59a4f0238ffd6eaef8b2aa0aced6f3070c9193c9bdba9f42a29a0a9c0f49f75cf11f6cf122131a3b9d9d6280c33c968d962b61fc037e49669
-  languageName: node
-  linkType: hard
-
-"@deno/shim-deno@npm:~0.18.0":
-  version: 0.18.2
-  resolution: "@deno/shim-deno@npm:0.18.2"
-  dependencies:
-    "@deno/shim-deno-test": "npm:^0.5.0"
-    which: "npm:^4.0.0"
-  checksum: 10c0/4a040c068e1200556f0a4d51dd6d11343a9c37d2e35f89034b114728b298275ff653a0477a7e2335bedbae7b162da05ead3087a884578568e879b9a59d0c2449
-  languageName: node
-  linkType: hard
-
 "@emnapi/core@npm:^1.4.3, @emnapi/core@npm:^1.5.0":
   version: 1.5.0
   resolution: "@emnapi/core@npm:1.5.0"
@@ -913,9 +886,25 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@modelcontextprotocol/sdk@npm:^1.11.0":
-  version: 1.16.0
-  resolution: "@modelcontextprotocol/sdk@npm:1.16.0"
+"@mjackson/headers@npm:^0.11.1":
+  version: 0.11.1
+  resolution: "@mjackson/headers@npm:0.11.1"
+  checksum: 10c0/fd462e5b41221a7fd56020c8bb19f47ee93f78580f78e4dedda134f8fe0fdb18a77754144b7bb50888f3e697f32ab73ce25a26a96554359804920db30ac12047
+  languageName: node
+  linkType: hard
+
+"@mjackson/multipart-parser@npm:^0.10.1":
+  version: 0.10.1
+  resolution: "@mjackson/multipart-parser@npm:0.10.1"
+  dependencies:
+    "@mjackson/headers": "npm:^0.11.1"
+  checksum: 10c0/cf693915c85a565c14dbf06e70102ee016b4efb726856d558df7664f27591e4a8de72e443ee8f2cda2977e2de3b48b080be8a907def777ab5692dd2cee9812f2
+  languageName: node
+  linkType: hard
+
+"@modelcontextprotocol/sdk@npm:^1.18.0":
+  version: 1.20.2
+  resolution: "@modelcontextprotocol/sdk@npm:1.20.2"
   dependencies:
     ajv: "npm:^6.12.6"
     content-type: "npm:^1.0.5"
@@ -929,7 +918,7 @@ __metadata:
     raw-body: "npm:^3.0.0"
     zod: "npm:^3.23.8"
     zod-to-json-schema: "npm:^3.24.1"
-  checksum: 10c0/fe4dc8038c24e1f2d747926db6ab7fac09458a1b64d8baf9eb7a4de18b351806590a04f5ffe09b25bb874b4d56927618128875fd48125fff37c583d1f0ba66ab
+  checksum: 10c0/5e195f207fbf6bc5765df2a2a3b20711ab9dac4ccddb5dbe7e0d6e98bcd9f5b32fa441589e41da78373d3713ada213442dc1983df2dc5946a1ebc91eaf9533f7
   languageName: node
   linkType: hard
 
@@ -2382,6 +2371,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@supabase/auth-js@npm:2.76.1":
+  version: 2.76.1
+  resolution: "@supabase/auth-js@npm:2.76.1"
+  dependencies:
+    "@supabase/node-fetch": "npm:2.6.15"
+    tslib: "npm:2.8.1"
+  checksum: 10c0/5bbb4f0f3107a2df4514dd7ebab86bc42b8d904ee235721c235da7166786eee68ccb6e0ea2c2946e7e3acccb48edb59be122c23a987f2f2c1112cc1e77bf6932
+  languageName: node
+  linkType: hard
+
 "@supabase/functions-js@npm:2.4.5":
   version: 2.4.5
   resolution: "@supabase/functions-js@npm:2.4.5"
@@ -2391,31 +2390,41 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@supabase/mcp-server-supabase@npm:^0.4.0":
-  version: 0.4.5
-  resolution: "@supabase/mcp-server-supabase@npm:0.4.5"
+"@supabase/functions-js@npm:2.76.1":
+  version: 2.76.1
+  resolution: "@supabase/functions-js@npm:2.76.1"
   dependencies:
-    "@deno/eszip": "npm:^0.84.0"
-    "@modelcontextprotocol/sdk": "npm:^1.11.0"
-    "@supabase/mcp-utils": "npm:0.2.1"
+    "@supabase/node-fetch": "npm:2.6.15"
+    tslib: "npm:2.8.1"
+  checksum: 10c0/147dd4f0415fc89d391bc2d2f39b74a3a9972a6f103462903538cf4cfd7050a6d347d3b2b1dce9e5d111ec829ac9f77d887694ad1fff3006eaa9452e36505c8a
+  languageName: node
+  linkType: hard
+
+"@supabase/mcp-server-supabase@npm:^0.5.7":
+  version: 0.5.7
+  resolution: "@supabase/mcp-server-supabase@npm:0.5.7"
+  dependencies:
+    "@mjackson/multipart-parser": "npm:^0.10.1"
+    "@modelcontextprotocol/sdk": "npm:^1.18.0"
+    "@supabase/mcp-utils": "npm:^0.2.3"
     common-tags: "npm:^1.8.2"
     graphql: "npm:^16.11.0"
     openapi-fetch: "npm:^0.13.5"
     zod: "npm:^3.24.1"
   bin:
     mcp-server-supabase: dist/transports/stdio.js
-  checksum: 10c0/62e5bd032f17f88500455428c08b6960c2e86b09c69edf4bc929cd54d4d166180393e63121c79db1b4a5d17cf4182d635a3c8f685ba5aed0b1f884a96ad82081
+  checksum: 10c0/be9621640c50597da3d14225d6c55460223c3c513c826adc83ac37d00b609a7fdd0625056a44ad92090ae8e86e2ed9e6fa33f686e220b6a1706b6355e1b4d57e
   languageName: node
   linkType: hard
 
-"@supabase/mcp-utils@npm:0.2.1":
-  version: 0.2.1
-  resolution: "@supabase/mcp-utils@npm:0.2.1"
+"@supabase/mcp-utils@npm:^0.2.3":
+  version: 0.2.3
+  resolution: "@supabase/mcp-utils@npm:0.2.3"
   dependencies:
-    "@modelcontextprotocol/sdk": "npm:^1.11.0"
+    "@modelcontextprotocol/sdk": "npm:^1.18.0"
     zod: "npm:^3.24.1"
     zod-to-json-schema: "npm:^3.24.1"
-  checksum: 10c0/4a08f22d89b708b925b7f5a768a744cdbbb03df7ffbfaf7ac69d707feb954131b1c17b444aa3dfd04708e6e2cd7ccccd67c04311b4e038e014b928a07500bd01
+  checksum: 10c0/ce87858e6eb70bcb63b87d24e4cb43ca43d172e42e80a12b882a8ef45bcab8bf3f3beb030997ad3dc504c31fe7e33b9be3fd0a0eb2ff4701cee81b52e48c80a5
   languageName: node
   linkType: hard
 
@@ -2437,6 +2446,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@supabase/postgrest-js@npm:2.76.1":
+  version: 2.76.1
+  resolution: "@supabase/postgrest-js@npm:2.76.1"
+  dependencies:
+    "@supabase/node-fetch": "npm:2.6.15"
+    tslib: "npm:2.8.1"
+  checksum: 10c0/8bf55c13ee3e91def8b7677332e7c06edc107d828ab77da8507b50b71ed487a4ac6437620540218d87d3901bcf51c7ddebe29b25fd7751d6dfed87c5560838c6
+  languageName: node
+  linkType: hard
+
 "@supabase/realtime-js@npm:2.11.15":
   version: 2.11.15
   resolution: "@supabase/realtime-js@npm:2.11.15"
@@ -2447,6 +2466,19 @@ __metadata:
     isows: "npm:^1.0.7"
     ws: "npm:^8.18.2"
   checksum: 10c0/bcb623db5cda0ddd8a30231ced3cdb09398a55a210aedfdc2b351355f1db97a3309504f27966098d393e5c45b20e239630c38fec7df2c9636f7c0bf1e26b1dc5
+  languageName: node
+  linkType: hard
+
+"@supabase/realtime-js@npm:2.76.1":
+  version: 2.76.1
+  resolution: "@supabase/realtime-js@npm:2.76.1"
+  dependencies:
+    "@supabase/node-fetch": "npm:2.6.15"
+    "@types/phoenix": "npm:^1.6.6"
+    "@types/ws": "npm:^8.18.1"
+    tslib: "npm:2.8.1"
+    ws: "npm:^8.18.2"
+  checksum: 10c0/c4ca6f3090c6f6fa044a1b23c581fcb5920a61871859e12b1df49b492bc92168c369f1dff9cbbff9f0b52130b50d21534ac50bca61413504b4f1f64de2baa4c5
   languageName: node
   linkType: hard
 
@@ -2470,7 +2502,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@supabase/supabase-js@npm:^2.49.4, @supabase/supabase-js@npm:^2.50.2":
+"@supabase/storage-js@npm:2.76.1":
+  version: 2.76.1
+  resolution: "@supabase/storage-js@npm:2.76.1"
+  dependencies:
+    "@supabase/node-fetch": "npm:2.6.15"
+    tslib: "npm:2.8.1"
+  checksum: 10c0/6d64a72f526f86431dcb0c295d8dcffd709e9c50e9f10590631b79bb2ce4b2ad461e44540d5fe7f230434d9b37589d4ecb2859e49ee89de6d03c3860d506ec23
+  languageName: node
+  linkType: hard
+
+"@supabase/supabase-js@npm:^2.50.2":
   version: 2.52.0
   resolution: "@supabase/supabase-js@npm:2.52.0"
   dependencies:
@@ -2481,6 +2523,20 @@ __metadata:
     "@supabase/realtime-js": "npm:2.11.15"
     "@supabase/storage-js": "npm:2.7.1"
   checksum: 10c0/5cd9e999afee018fd97dfc8e8a8338f67c3130f27fb8489df5ee4dede2bea42e3374de00dbea18880d68d94bdb11b15943e99935c41b1c71cdb5b07cdae194e5
+  languageName: node
+  linkType: hard
+
+"@supabase/supabase-js@npm:^2.76.1":
+  version: 2.76.1
+  resolution: "@supabase/supabase-js@npm:2.76.1"
+  dependencies:
+    "@supabase/auth-js": "npm:2.76.1"
+    "@supabase/functions-js": "npm:2.76.1"
+    "@supabase/node-fetch": "npm:2.6.15"
+    "@supabase/postgrest-js": "npm:2.76.1"
+    "@supabase/realtime-js": "npm:2.76.1"
+    "@supabase/storage-js": "npm:2.76.1"
+  checksum: 10c0/7cf5783b01d064feae175b92df35bb45dd05f0bf2df9f6027dbfd436e9b7c7f969e3b5236e414e68bb79eda42f80631c77373ad6811c1526f8c40ecab0faf306
   languageName: node
   linkType: hard
 
@@ -11103,8 +11159,8 @@ __metadata:
     "@nuxtjs/tailwindcss": "npm:^6.11.4"
     "@pinia/nuxt": "npm:^0.11.2"
     "@playwright/test": "npm:^1.54.1"
-    "@supabase/mcp-server-supabase": "npm:^0.4.0"
-    "@supabase/supabase-js": "npm:^2.49.4"
+    "@supabase/mcp-server-supabase": "npm:^0.5.7"
+    "@supabase/supabase-js": "npm:^2.76.1"
     "@tailwindcss/typography": "npm:^0.5.16"
     "@types/dompurify": "npm:^3.0.5"
     "@types/marked": "npm:^5.0.2"
@@ -11265,7 +11321,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"tslib@npm:^2.4.0":
+"tslib@npm:2.8.1, tslib@npm:^2.4.0":
   version: 2.8.1
   resolution: "tslib@npm:2.8.1"
   checksum: 10c0/9c4759110a19c53f992d9aae23aac5ced636e99887b51b9e61def52611732872ff7668757d4e4c61f19691e36f4da981cd9485e869b4a7408d689f6bf1f14e62
@@ -11466,13 +11522,6 @@ __metadata:
   version: 7.8.0
   resolution: "undici-types@npm:7.8.0"
   checksum: 10c0/9d9d246d1dc32f318d46116efe3cfca5a72d4f16828febc1918d94e58f6ffcf39c158aa28bf5b4fc52f410446bc7858f35151367bd7a49f21746cab6497b709b
-  languageName: node
-  linkType: hard
-
-"undici@npm:^6.0.0":
-  version: 6.21.3
-  resolution: "undici@npm:6.21.3"
-  checksum: 10c0/294da109853fad7a6ef5a172ad0ca3fb3f1f60cf34703d062a5ec967daf69ad8c03b52e6d536c5cba3bb65615769bf08e5b30798915cbccdddaca01045173dda
   languageName: node
   linkType: hard
 
@@ -12233,17 +12282,6 @@ __metadata:
   bin:
     node-which: ./bin/node-which
   checksum: 10c0/66522872a768b60c2a65a57e8ad184e5372f5b6a9ca6d5f033d4b0dc98aff63995655a7503b9c0a2598936f532120e81dd8cc155e2e92ed662a2b9377cc4374f
-  languageName: node
-  linkType: hard
-
-"which@npm:^4.0.0":
-  version: 4.0.0
-  resolution: "which@npm:4.0.0"
-  dependencies:
-    isexe: "npm:^3.1.1"
-  bin:
-    node-which: bin/which.js
-  checksum: 10c0/449fa5c44ed120ccecfe18c433296a4978a7583bf2391c50abce13f76878d2476defde04d0f79db8165bdf432853c1f8389d0485ca6e8ebce3bbcded513d5e6a
   languageName: node
   linkType: hard
 
