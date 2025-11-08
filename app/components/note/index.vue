@@ -149,7 +149,7 @@
       </div>
       <div
         v-else
-        class="mt-4 bg-gray-50 p-6 rounded-lg overflow-auto h-[500px]"
+        class="mt-4 bg-white border border-green-200 p-6 rounded-lg overflow-auto h-[500px]"
       >
         <div class="prose prose-sm max-w-none" v-html="renderedMarkdown"></div>
       </div>
@@ -438,111 +438,194 @@ onBeforeUnmount(() => {
 
 :deep(.prose) {
   max-width: 100%;
-  color: #374151;
+  margin: 0 auto;
+  color: #657b83;
+  font-family:
+    "Inter",
+    "Hiragino Sans",
+    "Noto Sans JP",
+    system-ui,
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    sans-serif;
+  line-height: 1.8;
+  letter-spacing: 0.005em;
 }
 
 :deep(.prose > p) {
-  margin-top: 0.5em;
-  margin-bottom: 0 !important;
-  line-height: 1.3;
+  margin-top: 1.1em;
+  margin-bottom: 1.3em;
+  color: #586e75;
+}
+
+:deep(.prose h1),
+:deep(.prose h2),
+:deep(.prose h3) {
+  font-family:
+    "Inter",
+    "Hiragino Sans",
+    "Noto Sans JP",
+    system-ui,
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    sans-serif;
+  font-weight: 700;
+  color: #002b36;
+  line-height: 1.25;
+  letter-spacing: 0.02em;
+}
+
+:deep(.prose h1) {
+  font-size: 24px;
+  margin-top: 1.6em;
+  margin-bottom: 1.2em;
+  font-family:
+    "Hiragino Mincho ProN", "YuMincho", "Noto Serif JP", "Times New Roman",
+    serif;
+  letter-spacing: 0.03em;
+}
+
+:deep(.prose h2) {
+  font-size: 22px;
+  margin-top: 2.2em;
+  margin-bottom: 0.95em;
+  padding-left: 0.65em;
+  border-left: 3px solid rgba(147, 161, 161, 0.6);
+}
+
+:deep(.prose h3) {
+  font-size: 18px;
+  margin-top: 1.8em;
+  margin-bottom: 0.7em;
+  color: #073642;
 }
 
 :deep(.prose ul),
 :deep(.prose ol) {
-  padding-left: 1.5rem;
+  padding-left: 1.75rem;
+  margin: 1.1em 0 1.5em;
 }
 
 :deep(.prose ul > li),
 :deep(.prose ol > li) {
-  padding-left: 1.25em;
-  margin-top: 0.125em;
-  margin-bottom: 0 !important;
-  line-height: 1.3;
+  padding-left: 0.5em;
+  margin-bottom: 0.45em;
+  color: #586e75;
 }
 
-:deep(.prose h1) {
-  font-size: 18px !important;
-  margin-top: 0.5em;
-  margin-bottom: 0 !important;
-  line-height: 1.3;
-  color: #374151;
+:deep(.prose ul > li::marker) {
+  color: #586e75;
 }
 
-:deep(.prose h2) {
-  font-size: 16px !important;
-  margin-top: 0.5em !important;
-  margin-bottom: 0 !important;
-  line-height: 1.3;
-  color: #374151;
-}
-
-:deep(.prose h3) {
-  font-size: 14px !important;
-  margin-top: 0.5em;
-  margin-bottom: 0 !important;
-  line-height: 1.3;
-  color: #374151;
+:deep(.prose ol > li::marker) {
+  color: #586e75;
+  font-weight: 600;
 }
 
 :deep(.prose code) {
-  color: #6b7280;
-  background-color: #f3f4f6;
-  padding: 0.15em 0.3em;
-  border-radius: 0.25em;
-  font-size: 0.875em;
+  color: #cb4b16;
+  background: #eee8d5;
+  padding: 0.2em 0.5em;
+  border-radius: 0.4rem;
+  font-size: 0.92em;
+  font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
 }
 
 :deep(.prose > pre) {
-  background-color: #f3f4f6;
-  padding: 0.75em;
-  border-radius: 0.375em;
-  margin-top: 0.5em;
-  margin-bottom: 0 !important;
+  background: #002b36;
+  border-radius: 0.9rem;
+  padding: 1.35rem;
+  margin: 1.6rem -0.5rem;
+  box-shadow: 0 18px 40px rgba(0, 43, 54, 0.35);
+  color: #fdf6e3;
+  font-size: 0.95rem;
+  border: 1px solid rgba(147, 161, 161, 0.25);
 }
 
 :deep(.prose pre code) {
   background-color: transparent;
   padding: 0;
-  color: #374151;
+  color: inherit;
 }
 
 :deep(.prose blockquote) {
-  border-left: 4px solid #e2e8f0;
-  padding-left: 0.75em;
-  font-style: normal;
-  color: #6b7280;
-  line-height: 1.5;
-  margin-top: 0.5em;
-  margin-bottom: 0 !important;
+  background: #fef3c7;
+  border-left: 4px solid #b58900;
+  border-radius: 0 0.5rem 0.5rem 0;
+  padding: 1rem 1.25rem;
+  font-style: italic;
+  color: #855d12;
+  margin: 1.5rem 0;
 }
 
 :deep(.prose hr) {
-  margin-top: 0.75em;
-  margin-bottom: 0 !important;
+  margin: 2.5rem 0;
+  border: none;
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(38, 139, 210, 0.45),
+    transparent
+  );
 }
 
 :deep(.prose a) {
-  color: #2563eb;
-  text-decoration: underline;
+  color: #268bd2;
+  text-decoration: none;
+  border-bottom: 1px solid rgba(38, 139, 210, 0.4);
+  transition:
+    color 0.2s ease,
+    border-color 0.2s ease,
+    background 0.2s ease;
 }
 
 :deep(.prose a:hover) {
-  color: #1d4ed8;
+  color: #2aa198;
+  border-bottom-color: rgba(42, 161, 152, 0.6);
+  background: rgba(38, 139, 210, 0.08);
 }
 
 :deep(.prose table) {
   width: 100%;
   border-collapse: collapse;
+  margin: 1.5rem 0;
+  overflow: hidden;
+  border-radius: 0.85rem;
+  border: 1px solid rgba(147, 161, 161, 0.35);
+  background: #fffdf7;
+  box-shadow:
+    inset 0 0 0 1px rgba(147, 161, 161, 0.35),
+    0 12px 25px rgba(147, 161, 161, 0.15);
 }
 
 :deep(.prose th),
 :deep(.prose td) {
-  padding: 0.5rem;
-  border: 1px solid #e2e8f0;
+  padding: 0.85rem 1rem;
+  border-bottom: 1px solid rgba(147, 161, 161, 0.35);
+  border-right: 1px solid rgba(147, 161, 161, 0.25);
 }
 
 :deep(.prose th) {
-  background-color: #f8fafc;
+  background: linear-gradient(135deg, #eee8d5, #fdf6e3);
   font-weight: 600;
+  color: #073642;
+  text-transform: uppercase;
+  font-size: 0.82rem;
+  letter-spacing: 0.05em;
+}
+
+:deep(.prose tbody tr:nth-child(odd)) {
+  background-color: rgba(253, 246, 227, 0.65);
+}
+
+:deep(.prose tbody tr:nth-child(even)) {
+  background-color: rgba(238, 232, 213, 0.75);
+}
+
+:deep(.prose tbody tr:hover) {
+  background-color: rgba(42, 161, 152, 0.08);
 }
 </style>

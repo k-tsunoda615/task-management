@@ -50,7 +50,7 @@ export default defineNuxtConfig({
 
   app: {
     head: {
-      title: "タスク管理アプリ",
+      title: "タスクボード",
       meta: [
         { charset: "utf-8" },
         {
