@@ -149,9 +149,9 @@
       </div>
       <div
         v-else
-        class="mt-4 bg-gray-50 p-6 rounded-lg overflow-auto h-[500px]"
+        class="mt-4 bg-white border border-green-200 p-6 rounded-lg overflow-auto max-h-[90vh]"
       >
-        <div class="prose prose-sm max-w-none" v-html="renderedMarkdown"></div>
+        <div class="markdown-prose" v-html="renderedMarkdown"></div>
       </div>
     </div>
 
@@ -434,78 +434,5 @@ onBeforeUnmount(() => {
   display: flex;
   flex-direction: column;
   align-items: center;
-}
-
-:deep(.prose) {
-  max-width: 100%;
-}
-
-:deep(.prose h1) {
-  font-size: 1.5rem;
-  margin-top: 1.5rem;
-  margin-bottom: 1rem;
-}
-
-:deep(.prose h2) {
-  font-size: 1.25rem;
-  margin-top: 1.25rem;
-  margin-bottom: 0.75rem;
-}
-
-:deep(.prose h3) {
-  font-size: 1.125rem;
-  margin-top: 1rem;
-  margin-bottom: 0.5rem;
-}
-
-:deep(.prose p) {
-  margin-top: 0.5rem;
-  margin-bottom: 0.5rem;
-}
-
-:deep(.prose ul, .prose ol) {
-  padding-left: 1.5rem;
-}
-
-:deep(.prose code) {
-  background-color: #f1f5f9;
-  padding: 0.125rem 0.25rem;
-  border-radius: 0.25rem;
-  font-size: 0.875em;
-}
-
-:deep(.prose pre) {
-  background-color: #1e293b;
-  color: #e2e8f0;
-  padding: 1rem;
-  border-radius: 0.375rem;
-  overflow-x: auto;
-}
-
-:deep(.prose pre code) {
-  background-color: transparent;
-  padding: 0;
-}
-
-:deep(.prose blockquote) {
-  border-left: 4px solid #e2e8f0;
-  padding-left: 1rem;
-  font-style: italic;
-  color: #64748b;
-}
-
-:deep(.prose table) {
-  width: 100%;
-  border-collapse: collapse;
-}
-
-:deep(.prose th, .prose td) {
-  padding: 0.5rem;
-  border: 1px solid #e2e8f0;
-}
-
-:deep(.prose th) {
-  background-color: #f8fafc;
-  font-weight: 600;
 }
 </style>
