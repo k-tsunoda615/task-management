@@ -134,7 +134,7 @@
     <!-- メモ -->
     <div
       v-if="todo.memo"
-      class="border border-gray-200/50 rounded-[6px] p-2 mt-2 text-sm prose prose-sm prose-gray max-h-[20em] w-full overflow-y-auto pr-2 break-all"
+      class="border border-gray-200/50 rounded-[6px] p-2 mt-2 text-sm markdown-prose max-h-[20em] w-full overflow-y-auto pr-2 break-all"
       v-html="parsedMemo"
     />
   </div>
@@ -268,45 +268,3 @@ const stopTiming = (event: Event) => {
 //   return `#${r.toString(16).padStart(2, "0")}${g.toString(16).padStart(2, "0")}${b.toString(16).padStart(2, "0")}`;
 // }
 </script>
-
-<style scoped>
-.prose :deep(p) {
-  margin: 0.5em 0;
-  color: #4b5563;
-  line-height: 1.5;
-}
-
-.prose :deep(ul),
-.prose :deep(ol) {
-  margin: 0.5em 0;
-  padding-left: 1.5em;
-}
-
-.prose :deep(li) {
-  margin: 0.25em 0;
-}
-
-.prose :deep(a) {
-  color: #2563eb;
-  text-decoration: none;
-  border-bottom: 1px solid #93c5fd;
-}
-
-.prose :deep(a:hover) {
-  border-bottom-color: #2563eb;
-}
-
-.prose :deep(code) {
-  background-color: #f3f4f6;
-  padding: 0.2em 0.4em;
-  border-radius: 0.25em;
-  font-size: 0.875em;
-}
-
-.prose :deep(pre) {
-  background-color: #f3f4f6;
-  padding: 1em;
-  border-radius: 0.5em;
-  overflow-x: auto;
-}
-</style>
