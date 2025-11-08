@@ -438,60 +438,96 @@ onBeforeUnmount(() => {
 
 :deep(.prose) {
   max-width: 100%;
+  color: #374151;
 }
 
-:deep(.prose h1) {
-  font-size: 1.5rem;
-  margin-top: 1.5rem;
-  margin-bottom: 1rem;
+:deep(.prose > p) {
+  margin-top: 0.5em;
+  margin-bottom: 0 !important;
+  line-height: 1.3;
 }
 
-:deep(.prose h2) {
-  font-size: 1.25rem;
-  margin-top: 1.25rem;
-  margin-bottom: 0.75rem;
-}
-
-:deep(.prose h3) {
-  font-size: 1.125rem;
-  margin-top: 1rem;
-  margin-bottom: 0.5rem;
-}
-
-:deep(.prose p) {
-  margin-top: 0.5rem;
-  margin-bottom: 0.5rem;
-}
-
-:deep(.prose ul, .prose ol) {
+:deep(.prose ul),
+:deep(.prose ol) {
   padding-left: 1.5rem;
 }
 
+:deep(.prose ul > li),
+:deep(.prose ol > li) {
+  padding-left: 1.25em;
+  margin-top: 0.125em;
+  margin-bottom: 0 !important;
+  line-height: 1.3;
+}
+
+:deep(.prose h1) {
+  font-size: 18px !important;
+  margin-top: 0.5em;
+  margin-bottom: 0 !important;
+  line-height: 1.3;
+  color: #374151;
+}
+
+:deep(.prose h2) {
+  font-size: 16px !important;
+  margin-top: 0.5em !important;
+  margin-bottom: 0 !important;
+  line-height: 1.3;
+  color: #374151;
+}
+
+:deep(.prose h3) {
+  font-size: 14px !important;
+  margin-top: 0.5em;
+  margin-bottom: 0 !important;
+  line-height: 1.3;
+  color: #374151;
+}
+
 :deep(.prose code) {
-  background-color: #f1f5f9;
-  padding: 0.125rem 0.25rem;
-  border-radius: 0.25rem;
+  color: #6b7280;
+  background-color: #f3f4f6;
+  padding: 0.15em 0.3em;
+  border-radius: 0.25em;
   font-size: 0.875em;
 }
 
-:deep(.prose pre) {
-  background-color: #1e293b;
-  color: #e2e8f0;
-  padding: 1rem;
-  border-radius: 0.375rem;
-  overflow-x: auto;
+:deep(.prose > pre) {
+  background-color: #f3f4f6;
+  padding: 0.75em;
+  border-radius: 0.375em;
+  margin-top: 0.5em;
+  margin-bottom: 0 !important;
 }
 
 :deep(.prose pre code) {
   background-color: transparent;
   padding: 0;
+  color: #374151;
 }
 
 :deep(.prose blockquote) {
   border-left: 4px solid #e2e8f0;
-  padding-left: 1rem;
-  font-style: italic;
-  color: #64748b;
+  padding-left: 0.75em;
+  font-style: normal;
+  color: #6b7280;
+  line-height: 1.5;
+  margin-top: 0.5em;
+  margin-bottom: 0 !important;
+}
+
+:deep(.prose hr) {
+  margin-top: 0.75em;
+  margin-bottom: 0 !important;
+}
+
+:deep(.prose a) {
+  color: #2563eb;
+  text-decoration: underline;
+}
+
+:deep(.prose a:hover) {
+  color: #1d4ed8;
 }
 
 :deep(.prose table) {
@@ -499,7 +535,8 @@ onBeforeUnmount(() => {
   border-collapse: collapse;
 }
 
-:deep(.prose th, .prose td) {
+:deep(.prose th),
+:deep(.prose td) {
   padding: 0.5rem;
   border: 1px solid #e2e8f0;
 }
