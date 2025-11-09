@@ -2,6 +2,12 @@ import { gtmNoscript, gtmScript } from "./app/utils/gtm";
 
 export default defineNuxtConfig({
   modules: ["@nuxt/ui", "@nuxtjs/supabase", "@pinia/nuxt", "@vueuse/nuxt"],
+  runtimeConfig: {
+    public: {
+      todoRefreshIntervalMs:
+        process.env.NUXT_PUBLIC_TODO_REFRESH_INTERVAL_MS || "1800000",
+    },
+  },
 
   // エイリアス設定を追加
   alias: {
