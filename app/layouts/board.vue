@@ -12,6 +12,15 @@
         </div>
       </div>
       <div
+        v-else-if="showDataLoadingOverlay"
+        class="fixed inset-0 bg-white/80 backdrop-blur-sm flex items-center justify-center z-40"
+      >
+        <div class="text-center space-y-2">
+          <USpinner size="lg" class="mx-auto" />
+          <p class="text-gray-600 text-sm">データを更新しています...</p>
+        </div>
+      </div>
+      <div
         v-if="!initialized"
         class="flex min-h-screen items-center justify-center"
       >
@@ -100,6 +109,7 @@ import TheSidebar from "../components/common/Sidebar.vue";
 import ModalsHelpModal from "../components/modals/HelpModal.vue";
 import { useAuthService } from "../composables/useAuthService";
 import { useTodoSync } from "../composables/useTodoSync";
+import { useTodoStore } from "../../stores/tasks";
 
 const { user } = useAuthService();
 const loading = useState("auth-loading", () => true);
@@ -112,7 +122,11 @@ const sidebarOpen = ref(true);
 const isMobileMenuOpen = ref(false);
 // モバイル判定
 const isMobile = ref(false);
-const { startAutoRefresh, stopAutoRefresh } = useTodoSync();
+const { startAutoRefresh, stopAutoRefresh, isSyncing } = useTodoSync();
+const todoStore = useTodoStore();
+const showDataLoadingOverlay = computed(
+  () => !!user.value && (todoStore.isLoading || isSyncing.value)
+);
 
 watch(
   () => user.value?.id,
