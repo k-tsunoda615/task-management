@@ -1,7 +1,8 @@
 import { computed } from "vue";
 import { useTodoStore } from "../../stores/tasks";
 
-const DEFAULT_INTERVAL = 120000;
+const DEFAULT_INTERVAL =
+  Number(useRuntimeConfig().public.todoRefreshIntervalMs) || 1800000;
 
 type AutoRefreshState = {
   started: boolean;
