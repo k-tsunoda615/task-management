@@ -4,8 +4,11 @@ export interface TodoStore {
   todos: Todo[];
   filteredTodos: Todo[];
   isLoaded: boolean;
+  isLoading: boolean;
+  lastSyncedAt: number | null;
+  lastSyncError: string | null;
   taskFilter: "all" | "private" | "public";
-  fetchTodos(): Promise<void>;
+  fetchTodos(options?: { force?: boolean }): Promise<void>;
   createTodo(todo: Partial<Todo>): Promise<void>;
   updateTodo(todo: Todo): Promise<void>;
   deleteTodo(id: string): Promise<void>;
