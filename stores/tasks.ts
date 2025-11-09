@@ -7,6 +7,8 @@ export const useTodoStore = defineStore("todo", {
     todos: [] as Todo[],
     isLoaded: false,
     isLoading: false,
+    lastSyncedAt: null as number | null,
+    lastSyncError: null as string | null,
     taskFilter: "public" as "all" | "private" | "public",
   }),
 
@@ -26,26 +28,48 @@ export const useTodoStore = defineStore("todo", {
   },
 
   actions: {
-    async fetchTodos() {
+    async fetchTodos(options?: { force?: boolean }) {
+      const shouldForce = options?.force ?? false;
       try {
+        this.isLoading = true;
         const todoData = useTaskRepository();
-        const { data: todos, pending, error } = await todoData.fetchAllTodos();
+        const {
+          data: todos,
+          error,
+          refresh,
+        } = await todoData.fetchAllTodos();
 
-        this.isLoading = pending.value;
+        if (shouldForce) {
+          await refresh();
+        }
 
         if (error.value) {
           console.error("Todoの取得中にエラーが発生しました:", error.value);
+          const message =
+            error.value instanceof Error
+              ? error.value.message
+              : "Todoの取得中にエラーが発生しました";
+          this.lastSyncError = message;
           throw error.value;
         }
 
         if (todos.value) {
           this.todos = todos.value;
           this.isLoaded = true;
+          this.lastSyncedAt = Date.now();
+          this.lastSyncError = null;
           console.log("[fetchTodos] データ取得完了:", this.todos.length);
         }
       } catch (error) {
         console.error("Todoの取得中にエラーが発生しました:", error);
+        const message =
+          error instanceof Error
+            ? error.message
+            : "Todoの取得中にエラーが発生しました";
+        this.lastSyncError = message;
         throw error;
+      } finally {
+        this.isLoading = false;
       }
     },
 

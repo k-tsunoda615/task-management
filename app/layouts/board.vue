@@ -99,6 +99,7 @@
 import TheSidebar from "../components/common/Sidebar.vue";
 import ModalsHelpModal from "../components/modals/HelpModal.vue";
 import { useAuthService } from "../composables/useAuthService";
+import { useTodoSync } from "../composables/useTodoSync";
 
 const { user } = useAuthService();
 const loading = useState("auth-loading", () => true);
@@ -111,6 +112,23 @@ const sidebarOpen = ref(true);
 const isMobileMenuOpen = ref(false);
 // モバイル判定
 const isMobile = ref(false);
+const { startAutoRefresh, stopAutoRefresh } = useTodoSync();
+
+watch(
+  () => user.value?.id,
+  (currentUserId) => {
+    if (currentUserId) {
+      startAutoRefresh();
+    } else {
+      stopAutoRefresh();
+    }
+  },
+  { immediate: true }
+);
+
+onBeforeUnmount(() => {
+  stopAutoRefresh();
+});
 
 onMounted(() => {
   // 初期化完了を通知

@@ -16,7 +16,31 @@
         }}</span>
       </div>
 
-      <div class="flex items-center space-x-3">
+      <div class="flex flex-wrap items-center justify-end gap-3 text-right">
+        <div class="flex flex-col items-end gap-1">
+          <div class="flex flex-wrap items-center gap-2">
+            <UButton
+              size="xs"
+              color="gray"
+              variant="soft"
+              icon="i-heroicons-arrow-path"
+              :loading="isSyncing"
+              :disabled="isSyncing"
+              @click="handleManualRefresh"
+            >
+              最新に更新
+            </UButton>
+            <span class="text-xs text-gray-500">
+              最終更新: {{ lastSyncedLabel }}
+            </span>
+          </div>
+          <span
+            v-if="lastSyncError"
+            class="text-xs text-red-500"
+          >
+            {{ lastSyncError }}
+          </span>
+        </div>
         <UTooltip text="ヘルプ" :ui="{ popper: { strategy: 'fixed' } }">
           <UButton
             @click="showHelpModal = true"
@@ -66,7 +90,10 @@
 </template>
 
 <script setup lang="ts">
+import dayjs from "dayjs";
+import { computed } from "vue";
 import { useAuthService } from "../../composables/useAuthService";
+import { useTodoSync } from "../../composables/useTodoSync";
 
 const client = useSupabaseClient();
 const router = useRouter();
@@ -79,6 +106,23 @@ const props = defineProps({
 });
 const showHelpModal = useState("help-modal", () => false);
 const showAnonymousBanner = ref(true);
+const { refresh, lastSyncedAt, lastSyncError, isSyncing } = useTodoSync();
+
+const lastSyncedLabel = computed(() => {
+  if (!lastSyncedAt.value) {
+    return "未取得";
+  }
+  return dayjs(lastSyncedAt.value).format("HH:mm:ss");
+});
+
+const handleManualRefresh = async () => {
+  try {
+    await refresh();
+  } catch (error) {
+    console.error("[CommonNavigation] 最新情報の再取得に失敗:", error);
+  }
+};
+
 const logout = async () => {
   await client.auth.signOut();
   router.push("/auth");
