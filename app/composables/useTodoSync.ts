@@ -1,8 +1,7 @@
 import { computed } from "vue";
 import { useTodoStore } from "../../stores/tasks";
 
-const DEFAULT_INTERVAL =
-  Number(useRuntimeConfig().public.todoRefreshIntervalMs) || 1800000;
+const DEFAULT_INTERVAL_FALLBACK = 1800000;
 
 type AutoRefreshState = {
   started: boolean;
@@ -10,6 +9,14 @@ type AutoRefreshState = {
 };
 
 export function useTodoSync() {
+  const resolveDefaultInterval = () => {
+    const runtimeConfig = useRuntimeConfig();
+    return (
+      Number(runtimeConfig.public.todoRefreshIntervalMs) ||
+      DEFAULT_INTERVAL_FALLBACK
+    );
+  };
+
   const todoStore = useTodoStore();
   const supabaseUser = useSupabaseUser();
   const autoRefreshState = useState<AutoRefreshState>(
@@ -33,7 +40,7 @@ export function useTodoSync() {
       return;
     }
 
-    const intervalMs = options?.intervalMs ?? DEFAULT_INTERVAL;
+    const intervalMs = options?.intervalMs ?? resolveDefaultInterval();
 
     const focusHandler = () => {
       refresh().catch((error) => {
