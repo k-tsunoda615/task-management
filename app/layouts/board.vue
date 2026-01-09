@@ -92,6 +92,7 @@
         </main>
 
         <ModalsHelpModal v-model="helpModal" />
+        <AIChat v-if="user" />
       </div>
 
       <!-- フォールバックコンテンツ -->
@@ -106,6 +107,7 @@
 
 <script setup lang="ts">
 import TheSidebar from "../components/common/Sidebar.vue";
+import AIChat from "../components/ai/AIChat.vue";
 import ModalsHelpModal from "../components/modals/HelpModal.vue";
 import { useAuthService } from "../composables/useAuthService";
 import { useTodoSync } from "../composables/useTodoSync";

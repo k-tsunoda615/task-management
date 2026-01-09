@@ -25,6 +25,8 @@
     "analyze": "nuxi analyze"
   },
   "dependencies": {
+    "@google/genai": "^1.35.0",
+    "@nuxt/ui": "^2.14.2",
     "@iconify-json/heroicons": "^1.1.21",
     "@nuxt/ui": "^2.18.0",
     "@nuxtjs/supabase": "^1.1.7",

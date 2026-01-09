@@ -28,7 +28,21 @@
             :model-value="editingTodo?.title"
             @update:model-value="$emit('update:editingTodoTitle', $event)"
             required
-          />
+          >
+            <template #trailing>
+              <UTooltip text="メモからAI生成">
+                <UButton
+                  v-if="editingTodo?.memo"
+                  color="gray"
+                  variant="link"
+                  icon="i-heroicons-sparkles"
+                  :padded="false"
+                  :loading="isGenerating"
+                  @click="handleGenerateTitle"
+                />
+              </UTooltip>
+            </template>
+          </UInput>
         </UFormGroup>
         <UFormGroup label="メモ">
           <div class="space-y-2">
@@ -166,7 +180,22 @@
 
 <script setup lang="ts">
 import type { Tag } from "../../../types/todo";
-defineProps({
+
+// AI Title Generation
+import { useAITitleGenerator } from "../../composables/useAITitleGenerator";
+const { isGenerating, generateTitle } = useAITitleGenerator();
+
+const handleGenerateTitle = async () => {
+  // @ts-ignore
+  if (!props.editingTodo?.memo) return;
+  // @ts-ignore
+  const title = await generateTitle(props.editingTodo.memo);
+  if (title) {
+    emit("update:editingTodoTitle", title);
+  }
+};
+
+const props = defineProps({
   show: Boolean,
   editingTodo: Object,
   editTimeInput: String,
@@ -175,7 +204,7 @@ defineProps({
   showPreviewModal: Boolean,
   parsedPreviewMemo: String,
 });
-defineEmits([
+const emit = defineEmits([
   "close",
   "update",
   "toggleTag",
