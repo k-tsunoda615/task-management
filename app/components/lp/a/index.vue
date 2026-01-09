@@ -8,7 +8,7 @@
             <div
               class="inline-block mb-3 px-4 py-1.5 bg-primary-100 text-primary-700 rounded-full text-sm font-medium"
             >
-              あああああああプライオリティ志向のタスク管理
+              プライオリティ志向のタスク管理
             </div>
             <h1
               class="text-4xl md:text-5xl font-bold text-gray-900 !leading-[1.15]"
@@ -28,7 +28,7 @@
                 color="black"
                 class="rounded-md px-8 py-4"
               >
-                <span class="text-lg">今すぐ始<br />める（無料）</span>
+                <span class="text-lg">今すぐ始める（無料）</span>
                 <UIcon name="i-heroicons-arrow-right" class="ml-2" />
               </UButton>
               <UButton
@@ -45,7 +45,7 @@
           </div>
           <div class="relative">
             <img
-              src="https://placehold.jp/650x500.png"
+              src="https://placehold.jp/550x450.png"
               alt="カンバンボードのスクリーンショット"
               class="rounded-lg shadow-md border border-gray-200"
             />
