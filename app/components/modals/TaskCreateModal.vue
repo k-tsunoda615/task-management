@@ -13,7 +13,22 @@
             :model-value="newTodo?.title"
             @update:model-value="$emit('update:newTodoTitle', $event)"
             required
-          />
+            :ui="{ icon: { trailing: { pointer: '' } } }"
+          >
+            <template #trailing>
+              <UTooltip text="メモからAI生成" :shortcuts="['⌘', 'G']">
+                <UButton
+                  v-if="newTodo?.memo"
+                  color="gray"
+                  variant="link"
+                  icon="i-heroicons-sparkles"
+                  :padded="false"
+                  :loading="isGenerating"
+                  @click="handleGenerateTitle"
+                />
+              </UTooltip>
+            </template>
+          </UInput>
         </UFormGroup>
         <UFormGroup label="メモ">
           <UTextarea
@@ -91,18 +106,18 @@
 </template>
 
 <script setup lang="ts">
-import type { Tag } from "../../types/todo";
+import type { Tag } from "../../../types/todo";
 import { TASK_STATUS_LABELS } from "../../utils/constants";
 import { computed } from "vue";
 
-defineProps({
+const props = defineProps({
   show: Boolean,
   newTodo: Object,
   timeInput: String,
   tagStore: Object,
   isCreating: Boolean,
 });
-defineEmits([
+const emit = defineEmits([
   "close",
   "create",
   "toggle-tag",
@@ -123,4 +138,17 @@ const statusOptions = computed(() => {
     label,
   }));
 });
+
+// AI Title Generation
+import { useAITitleGenerator } from "../../composables/useAITitleGenerator";
+const { isGenerating, generateTitle } = useAITitleGenerator();
+
+const handleGenerateTitle = async () => {
+  if (!props.newTodo?.memo) return;
+  const title = await generateTitle(props.newTodo.memo);
+  if (title) {
+    emit("update:newTodoTitle", title);
+  }
+};
+
 </script>
