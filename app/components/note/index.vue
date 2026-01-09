@@ -1,27 +1,39 @@
 <template>
   <div v-if="task" class="note-container">
-    <!-- 戻るボタン -->
+    <!-- 戻るボタンと削除ボタン -->
     <div class="mb-6 flex items-center justify-between">
-      <UButton
-        color="gray"
-        variant="ghost"
-        icon="i-heroicons-arrow-small-left"
-        class="hover:bg-gray-100"
-        @click="goBack"
-      >
-        戻る
-      </UButton>
-      <UTooltip v-if="assetCount > 0" text="添付ファイル">
-        <UBadge
-          color="primary"
-          variant="soft"
-          size="sm"
-          class="flex items-center gap-1"
+      <div class="flex items-center gap-2">
+        <UButton
+          color="gray"
+          variant="ghost"
+          icon="i-heroicons-arrow-small-left"
+          class="hover:bg-gray-100"
+          @click="goBack"
         >
-          <UIcon name="i-heroicons-paper-clip" class="w-4 h-4" />
-          {{ assetCount }}
-        </UBadge>
-      </UTooltip>
+          戻る
+        </UButton>
+        <UTooltip v-if="assetCount > 0" text="添付ファイル">
+          <UBadge
+            color="primary"
+            variant="soft"
+            size="sm"
+            class="flex items-center gap-1"
+          >
+            <UIcon name="i-heroicons-paper-clip" class="w-4 h-4" />
+            {{ assetCount }}
+          </UBadge>
+        </UTooltip>
+      </div>
+
+      <UButton
+        color="red"
+        variant="ghost"
+        icon="i-heroicons-trash"
+        class="hover:bg-red-50"
+        @click="showDeleteModal = true"
+      >
+        タスクを削除
+      </UButton>
     </div>
 
     <!-- タイマー部分 - 上部に固定 -->
@@ -171,6 +183,13 @@
         戻る
       </UButton>
     </div>
+    <!-- 削除確認モーダル -->
+    <DeleteConfirmModal
+      v-model:show="showDeleteModal"
+      :editing-todo="task"
+      @close="showDeleteModal = false"
+      @delete="handleDelete"
+    />
   </div>
   <div v-else class="flex justify-center items-center h-64">
     <USpinner size="lg" />
@@ -185,6 +204,7 @@ import { formatTime } from "../../utils/time";
 import type { Todo, TodoAsset } from "../../../types/todo";
 import AnalogTimer from "../kanban/AnalogTimer.vue";
 import AssetManager from "./AssetManager.vue";
+import DeleteConfirmModal from "../modals/DeleteConfirmModal.vue";
 import { marked } from "marked";
 // @ts-ignore
 import DOMPurify from "dompurify";
@@ -197,6 +217,7 @@ const todoStore = useTodoStore();
 const task = ref<Todo | null>(null);
 const editedTask = ref<Partial<Todo>>({});
 const isLoading = ref(true);
+const showDeleteModal = ref(false);
 
 const memoViewMode = ref<"edit" | "preview">("edit");
 const assetCount = computed(() => task.value?.assets?.length || 0);
@@ -400,6 +421,31 @@ function handleAssetDeleted(assetId: string) {
   if (!task.value) return;
   const currentAssets = task.value.assets || [];
   task.value.assets = currentAssets.filter((asset) => asset.id !== assetId);
+}
+
+// タスク削除
+async function handleDelete() {
+  const router = useRouter();
+  if (!task.value) return;
+  
+  try {
+    await todoStore.deleteTodo(task.value.id);
+    useToast().add({
+      title: "削除完了",
+      description: "タスクを削除しました",
+      color: "green",
+    });
+    router.push("/board");
+  } catch (error) {
+    console.error("タスク削除エラー:", error);
+    useToast().add({
+      title: "エラー",
+      description: "削除に失敗しました",
+      color: "red",
+    });
+  } finally {
+    showDeleteModal.value = false;
+  }
 }
 
 // タスクIDが変わったら再取得
