@@ -2,7 +2,7 @@ import { GoogleGenAI } from "@google/genai";
 
 export default defineEventHandler(async (event) => {
   const config = useRuntimeConfig();
-  const apiKey = config.geminiApiKey || process.env.NUXT_GEMINI_API_KEY || process.env.GEMINI_API_KEY;
+  const apiKey = config.geminiApiKey;
 
   if (!apiKey) {
     throw createError({
