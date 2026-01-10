@@ -3,6 +3,7 @@ import { gtmNoscript, gtmScript } from "./app/utils/gtm";
 export default defineNuxtConfig({
   modules: ["@nuxt/ui", "@nuxtjs/supabase", "@pinia/nuxt", "@vueuse/nuxt"],
   runtimeConfig: {
+    geminiApiKey: process.env.NUXT_GEMINI_API_KEY,
     public: {
       todoRefreshIntervalMs:
         process.env.NUXT_PUBLIC_TODO_REFRESH_INTERVAL_MS || "1800000",
