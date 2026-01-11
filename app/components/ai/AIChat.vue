@@ -155,9 +155,10 @@ const sendMessage = async () => {
     if (data.value?.text) {
       messages.value.push({ role: "model", text: data.value.text });
     }
-  } catch (err) {
+  } catch (err: any) {
     console.error(err);
-    messages.value.push({ role: "model", text: "エラーが発生しました。もう一度お試しください。" });
+    const errorMessage = err.data?.message || err.message || "エラーが発生しました。もう一度お試しください。";
+    messages.value.push({ role: "model", text: errorMessage });
   } finally {
     isLoading.value = false;
   }
