@@ -12,9 +12,12 @@ export default defineEventHandler(async (event) => {
   }
 
   const body = await readBody(event);
-  const { history, message, prompt } = body;
+  const { history, message, prompt, model: userModel } = body;
 
   const client = new GoogleGenAI({ apiKey });
+  
+  // Default to gemini-2.5-flash if not specified
+  const targetModel = userModel || "gemini-2.5-flash";
 
   try {
     if (history || message) {
@@ -52,9 +55,8 @@ export default defineEventHandler(async (event) => {
         });
       }
 
-      // Using gemini-2.5-flash as per new SDK guidelines
       const response = await client.models.generateContent({
-        model: "gemini-2.5-flash",
+        model: targetModel,
         contents: contents,
       });
 
@@ -63,7 +65,7 @@ export default defineEventHandler(async (event) => {
     } else if (prompt) {
       // Single prompt mode
       const response = await client.models.generateContent({
-        model: "gemini-2.5-flash",
+        model: targetModel,
         contents: [{ role: 'user', parts: [{ text: prompt }] }],
       });
       return { text: response.text };
@@ -75,6 +77,20 @@ export default defineEventHandler(async (event) => {
     }
   } catch (error: any) {
     console.error("Gemini API Error:", error);
+
+    // Handle Rate Limiting (429)
+    if (error.status === 429 || error.code === 429 || error.message?.includes("429") || error.message?.includes("quota")) {
+      // Try to extract retry delay from message like "Please retry in 59.071555733s."
+      const match = error.message?.match(/Please retry in ([0-9.]+)s/);
+      const retrySeconds = match ? Math.ceil(parseFloat(match[1])) : 60;
+      
+      throw createError({
+        statusCode: 429,
+        statusMessage: "Too Many Requests",
+        message: `利用制限に達しました。約${retrySeconds}秒後に再試行してください。`
+      });
+    }
+
     throw createError({
       statusCode: 500,
       statusMessage: error.message,

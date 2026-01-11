@@ -23,13 +23,22 @@
               <UIcon name="i-heroicons-sparkles" class="text-yellow-500" />
               AI Assistant
             </h3>
-            <UButton
-              color="gray"
-              variant="ghost"
-              icon="i-heroicons-x-mark"
-              size="sm"
-              @click="isOpen = false"
-            />
+            <div class="flex items-center gap-2">
+              <USelect
+                v-model="selectedModel"
+                :options="models"
+                option-attribute="label"
+                class="w-40"
+                size="xs"
+              />
+              <UButton
+                color="gray"
+                variant="ghost"
+                icon="i-heroicons-x-mark"
+                size="sm"
+                @click="isOpen = false"
+              />
+            </div>
           </div>
         </template>
 
@@ -98,10 +107,19 @@ interface ChatMessage {
   text: string;
 }
 
+const models = [
+  { label: 'Gemini 2.5 Flash', value: 'gemini-2.5-flash' },
+  { label: 'Gemini 2.5 Pro', value: 'gemini-2.5-pro' },
+  { label: 'Gemini 2.0 Flash', value: 'gemini-2.0-flash' },
+  { label: 'Gemini 2.5 Flash-Lite', value: 'gemini-2.5-flash-lite' },
+  { label: 'Gemini Exp 1206', value: 'gemini-exp-1206' },
+];
+
 const isOpen = ref(false);
 const input = ref("");
 const isLoading = ref(false);
 const messages = ref<ChatMessage[]>([]);
+const selectedModel = ref(models[0]?.value || 'gemini-2.5-flash');
 
 // Gemini API 用の履歴フォーマットに変換
 const getHistory = () => {
@@ -127,7 +145,8 @@ const sendMessage = async () => {
       method: "POST",
       body: {
         message: userMessage,
-        history: history, 
+        history: history,
+        model: selectedModel.value,
       },
     });
 
@@ -136,9 +155,10 @@ const sendMessage = async () => {
     if (data.value?.text) {
       messages.value.push({ role: "model", text: data.value.text });
     }
-  } catch (err) {
+  } catch (err: any) {
     console.error(err);
-    messages.value.push({ role: "model", text: "エラーが発生しました。もう一度お試しください。" });
+    const errorMessage = err.data?.message || err.message || "エラーが発生しました。もう一度お試しください。";
+    messages.value.push({ role: "model", text: errorMessage });
   } finally {
     isLoading.value = false;
   }
