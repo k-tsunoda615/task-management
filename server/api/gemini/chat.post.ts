@@ -12,9 +12,12 @@ export default defineEventHandler(async (event) => {
   }
 
   const body = await readBody(event);
-  const { history, message, prompt } = body;
+  const { history, message, prompt, model: userModel } = body;
 
   const client = new GoogleGenAI({ apiKey });
+  
+  // Default to gemini-2.5-flash if not specified
+  const targetModel = userModel || "gemini-2.5-flash";
 
   try {
     if (history || message) {
@@ -52,9 +55,8 @@ export default defineEventHandler(async (event) => {
         });
       }
 
-      // Using gemini-2.5-flash as per new SDK guidelines
       const response = await client.models.generateContent({
-        model: "gemini-2.5-flash",
+        model: targetModel,
         contents: contents,
       });
 
@@ -63,7 +65,7 @@ export default defineEventHandler(async (event) => {
     } else if (prompt) {
       // Single prompt mode
       const response = await client.models.generateContent({
-        model: "gemini-2.5-flash",
+        model: targetModel,
         contents: [{ role: 'user', parts: [{ text: prompt }] }],
       });
       return { text: response.text };
