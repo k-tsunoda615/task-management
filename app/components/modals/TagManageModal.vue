@@ -48,7 +48,7 @@
               <div
                 class="w-6 h-6 rounded-lg cursor-pointer border border-gray-200 transition-shadow hover:shadow-sm"
                 :style="{ backgroundColor: localColor }"
-              ></div>
+              />
 
               <template #panel>
                 <div class="p-3 w-44">
@@ -59,13 +59,13 @@
                       class="w-6 h-6 rounded-lg cursor-pointer hover:scale-110 transition-all duration-150 border border-gray-200"
                       :style="{ backgroundColor: color }"
                       @click="localColor = color"
-                    ></div>
+                    />
                   </div>
                   <input
-                    type="color"
                     v-model="localColor"
+                    type="color"
                     class="w-full h-8 cursor-pointer rounded"
-                  />
+                  >
                 </div>
               </template>
             </UPopover>
@@ -119,7 +119,7 @@
               <div
                 class="w-6 h-6 rounded-lg cursor-pointer border border-gray-200 transition-shadow hover:shadow-sm"
                 :style="{ backgroundColor: editColor }"
-              ></div>
+              />
 
               <template #panel>
                 <div class="p-3 w-44">
@@ -130,13 +130,13 @@
                       class="w-6 h-6 rounded-lg cursor-pointer hover:scale-110 transition-all duration-150 border border-gray-200"
                       :style="{ backgroundColor: color }"
                       @click="editColor = color"
-                    ></div>
+                    />
                   </div>
                   <input
-                    type="color"
                     v-model="editColor"
+                    type="color"
                     class="w-full h-8 cursor-pointer rounded"
-                  />
+                  >
                 </div>
               </template>
             </UPopover>
@@ -209,7 +209,7 @@
                     <div
                       class="w-4 h-4 rounded-md flex-shrink-0 border border-gray-200"
                       :style="{ backgroundColor: tag.color || '#3b82f6' }"
-                    ></div>
+                    />
                     <span class="text-sm text-gray-700">{{ tag.name }}</span>
                   </div>
                   <UButton
@@ -264,14 +264,26 @@
 
 <script setup lang="ts">
 import { useDebounceFn } from "@vueuse/core";
-import type { Tag } from "../../types/todo";
+import type { Tag } from "../../../types/todo";
 import draggable from "vuedraggable";
 
 const props = defineProps({
-  show: Boolean,
-  tagStore: Object,
-  newTagName: String,
-  newTagColor: String,
+  show: {
+    type: Boolean,
+    default: false,
+  },
+  tagStore: {
+    type: Object,
+    default: null,
+  },
+  newTagName: {
+    type: String,
+    default: "",
+  },
+  newTagColor: {
+    type: String,
+    default: "",
+  },
 });
 
 const emit = defineEmits([
@@ -320,11 +332,11 @@ watch(
   (newTags) => {
     if (newTags) {
       localTags.value = [...newTags].sort(
-        (a, b) => a.sort_order - b.sort_order,
+        (a, b) => a.sort_order - b.sort_order
       );
     }
   },
-  { immediate: true, deep: true },
+  { immediate: true, deep: true }
 );
 
 // モーダルの表示/非表示の処理
@@ -338,7 +350,7 @@ watch(
       localColor.value = props.newTagColor || "#3b82f6";
     }
   },
-  { immediate: true },
+  { immediate: true }
 );
 
 // モーダルが閉じられたときの処理
@@ -436,7 +448,8 @@ const handleDragEnd = () => {
 };
 
 // ドラッグ&ドロップの変更を処理
-const handleDragChange = async (evt: any) => {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const handleDragChange = async (_evt: any) => {
   if (!props.tagStore) return;
 
   // ドラッグ中フラグをセット
@@ -452,7 +465,7 @@ const handleDragChange = async (evt: any) => {
 
     // 一括更新
     const updatePromises = updatedTags.map((tag) =>
-      props.tagStore?.updateTagOrder(tag.id, tag.sort_order),
+      props.tagStore?.updateTagOrder(tag.id, tag.sort_order)
     );
 
     await Promise.all(updatePromises);
@@ -473,7 +486,7 @@ const handleDragChange = async (evt: any) => {
     // エラー時は元の順序に戻す
     if (props.tagStore.tags) {
       localTags.value = [...props.tagStore.tags].sort(
-        (a, b) => a.sort_order - b.sort_order,
+        (a, b) => a.sort_order - b.sort_order
       );
     }
   } finally {

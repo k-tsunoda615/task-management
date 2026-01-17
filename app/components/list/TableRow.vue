@@ -18,7 +18,7 @@
           @keyup.enter="saveTitleEdit"
           @keyup.esc="cancelTitleEdit"
           @blur="saveTitleEdit"
-        />
+        >
       </div>
       <div
         v-else
@@ -143,9 +143,9 @@
     <!-- 完了 - 編集可能 -->
     <td class="px-4 py-3 text-sm">
       <UCheckbox
-        :modelValue="todo.is_finished"
-        @change="toggleFinished"
+        :model-value="todo.is_finished"
         class="mx-auto"
+        @change="toggleFinished"
       />
     </td>
 
@@ -162,16 +162,16 @@
               size="xs"
               color="primary"
               variant="solid"
-              @click="saveTagsEdit"
               icon="i-heroicons-check"
               :disabled="editedTags.length === 0"
+              @click="saveTagsEdit"
             />
             <UButton
               size="xs"
               color="gray"
               variant="ghost"
-              @click="isEditingTags = false"
               icon="i-heroicons-x-mark"
+              @click="isEditingTags = false"
             />
           </div>
         </div>
@@ -204,7 +204,7 @@
               <div
                 class="w-3 h-3 rounded-full"
                 :style="{ backgroundColor: getTagColor(tag.value) }"
-              ></div>
+              />
               {{ tag.label }}
             </button>
           </div>
@@ -248,7 +248,6 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch, nextTick, onMounted, onUnmounted } from "vue";
 import {
   TASK_STATUS,
   TASK_STATUS_LABELS,
@@ -256,7 +255,6 @@ import {
 } from "../../utils/constants";
 import type { Todo } from "../../../types/todo";
 import { formatTime, isRecent } from "./TableUtils";
-import { useTodoStore } from "../../../stores/tasks";
 import { useTagStore } from "../../../stores/tags";
 
 const props = defineProps({
@@ -278,7 +276,6 @@ const emit = defineEmits([
 ]);
 
 const selected = ref(props.isSelected);
-const todoStore = useTodoStore();
 const tagStore = useTagStore();
 
 // 編集状態の管理
@@ -460,6 +457,7 @@ function onCloseEditorsFromExternal() {
 }
 
 // 配列が等しいかチェック
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 function arraysEqual(a: any[], b: any[]): boolean {
   if (a.length !== b.length) return false;
   const sortedA = [...a].sort();

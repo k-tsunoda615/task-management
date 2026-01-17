@@ -39,11 +39,11 @@
         <div class="block md:hidden">
           <div class="fixed top-0 left-0 z-30 p-4">
             <UButton
-              @click="isMobileMenuOpen = !isMobileMenuOpen"
               color="white"
               variant="solid"
               icon="i-heroicons-bars-3"
               class="shadow-md"
+              @click="isMobileMenuOpen = !isMobileMenuOpen"
             />
           </div>
 
@@ -58,7 +58,7 @@
               v-if="isMobileMenuOpen"
               class="fixed inset-0 bg-black bg-opacity-50 z-40"
               @click="isMobileMenuOpen = false"
-            ></div>
+            />
           </Transition>
 
           <!-- モバイルサイドバー -->
@@ -127,7 +127,7 @@ const isMobile = ref(false);
 const { startAutoRefresh, stopAutoRefresh, isSyncing } = useTodoSync();
 const todoStore = useTodoStore();
 const showDataLoadingOverlay = computed(
-  () => !!user.value && (todoStore.isLoading || isSyncing.value)
+  () => !!user.value && (todoStore.isLoading || isSyncing.value),
 );
 
 watch(
@@ -139,7 +139,7 @@ watch(
       stopAutoRefresh();
     }
   },
-  { immediate: true }
+  { immediate: true },
 );
 
 onBeforeUnmount(() => {
@@ -158,6 +158,7 @@ onMounted(() => {
   }
 
   // サイドバーの状態変更を監視（カスタムイベント）
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   window.addEventListener("sidebarToggle", (event: any) => {
     sidebarOpen.value = event.detail.isOpen;
   });

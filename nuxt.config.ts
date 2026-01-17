@@ -1,7 +1,13 @@
 import { gtmNoscript, gtmScript } from "./app/utils/gtm";
 
 export default defineNuxtConfig({
-  modules: ["@nuxt/ui", "@nuxtjs/supabase", "@pinia/nuxt", "@vueuse/nuxt"],
+  modules: [
+    "@nuxt/ui",
+    "@nuxtjs/supabase",
+    "@pinia/nuxt",
+    "@vueuse/nuxt",
+    "@nuxt/eslint",
+  ],
   runtimeConfig: {
     geminiApiKey: process.env.NUXT_GEMINI_API_KEY,
     public: {

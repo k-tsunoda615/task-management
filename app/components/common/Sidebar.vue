@@ -13,26 +13,26 @@
       <div
         class="flex items-center justify-between p-4 border-b border-gray-200"
       >
-        <p class="font-medium text-gray-900" v-if="isOpen || isMobile">
+        <p v-if="isOpen || isMobile" class="font-medium text-gray-900">
           メニュー
         </p>
         <UButton
           v-if="isMobile"
-          @click="$emit('close-mobile-menu')"
           color="gray"
           variant="ghost"
           size="sm"
           class="hover:bg-gray-100"
+          @click="$emit('close-mobile-menu')"
         >
           <UIcon name="i-heroicons-x-mark" class="h-5 w-5" />
         </UButton>
         <UButton
           v-else
-          @click="toggleSidebar"
           color="gray"
           variant="ghost"
           size="sm"
           class="hover:bg-gray-100"
+          @click="toggleSidebar"
         >
           <UIcon
             :name="
@@ -59,8 +59,8 @@
               :block="isOpen || isMobile"
               color="gray"
               variant="ghost"
-              @click="$emit('open-new-task-modal')"
               class="justify-start hover:bg-gray-100"
+              @click="$emit('open-new-task-modal')"
             >
               <UIcon
                 name="i-heroicons-plus-circle"
@@ -83,8 +83,8 @@
               :block="isOpen || isMobile"
               color="gray"
               variant="ghost"
-              @click="showTagModal = true"
               class="justify-start hover:bg-gray-100 relative"
+              @click="showTagModal = true"
             >
               <span class="relative inline-block w-5 h-5">
                 <UIcon name="i-heroicons-tag" class="w-5 h-5 text-gray-500" />
@@ -120,8 +120,8 @@
                 :block="isOpen || isMobile"
                 :color="isCurrentRoute('/board') ? 'primary' : 'gray'"
                 :variant="isCurrentRoute('/board') ? 'soft' : 'ghost'"
-                @click="navigateToBoard"
                 class="justify-start hover:bg-gray-100"
+                @click="navigateToBoard"
               >
                 <UIcon
                   name="i-heroicons-view-columns"
@@ -148,8 +148,8 @@
                 :block="isOpen || isMobile"
                 :color="isCurrentRoute('/list') ? 'primary' : 'gray'"
                 :variant="isCurrentRoute('/list') ? 'soft' : 'ghost'"
-                @click="navigateTo('/list')"
                 class="justify-start hover:bg-gray-100"
+                @click="navigateTo('/list')"
               >
                 <UIcon
                   name="i-heroicons-table-cells"
@@ -176,8 +176,8 @@
                 :block="isOpen || isMobile"
                 :color="isCurrentRoute('/analytics') ? 'primary' : 'gray'"
                 :variant="isCurrentRoute('/analytics') ? 'soft' : 'ghost'"
-                @click="navigateTo('/analytics')"
                 class="justify-start hover:bg-gray-100"
+                @click="navigateTo('/analytics')"
               >
                 <UIcon
                   name="i-heroicons-chart-bar"
@@ -196,17 +196,17 @@
 
             <!-- 管理ページ if(isAdmin)はあとで実装 -->
             <UTooltip
+              v-if="isAdmin"
               :text="!isOpen ? '管理ダッシュボード' : ''"
               :ui="{ popper: { strategy: 'fixed' } }"
               class="w-full"
-              v-if="isAdmin"
             >
               <UButton
                 :block="isOpen || isMobile"
                 :color="isCurrentRoute('/admin') ? 'primary' : 'gray'"
                 :variant="isCurrentRoute('/admin') ? 'soft' : 'ghost'"
-                @click="navigateTo('/admin')"
                 class="justify-start hover:bg-gray-100"
+                @click="navigateTo('/admin')"
               >
                 <UIcon
                   name="i-heroicons-shield-check"
@@ -243,9 +243,9 @@
               :block="isOpen || isMobile"
               :color="getFilterButtonColor()"
               :variant="'ghost'"
-              @click="toggleTaskFilter"
               :icon="getFilterIcon()"
               class="justify-start hover:bg-gray-100"
+              @click="toggleTaskFilter"
             >
               <span v-if="isOpen || isMobile" class="ml-2">{{
                 getFilterLabel()
@@ -269,8 +269,8 @@
               :block="isOpen || isMobile"
               :color="showTagBar ? 'green' : 'gray'"
               :variant="'ghost'"
-              @click="toggleTagVisibility"
               class="justify-start hover:bg-gray-100"
+              @click="toggleTagVisibility"
             >
               <UIcon
                 name="i-heroicons-tag"
@@ -301,8 +301,8 @@
               :block="isOpen || isMobile"
               :color="showTimer ? 'green' : 'gray'"
               :variant="'ghost'"
-              @click="toggleTimerVisibility"
               class="justify-start hover:bg-gray-100"
+              @click="toggleTimerVisibility"
             >
               <UIcon
                 name="i-heroicons-clock"
@@ -336,8 +336,8 @@
               :block="isOpen || isMobile"
               :color="showCompletedTasks ? 'green' : 'gray'"
               :variant="'ghost'"
-              @click="toggleCompletedTasksVisibility"
               class="justify-start hover:bg-gray-100"
+              @click="toggleCompletedTasksVisibility"
             >
               <UIcon
                 name="i-heroicons-check-circle"
@@ -404,7 +404,7 @@
               <span class="text-[11px] text-gray-500">
                 {{ totalItemCount }}件
               </span>
-              <hr class="w-full border-gray-200" />
+              <hr class="w-full border-gray-200" >
               <span class="text-[11px] text-gray-500">
                 {{ formattedStorageUsage }}
               </span>
@@ -431,15 +431,15 @@
 
     <TagManageModal
       :show="showTagModal"
-      :tagStore="tagStore"
-      :newTagName="newTagName"
-      :newTagColor="newTagColor"
+      :tag-store="tagStore"
+      :new-tag-name="newTagName"
+      :new-tag-color="newTagColor"
       @close="showTagModal = false"
-      @addTag="addTag"
-      @deleteTag="deleteTag"
-      @updateTag="updateTag"
-      @updateNewTagName="(val: string) => (newTagName = val)"
-      @updateNewTagColor="(val: string) => (newTagColor = val)"
+      @add-tag="addTag"
+      @delete-tag="deleteTag"
+      @update-tag="updateTag"
+      @update-new-tag-name="(val: string) => (newTagName = val)"
+      @update-new-tag-color="(val: string) => (newTagColor = val)"
     />
   </div>
 </template>
@@ -458,7 +458,7 @@ defineProps({
   },
 });
 
-const emit = defineEmits(["close-mobile-menu", "open-new-task-modal"]);
+const _emit = defineEmits(["close-mobile-menu", "open-new-task-modal"]);
 
 const todoStore = useTodoStore();
 const { tagStore, newTagName, newTagColor, addTag, deleteTag, updateTag } =
@@ -489,7 +489,7 @@ const totalAssetSize = computed(() => {
     const assets = todo.assets || [];
     const assetSize = assets.reduce(
       (assetSum, asset) => assetSum + (asset.size || 0),
-      0
+      0,
     );
     return sum + assetSize;
   }, 0);
@@ -570,7 +570,7 @@ const toggleSidebar = () => {
   window.dispatchEvent(
     new CustomEvent("sidebarToggle", {
       detail: { isOpen: isOpen.value },
-    })
+    }),
   );
 };
 
@@ -584,7 +584,7 @@ const toggleTimerVisibility = () => {
   window.dispatchEvent(
     new CustomEvent("timerVisibilityToggle", {
       detail: { showTimer: showTimer.value },
-    })
+    }),
   );
 };
 
@@ -595,7 +595,7 @@ const toggleTagVisibility = () => {
   window.dispatchEvent(
     new CustomEvent("tagVisibilityToggle", {
       detail: { showTagBar: showTagBar.value },
-    })
+    }),
   );
 };
 
@@ -604,12 +604,12 @@ const toggleCompletedTasksVisibility = () => {
   showCompletedTasks.value = !showCompletedTasks.value;
   localStorage.setItem(
     "showCompletedTasks",
-    showCompletedTasks.value.toString()
+    showCompletedTasks.value.toString(),
   );
   window.dispatchEvent(
     new CustomEvent("completedTasksVisibilityToggle", {
       detail: { showCompletedTasks: showCompletedTasks.value },
-    })
+    }),
   );
 };
 
@@ -665,6 +665,7 @@ const toggleTaskFilter = () => {
 };
 
 // ゴミ箱へのドロップを処理
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const handleTrashDrop = (event: any) => {
   const todoId = event.dataTransfer.getData("todoId");
   if (todoId) {

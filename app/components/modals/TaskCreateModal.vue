@@ -7,13 +7,13 @@
       <template #header>
         <h3 class="text-lg font-medium text-gray-900">新しいタスク</h3>
       </template>
-      <form @submit.prevent="$emit('create')" class="space-y-4">
+      <form class="space-y-4" @submit.prevent="$emit('create')">
         <UFormGroup label="タイトル">
           <UInput
             :model-value="newTodo?.title"
-            @update:model-value="$emit('update:newTodoTitle', $event)"
             required
             :ui="{ icon: { trailing: { pointer: '' } } }"
+            @update:model-value="$emit('update:newTodoTitle', $event)"
           >
             <template #trailing>
               <UTooltip text="メモからAI生成" :shortcuts="['⌘', 'G']">
@@ -39,22 +39,22 @@
         <UFormGroup label="ステータス">
           <USelect
             :model-value="newTodo?.status"
-            @update:model-value="$emit('update:newTodoStatus', $event)"
             :options="statusOptions"
+            @update:model-value="$emit('update:newTodoStatus', $event)"
           />
         </UFormGroup>
         <UFormGroup>
           <UCheckbox
             :model-value="newTodo?.is_private"
-            @update:model-value="$emit('update:newTodoIsPrivate', $event)"
             label="Private"
+            @update:model-value="$emit('update:newTodoIsPrivate', $event)"
           />
         </UFormGroup>
         <UFormGroup label="合計時間 (hh:mm:ss)">
           <UInput
             :model-value="timeInput"
-            @update:model-value="$emit('update:timeInput', $event)"
             placeholder="00:00:00"
+            @update:model-value="$emit('update:timeInput', $event)"
             @input="$emit('validate-time', $event)"
           />
         </UFormGroup>
@@ -94,8 +94,8 @@
           </UButton>
           <UButton
             color="primary"
-            @click="$emit('create')"
             :loading="isCreating"
+            @click="$emit('create')"
           >
             作成
           </UButton>
@@ -108,14 +108,31 @@
 <script setup lang="ts">
 import type { Tag } from "../../../types/todo";
 import { TASK_STATUS_LABELS } from "../../utils/constants";
-import { computed } from "vue";
+
+// AI Title Generation
+import { useAITitleGenerator } from "../../composables/useAITitleGenerator";
 
 const props = defineProps({
-  show: Boolean,
-  newTodo: Object,
-  timeInput: String,
-  tagStore: Object,
-  isCreating: Boolean,
+  show: {
+    type: Boolean,
+    default: false,
+  },
+  newTodo: {
+    type: Object,
+    default: null,
+  },
+  timeInput: {
+    type: String,
+    default: "",
+  },
+  tagStore: {
+    type: Object,
+    default: null,
+  },
+  isCreating: {
+    type: Boolean,
+    default: false,
+  },
 });
 const emit = defineEmits([
   "close",
@@ -138,9 +155,6 @@ const statusOptions = computed(() => {
     label,
   }));
 });
-
-// AI Title Generation
-import { useAITitleGenerator } from "../../composables/useAITitleGenerator";
 const { isGenerating, generateTitle } = useAITitleGenerator();
 
 const handleGenerateTitle = async () => {
@@ -150,5 +164,4 @@ const handleGenerateTitle = async () => {
     emit("update:newTodoTitle", title);
   }
 };
-
 </script>

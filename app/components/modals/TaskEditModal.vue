@@ -1,11 +1,12 @@
 <template>
   <UModal
-    v-model="show"
+    :model-value="show"
     :ui="{
       container: 'items-start my-20',
       width: 'max-w-4xl',
       height: 'min-h-[300px]',
     }"
+    @update:model-value="$emit('update:show', $event)"
   >
     <UCard>
       <template #header>
@@ -16,18 +17,18 @@
             variant="ghost"
             icon="i-heroicons-trash"
             size="sm"
-            @click="$emit('confirmDelete')"
             title="タスクを削除"
             class="hover:bg-red-50"
+            @click="$emit('confirmDelete')"
           />
         </div>
       </template>
-      <form @submit.prevent="$emit('update')" class="space-y-4">
+      <form class="space-y-4" @submit.prevent="$emit('update')">
         <UFormGroup label="タイトル">
           <UInput
             :model-value="editingTodo?.title"
-            @update:model-value="$emit('update:editingTodoTitle', $event)"
             required
+            @update:model-value="$emit('update:editingTodoTitle', $event)"
           >
             <template #trailing>
               <UTooltip text="メモからAI生成">
@@ -48,16 +49,16 @@
           <div class="space-y-2">
             <UTextarea
               :model-value="editingTodo?.memo"
-              @update:model-value="$emit('update:editingTodoMemo', $event)"
               :rows="15"
               class="font-mono text-sm"
               :ui="{ base: 'min-h-[300px] resize-y' }"
+              @update:model-value="$emit('update:editingTodoMemo', $event)"
             />
             <UButton
               size="sm"
               variant="soft"
-              @click.prevent="$emit('showPreview')"
               icon="i-heroicons-eye"
+              @click.prevent="$emit('showPreview')"
             >
               プレビュー
             </UButton>
@@ -67,19 +68,19 @@
           <UFormGroup label="ステータス" class="flex-1">
             <USelect
               :model-value="editingTodo?.status"
-              @update:model-value="$emit('update:editingTodoStatus', $event)"
               :options="[
                 { label: 'Priority', value: '未対応' },
                 { label: 'Next', value: '対応中' },
                 { label: 'Archived', value: '完了' },
               ]"
+              @update:model-value="$emit('update:editingTodoStatus', $event)"
             />
           </UFormGroup>
           <UFormGroup class="flex-1">
             <UCheckbox
               :model-value="editingTodo?.is_private"
-              @update:model-value="$emit('update:editingTodoIsPrivate', $event)"
               label="Private"
+              @update:model-value="$emit('update:editingTodoIsPrivate', $event)"
             />
           </UFormGroup>
         </div>
@@ -88,8 +89,8 @@
             <UInput
               :model-value="editTimeInput"
               placeholder="00:00:00"
-              @input="$emit('validateTime', $event)"
               :disabled="editingTodo?.is_timing"
+              @input="$emit('validateTime', $event)"
             />
             <UTooltip
               v-if="editingTodo?.is_timing"
@@ -138,8 +139,8 @@
           </UButton>
           <UButton
             color="primary"
-            @click="$emit('update')"
             :loading="isUpdating"
+            @click="$emit('update')"
           >
             更新
           </UButton>
@@ -149,22 +150,25 @@
       <!-- プレビューモーダル -->
       <UModal
         v-if="showPreviewModal"
-        v-model="showPreviewModal"
+        :model-value="showPreviewModal"
         :ui="{
           container: 'items-start my-20',
           width: 'max-w-4xl',
           wrapper: 'z-[60]',
           overlay: { base: 'bg-gray-950/75' },
         }"
+        @update:model-value="$emit('update:showPreviewModal', $event)"
       >
         <UCard>
           <template #header>
             <h3 class="text-lg font-medium text-gray-900">プレビュー</h3>
           </template>
+          <!-- eslint-disable vue/no-v-html -->
           <div
             class="prose prose-sm max-w-none min-h-[300px] overflow-y-auto max-h-[60vh]"
             v-html="parsedPreviewMemo"
           />
+          <!-- eslint-enable vue/no-v-html -->
           <template #footer>
             <div class="flex justify-end">
               <UButton variant="ghost" @click="$emit('closePreview')">
@@ -186,9 +190,7 @@ import { useAITitleGenerator } from "../../composables/useAITitleGenerator";
 const { isGenerating, generateTitle } = useAITitleGenerator();
 
 const handleGenerateTitle = async () => {
-  // @ts-ignore
   if (!props.editingTodo?.memo) return;
-  // @ts-ignore
   const title = await generateTitle(props.editingTodo.memo);
   if (title) {
     emit("update:editingTodoTitle", title);
@@ -196,22 +198,45 @@ const handleGenerateTitle = async () => {
 };
 
 const props = defineProps({
-  show: Boolean,
-  editingTodo: Object,
-  editTimeInput: String,
-  tagStore: Object,
-  isUpdating: Boolean,
-  showPreviewModal: Boolean,
-  parsedPreviewMemo: String,
+  show: {
+    type: Boolean,
+    default: false,
+  },
+  editingTodo: {
+    type: Object,
+    default: null,
+  },
+  editTimeInput: {
+    type: String,
+    default: "",
+  },
+  tagStore: {
+    type: Object,
+    default: null,
+  },
+  isUpdating: {
+    type: Boolean,
+    default: false,
+  },
+  showPreviewModal: {
+    type: Boolean,
+    default: false,
+  },
+  parsedPreviewMemo: {
+    type: String,
+    default: "",
+  },
 });
 const emit = defineEmits([
   "close",
+  "update:show",
   "update",
   "toggleTag",
   "validateTime",
   "showPreview",
   "closePreview",
   "confirmDelete",
+  "update:showPreviewModal",
   "update:editingTodoTitle",
   "update:editingTodoMemo",
   "update:editingTodoStatus",

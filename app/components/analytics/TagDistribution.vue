@@ -1,5 +1,5 @@
 <template>
-  <div ref="chartContainer" class="w-full h-full"></div>
+  <div ref="chartContainer" class="w-full h-full"/>
 </template>
 
 <script setup lang="ts">
@@ -12,6 +12,7 @@ const props = defineProps<{
 }>();
 
 const chartContainer = ref<HTMLElement | null>(null);
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 let chart: any = null;
 
 // タグ別にタスクをカウント
@@ -46,7 +47,7 @@ const getTagCounts = () => {
       }
       return result;
     },
-    {} as Record<string, { count: number; color: string }>
+    {} as Record<string, { count: number; color: string }>,
   );
 };
 
@@ -73,7 +74,7 @@ const initChart = async () => {
       CategoryScale,
       LinearScale,
       Tooltip,
-      Legend
+      Legend,
     );
 
     const tagCounts = getTagCounts();
@@ -132,15 +133,15 @@ watch(
       const tagCounts = getTagCounts();
       chart.data.labels = Object.keys(tagCounts);
       chart.data.datasets[0].data = Object.values(tagCounts).map(
-        (data) => data.count
+        (data) => data.count,
       );
       chart.data.datasets[0].backgroundColor = Object.values(tagCounts).map(
-        (data) => data.color
+        (data) => data.color,
       );
       chart.update();
     }
   },
-  { deep: true }
+  { deep: true },
 );
 
 // コンポーネントのマウント時にグラフを初期化

@@ -25,7 +25,7 @@ export function useTagRepository() {
       },
       {
         server: false, // クライアントサイドのみで実行（認証が必要なため）
-      }
+      },
     );
   };
 
@@ -67,7 +67,7 @@ export function useTagRepository() {
    */
   const updateTag = async (
     tagId: string,
-    updates: { name?: string; color?: string; sort_order?: number }
+    updates: { name?: string; color?: string; sort_order?: number },
   ) => {
     try {
       const { data, error } = await client

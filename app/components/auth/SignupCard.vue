@@ -10,7 +10,7 @@
     </div>
 
     <UCard :class="cardClass">
-      <form @submit.prevent="handleSubmit" class="space-y-4">
+      <form class="space-y-4" @submit.prevent="handleSubmit">
         <UFormGroup label="メールアドレス">
           <UInput
             v-model="email"
@@ -38,10 +38,10 @@
         <div class="flex items-center gap-2">
           <input
             id="agreeTerms"
-            type="checkbox"
             v-model="agreeTerms"
+            type="checkbox"
             class="w-4 h-4"
-          />
+          >
           <label for="agreeTerms" class="text-sm text-gray-700 select-none">
             <a
               href="#"
@@ -129,7 +129,7 @@ async function handleSubmit() {
   try {
     // 匿名ユーザーから永続的なユーザーへの変換
     if (user.value?.is_anonymous) {
-      const { data: updateData, error: updateError } =
+      const { data: _updateData, error: updateError } =
         await client.auth.updateUser({ email: email.value });
 
       if (updateError) throw updateError;
@@ -139,7 +139,7 @@ async function handleSubmit() {
       router.push(props.redirectUrl || "/board");
     } else {
       // 通常の新規登録
-      const { data, error } = await client.auth.signUp({
+      const { data: _data, error } = await client.auth.signUp({
         email: email.value,
         password: password.value,
       });
@@ -149,6 +149,7 @@ async function handleSubmit() {
       emit("signup-success");
       router.push(props.redirectUrl || "/board");
     }
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (error: any) {
     console.error("認証エラー:", error);
     errorMessage.value = mapAuthErrorToMessage(error);

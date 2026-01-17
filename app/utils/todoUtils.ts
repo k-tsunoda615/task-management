@@ -92,7 +92,7 @@ export function convertTodoForDB(todo: Partial<Todo>): Record<string, unknown> {
 export function calculateNewOrders(
   todo: Todo,
   newIndex: number,
-  targetList: Todo[]
+  targetList: Todo[],
 ) {
   console.log("calculateNewOrders実行:", {
     todoId: todo.id,
@@ -102,7 +102,7 @@ export function calculateNewOrders(
 
   // リストを一度ソートして順序を確保
   const sortedList = [...targetList].sort(
-    (a, b) => (a.sort_order || 0) - (b.sort_order || 0)
+    (a, b) => (a.sort_order || 0) - (b.sort_order || 0),
   );
 
   // 順序値が同じアイテムが複数あるかチェック（バグ検出）
@@ -115,7 +115,7 @@ export function calculateNewOrders(
   // 順序の重複があるか、アイテムが多い場合は全体を再計算
   if (hasDuplicateOrders || targetList.length > 10) {
     console.log(
-      "重複したsort_orderが見つかったか、アイテム数が多いため全体を再計算"
+      "重複したsort_orderが見つかったか、アイテム数が多いため全体を再計算",
     );
 
     // 移動後の新しい順序でリストを再構築
@@ -123,7 +123,7 @@ export function calculateNewOrders(
 
     // 移動元のアイテムを一度削除
     const movedItemIndex = reorderedList.findIndex(
-      (item) => item.id === todo.id
+      (item) => item.id === todo.id,
     );
     if (movedItemIndex !== -1) {
       reorderedList.splice(movedItemIndex, 1);

@@ -92,8 +92,8 @@
                 </td>
               </tr>
               <tr
-                v-else
                 v-for="user in users"
+                v-else
                 :key="user.id"
                 class="transition hover:bg-gray-50"
               >
@@ -160,7 +160,7 @@ const refresh = async () => {
       {
         server: false,
         key: "admin-user-metrics",
-      }
+      },
     );
 
     if (fetchError.value) {

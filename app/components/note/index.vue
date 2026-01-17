@@ -44,14 +44,14 @@
           <UButton
             v-if="!isTimerRunning"
             color="green"
-            @click="startTimer"
             :disabled="isTaskCompleted"
             class="px-4"
+            @click="startTimer"
           >
             <UIcon name="i-heroicons-play" class="mr-1" />
             開始
           </UButton>
-          <UButton v-else color="amber" @click="stopTimer" class="px-4">
+          <UButton v-else color="amber" class="px-4" @click="stopTimer">
             <UIcon name="i-heroicons-pause" class="mr-1" />
             停止
           </UButton>
@@ -79,7 +79,7 @@
           type="text"
           class="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:border-primary-500 focus:ring focus:ring-primary-200"
           @change="updateTask('title')"
-        />
+        >
       </div>
 
       <!-- ステータスと完了フラグ -->
@@ -157,13 +157,15 @@
           class="w-full h-[500px] px-4 py-3 border border-gray-300 rounded-md shadow-sm focus:border-primary-500 focus:ring focus:ring-primary-200 font-mono text-sm"
           placeholder="Markdownでメモを入力できます..."
           @change="updateTask('memo')"
-        ></textarea>
+        />
       </div>
       <div
         v-else
         class="mt-4 bg-white border border-green-200 p-6 rounded-lg overflow-auto max-h-[90vh]"
       >
-        <div class="markdown-prose" v-html="renderedMarkdown"></div>
+        <!-- eslint-disable vue/no-v-html -->
+        <div class="markdown-prose" v-html="renderedMarkdown" />
+        <!-- eslint-enable vue/no-v-html -->
       </div>
     </div>
 
@@ -198,7 +200,7 @@
 
 <script setup lang="ts">
 import { useTodoStore } from "../../../stores/tasks";
-import { TASK_STATUS, TASK_STATUS_LABELS } from "../../utils/constants";
+import { TASK_STATUS_LABELS } from "../../utils/constants";
 import { useTaskTimer } from "../../composables/useTaskTimer";
 import { formatTime } from "../../utils/time";
 import type { Todo, TodoAsset } from "../../../types/todo";
@@ -206,7 +208,6 @@ import AnalogTimer from "../kanban/AnalogTimer.vue";
 import AssetManager from "./AssetManager.vue";
 import DeleteConfirmModal from "../modals/DeleteConfirmModal.vue";
 import { marked } from "marked";
-// @ts-ignore
 import DOMPurify from "dompurify";
 
 const props = defineProps<{
@@ -345,7 +346,7 @@ async function updateTask(field: string) {
     // エラー時は元の値に戻す
     if (task.value && field in task.value) {
       const fieldKey = field as keyof typeof task.value;
-      // @ts-ignore
+      // @ts-expect-error dynamic field assignment relies on runtime keys
       editedTask.value[fieldKey] = task.value[fieldKey];
     }
   }
@@ -427,7 +428,7 @@ function handleAssetDeleted(assetId: string) {
 async function handleDelete() {
   const router = useRouter();
   if (!task.value) return;
-  
+
   try {
     await todoStore.deleteTodo(task.value.id);
     useToast().add({

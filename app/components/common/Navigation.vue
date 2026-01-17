@@ -34,29 +34,26 @@
               最終更新: {{ lastSyncedLabel }}
             </span>
           </div>
-          <span
-            v-if="lastSyncError"
-            class="text-xs text-red-500"
-          >
+          <span v-if="lastSyncError" class="text-xs text-red-500">
             {{ lastSyncError }}
           </span>
         </div>
         <UTooltip text="ヘルプ" :ui="{ popper: { strategy: 'fixed' } }">
           <UButton
-            @click="showHelpModal = true"
             color="gray"
             variant="ghost"
             icon="i-heroicons-question-mark-circle"
+            @click="showHelpModal = true"
           >
             <span class="md:hidden hidden">ヘルプ</span>
           </UButton>
         </UTooltip>
         <UTooltip text="ログアウト" :ui="{ popper: { strategy: 'fixed' } }">
           <UButton
-            @click="logout"
             color="gray"
             variant="ghost"
             icon="i-heroicons-arrow-right-on-rectangle"
+            @click="logout"
           >
             <span class="md:hidden hidden">ログアウト</span>
           </UButton>
@@ -70,10 +67,10 @@
     class="anonymous-warning"
   >
     <span class="close-btn" @click="showAnonymousBanner = false">&times;</span>
-    ゲスト（匿名）ユーザーとして利用中です。データは一定期間で自動削除されます。<br />
+    ゲスト（匿名）ユーザーとして利用中です。データは一定期間で自動削除されます。<br >
     <strong
       >【重要】ゲストのままログアウトすると、同じアカウントで再ログインすることはできません。</strong
-    ><br />
+    ><br >
     作成したタスクやタグを残したい場合は、<NuxtLink
       to="/auth?signup=1"
       class="underline font-bold"
@@ -91,7 +88,6 @@
 
 <script setup lang="ts">
 import dayjs from "dayjs";
-import { computed } from "vue";
 import { useAuthService } from "../../composables/useAuthService";
 import { useTodoSync } from "../../composables/useTodoSync";
 

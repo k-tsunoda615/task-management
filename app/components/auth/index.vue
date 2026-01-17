@@ -42,7 +42,7 @@
         </div>
 
         <UCard>
-          <form @submit.prevent="handleSubmit" class="space-y-4">
+          <form class="space-y-4" @submit.prevent="handleSubmit">
             <UFormGroup label="メールアドレス">
               <UInput
                 v-model="email"
@@ -70,10 +70,10 @@
             <div v-if="isSignUp" class="flex items-center gap-2">
               <input
                 id="agreeTerms"
-                type="checkbox"
                 v-model="agreeTerms"
+                type="checkbox"
                 class="w-4 h-4"
-              />
+              >
               <label for="agreeTerms" class="text-sm text-gray-700 select-none">
                 <a
                   href="#"
@@ -140,7 +140,7 @@
             <template #header>
               <div class="text-lg font-bold">パスワードリセット</div>
             </template>
-            <form @submit.prevent="handleResetPassword" class="space-y-4">
+            <form class="space-y-4" @submit.prevent="handleResetPassword">
               <UFormGroup label="メールアドレス">
                 <UInput
                   v-model="resetEmail"
@@ -238,7 +238,7 @@ async function handleSubmit() {
       // 匿名ユーザーから永続的なユーザーへの変換
       if (user.value?.is_anonymous) {
         // 1. まずメールアドレスのみ更新（パスワードはまだ設定しない）
-        const { data: updateData, error: updateError } =
+        const { data: _updateData, error: updateError } =
           await client.auth.updateUser({
             email: email.value,
           });
@@ -255,7 +255,7 @@ async function handleSubmit() {
         agreeTerms.value = false;
       } else {
         // 通常の新規登録
-        const { data, error } = await client.auth.signUp({
+        const { data: _data, error } = await client.auth.signUp({
           email: email.value,
           password: password.value,
         });
@@ -266,7 +266,7 @@ async function handleSubmit() {
       }
     } else {
       // 通常のログイン処理
-      const { data, error } = await client.auth.signInWithPassword({
+      const { data: _data, error } = await client.auth.signInWithPassword({
         email: email.value,
         password: password.value,
       });
@@ -276,6 +276,7 @@ async function handleSubmit() {
         router.push("/board");
       }
     }
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (error: any) {
     console.error("認証エラー:", error);
     errorMessage.value = mapAuthErrorToMessage(error);
@@ -299,7 +300,7 @@ async function handleResetPassword() {
       resetMessage.value =
         "パスワードリセット用のメールを送信しました。メールボックスをご確認ください。";
     }
-  } catch (e) {
+  } catch {
     resetMessage.value = "リセット処理中にエラーが発生しました。";
   } finally {
     resetLoading.value = false;

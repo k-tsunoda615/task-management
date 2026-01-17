@@ -1,5 +1,5 @@
 <template>
-  <div ref="chartContainer" class="w-full h-full"></div>
+  <div ref="chartContainer" class="w-full h-full"/>
 </template>
 
 <script setup lang="ts">
@@ -12,6 +12,7 @@ const props = defineProps<{
 }>();
 
 const chartContainer = ref<HTMLElement | null>(null);
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 let chart: any = null;
 
 // タスクの時間を抽出
@@ -73,7 +74,7 @@ const initChart = async () => {
       CategoryScale,
       LinearScale,
       Tooltip,
-      Legend
+      Legend,
     );
 
     const { titles, times } = getTaskTimeData();
@@ -139,7 +140,7 @@ watch(
       chart.update();
     }
   },
-  { deep: true }
+  { deep: true },
 );
 
 // コンポーネントのマウント時にグラフを初期化

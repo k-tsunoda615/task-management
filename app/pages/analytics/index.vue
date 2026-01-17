@@ -236,7 +236,7 @@ const filteredTasks = computed(() => {
     if (targetDate) {
       // 期間でフィルタリング
       periodFilteredTasks = tasks.value.filter(
-        (task) => task.updated_at && dayjs(task.updated_at).isAfter(targetDate)
+        (task) => task.updated_at && dayjs(task.updated_at).isAfter(targetDate),
       );
     }
   }
@@ -245,11 +245,11 @@ const filteredTasks = computed(() => {
   let privateFilteredTasks = periodFilteredTasks;
   if (todoStore.taskFilter === "private") {
     privateFilteredTasks = periodFilteredTasks.filter(
-      (task) => task.is_private === true
+      (task) => task.is_private === true,
     );
   } else if (todoStore.taskFilter === "public") {
     privateFilteredTasks = periodFilteredTasks.filter(
-      (task) => task.is_private === false
+      (task) => task.is_private === false,
     );
   }
 
@@ -264,7 +264,7 @@ const filteredTasks = computed(() => {
 // 集計データ
 const totalTasks = computed(() => filteredTasks.value.length);
 const completedTasks = computed(
-  () => filteredTasks.value.filter((task) => task.is_finished).length
+  () => filteredTasks.value.filter((task) => task.is_finished).length,
 );
 const totalTimeSpent = computed(() =>
   filteredTasks.value.reduce((sum, task) => {
@@ -272,7 +272,7 @@ const totalTimeSpent = computed(() =>
       ? task.total_time[0] || 0
       : task.total_time || 0;
     return sum + time;
-  }, 0)
+  }, 0),
 );
 
 // 最近のタスク
@@ -311,9 +311,9 @@ onMounted(async () => {
       // ストアのフィルターが変更されたら、データを再フィルタリング
       console.log(
         "Todoストアのフィルターが変更されました:",
-        todoStore.taskFilter
+        todoStore.taskFilter,
       );
-    }
+    },
   );
 
   // クリーンアップ

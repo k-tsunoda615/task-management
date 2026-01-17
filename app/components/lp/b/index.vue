@@ -15,15 +15,15 @@
             <h1
               class="text-5xl md:text-6xl font-bold text-gray-900 !leading-[1.15]"
             >
-              成果が出る人は、<br />
+              成果が出る人は、<br >
               <span
                 class="bg-clip-text text-transparent bg-gradient-to-r from-primary-600 to-blue-500"
                 >重要なことから</span
-              ><br />
+              ><br >
               始めている。
             </h1>
             <p class="mt-6 text-xl text-gray-600 leading-relaxed">
-              pritoxは、タスク管理アプリで終わらせない。<br />
+              pritoxは、タスク管理アプリで終わらせない。<br >
               優先順位で動き、成果を最大化する新しいワークスタイルをあなたに。
             </p>
             <div class="mt-10 flex flex-col sm:flex-row gap-4">
@@ -37,11 +37,11 @@
                 <UIcon name="i-heroicons-arrow-right" class="ml-2" />
               </UButton>
               <UButton
-                @click="scrollToFeatures"
                 size="xl"
                 variant="soft"
                 color="gray"
                 class="rounded-full px-8 py-4"
+                @click="scrollToFeatures"
               >
                 <span class="text-lg">機能を探索する</span>
                 <UIcon name="i-heroicons-chevron-down" class="ml-2" />
@@ -51,16 +51,16 @@
           <div class="relative">
             <div
               class="absolute -z-10 inset-0 bg-gradient-to-r from-primary-100 to-blue-100 rounded-[30px] blur-3xl opacity-40"
-            ></div>
+            />
             <div
               class="bg-white rounded-[30px] shadow-xl border border-gray-100 p-6 relative overflow-hidden"
             >
               <div
                 class="absolute top-0 right-0 w-40 h-40 bg-gradient-to-b from-primary-100 to-transparent rounded-bl-[100px] -z-0"
-              ></div>
+              />
               <div
                 class="absolute bottom-0 left-0 w-32 h-32 bg-gradient-to-t from-blue-100 to-transparent rounded-tr-[120px] -z-0"
-              ></div>
+              />
               <div class="relative z-10">
                 <div class="mb-4">
                   <h3 class="text-xl font-bold text-gray-900 mb-1">
@@ -73,14 +73,14 @@
                 <div class="space-y-4">
                   <AuthSignupCard
                     class="bg-transparent"
-                    cardClass="bg-transparent shadow-none border-0 p-0"
-                    :showTitle="false"
-                    :showSubtitle="false"
+                    card-class="bg-transparent shadow-none border-0 p-0"
+                    :show-title="false"
+                    :show-subtitle="false"
                   />
                   <div class="relative my-6">
                     <div
                       class="absolute inset-x-0 top-1/2 h-px bg-gray-200 transform -translate-y-1/2"
-                    ></div>
+                    />
                     <div class="relative flex justify-center">
                       <span class="bg-white px-4 text-sm text-gray-500"
                         >または</span
@@ -88,9 +88,9 @@
                     </div>
                   </div>
                   <AuthGuestLogin
-                    redirectTo="/board"
+                    redirect-to="/board"
                     class="transform hover:scale-105 transition-transform duration-200"
-                    buttonText="ゲストモードで試してみる"
+                    button-text="ゲストモードで試してみる"
                   />
                   <div class="text-center text-xs text-gray-500 mt-3">
                     アカウント登録なしで機能を体験できます
@@ -150,7 +150,7 @@
             成果を出すために必要な機能だけを
           </h2>
           <p class="mt-4 text-xl text-gray-600 max-w-2xl mx-auto">
-            本当に重要なことに集中できるように設計された、<br />シンプルで効果的なツール
+            本当に重要なことに集中できるように設計された、<br >シンプルで効果的なツール
           </p>
         </div>
 
@@ -240,12 +240,12 @@
           <div class="order-2 md:order-1 relative">
             <div
               class="absolute -z-10 inset-0 bg-gradient-to-r from-blue-100 to-primary-100 rounded-[30px] blur-3xl opacity-40"
-            ></div>
+            />
             <img
               src="https://placehold.jp/600x450.png"
               alt="アプリケーションのデモ画面"
               class="rounded-[30px] shadow-xl border border-gray-100"
-            />
+            >
             <div
               class="absolute -bottom-6 -right-6 bg-white p-4 rounded-2xl shadow-xl border border-gray-50"
             >
@@ -265,10 +265,10 @@
               成果を出すワークフロー
             </div>
             <h2 class="text-4xl font-bold text-gray-900">
-              「忙しい」から<br />「成果が出る」へ
+              「忙しい」から<br >「成果が出る」へ
             </h2>
             <p class="mt-6 text-lg text-gray-600 leading-relaxed">
-              単なるタスク管理ではなく、成果を最大化するための<br />
+              単なるタスク管理ではなく、成果を最大化するための<br >
               新しいワークスタイルを提供します。
             </p>
             <div class="mt-10 space-y-4">
@@ -334,10 +334,10 @@
     >
       <div class="container mx-auto max-w-4xl px-4 text-center">
         <h2 class="text-4xl font-bold">
-          今日から、重要なことに<br class="md:hidden" />集中する習慣を始めよう
+          今日から、重要なことに<br class="md:hidden" >集中する習慣を始めよう
         </h2>
         <p class="mt-6 text-xl text-white/90 max-w-2xl mx-auto">
-          タスクをこなすだけでなく、本当に価値のある成果を生み出す。<br />
+          タスクをこなすだけでなく、本当に価値のある成果を生み出す。<br >
           それがプロフェッショナルの働き方です。
         </p>
         <div class="mt-10">
@@ -369,7 +369,7 @@ definePageMeta({
   middleware: ["auth"],
 });
 
-const user = useSupabaseUser();
+const _user = useSupabaseUser();
 
 // 機能セクションまでスクロール
 const scrollToFeatures = () => {

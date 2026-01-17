@@ -132,20 +132,19 @@
       </div>
     </div>
     <!-- メモ -->
+    <!-- eslint-disable vue/no-v-html -->
     <div
       v-if="todo.memo"
       class="border border-gray-200/50 rounded-[6px] p-2 mt-2 text-sm markdown-prose max-h-[20em] w-full overflow-y-auto pr-2 break-all"
       v-html="parsedMemo"
     />
+    <!-- eslint-enable vue/no-v-html -->
   </div>
 </template>
 
 <script setup lang="ts">
-import { useTodoStore } from "../../../stores/tasks";
 import { marked } from "marked";
-// @ts-ignore
 import DOMPurify from "dompurify";
-import type { PropType } from "vue";
 import type { TaskStatus } from "../../utils/constants";
 import { formatTime } from "../../utils/time";
 
@@ -182,9 +181,6 @@ const props = defineProps({
 
 const emit = defineEmits(["edit", "start-timing", "stop-timing"]);
 
-const todoStore = useTodoStore();
-const toast = useToast();
-
 const editTodo = (event: Event) => {
   event.preventDefault();
   event.stopPropagation();
@@ -192,6 +188,7 @@ const editTodo = (event: Event) => {
 };
 
 // ドラッグ開始時にTodoのIDをデータ転送オブジェクトに設定
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const handleDragStart = (event: any) => {
   event.dataTransfer.setData("todoId", props.todo.id);
   event.dataTransfer.effectAllowed = "move";

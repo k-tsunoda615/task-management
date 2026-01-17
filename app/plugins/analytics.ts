@@ -2,7 +2,7 @@ import { initDataLayer, pushEvent } from "../utils/analytics";
 
 export default defineNuxtPlugin((nuxtApp) => {
   // クライアントサイドでのみ実行
-  if (process.client) {
+  if (import.meta.client) {
     // dataLayer初期化
     initDataLayer();
 
@@ -54,16 +54,16 @@ export const trackFormSubmit = (
   formId: string,
   formName: string | null,
   formDestination: string,
-  formLength: number,
+  formLength: number
 ) => {
   pushEvent("form_submit", {
-    eventModel: {
+    eventModel: JSON.stringify({
       form_id: formId,
       form_name: formName,
       form_destination: formDestination,
       form_length: formLength,
       send_to: process.env.NUXT_PUBLIC_GTM_ID || "",
-    },
+    }),
   });
 };
 
@@ -78,7 +78,7 @@ export const trackFormComplete = (
   formId: string,
   formName: string,
   formType: string,
-  formLength: number,
+  formLength: number
 ) => {
   pushEvent("form_complete", {
     form_id: formId,
@@ -99,7 +99,7 @@ export const trackFormError = (
   formId: string,
   formName: string,
   errorMessage: string,
-  errorField?: string,
+  errorField?: string
 ) => {
   pushEvent("form_error", {
     form_id: formId,
@@ -118,7 +118,7 @@ export const trackFormError = (
 export const trackFormStart = (
   formId: string,
   formName: string,
-  formType: string,
+  formType: string
 ) => {
   pushEvent("form_start", {
     form_id: formId,

@@ -6,8 +6,8 @@
         color="red"
         size="sm"
         icon="i-heroicons-trash"
-        @click="$emit('deleteTodos')"
         class="mr-2"
+        @click="$emit('deleteTodos')"
       >
         {{ selectedCount }}件を削除
       </UButton>
@@ -33,7 +33,6 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch, computed } from "vue";
 import { TASK_STATUS, TASK_STATUS_LABELS } from "../../utils/constants";
 
 const props = defineProps({

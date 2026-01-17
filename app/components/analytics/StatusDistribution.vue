@@ -10,14 +10,14 @@
       <div
         ref="completionChartContainer"
         class="max-w-[220px] max-h-[220px]"
-      ></div>
+      />
       <div class="text-base font-medium text-gray-600 mt-4">完了率</div>
       <div class="text-3xl font-bold text-green-600">{{ completionRate }}%</div>
     </div>
 
     <!-- ステータス分布グラフ -->
     <div class="flex flex-col items-center justify-center">
-      <div ref="statusChartContainer" class="max-w-[300px] max-h-[300px]"></div>
+      <div ref="statusChartContainer" class="max-w-[300px] max-h-[300px]"/>
     </div>
   </div>
 </template>
@@ -29,7 +29,7 @@ import {
   STATUS_COLORS,
 } from "../../utils/constants";
 import type { Todo } from "../../../types/todo";
-import type { ChartData, ChartOptions, TooltipItem } from "chart.js";
+import type { TooltipItem } from "chart.js";
 
 const props = defineProps<{
   tasks: Todo[];
@@ -37,7 +37,9 @@ const props = defineProps<{
 
 const statusChartContainer = ref<HTMLElement | null>(null);
 const completionChartContainer = ref<HTMLElement | null>(null);
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 let statusChart: any = null;
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 let completionChart: any = null;
 const showCompletedTasks = ref(false);
 
@@ -90,11 +92,6 @@ const completionRate = computed(() => {
   if (props.tasks.length === 0) return 0;
   const { finished } = getCompletionCounts();
   return Math.round((finished / props.tasks.length) * 100);
-});
-
-// 完了タスクがあるかどうか
-const hasFinishedTasks = computed(() => {
-  return props.tasks.some((task) => task.is_finished);
 });
 
 // ステータス別にタスクをカウント
@@ -157,7 +154,7 @@ const initStatusChart = async () => {
       data: {
         labels: Object.keys(statusCounts).map(
           (status) =>
-            TASK_STATUS_LABELS[status as keyof typeof TASK_STATUS_LABELS]
+            TASK_STATUS_LABELS[status as keyof typeof TASK_STATUS_LABELS],
         ),
         datasets: [
           {
@@ -195,7 +192,7 @@ const initStatusChart = async () => {
                 const value = context.raw || 0;
                 const total = context.dataset.data.reduce(
                   (a: number, b: number) => a + b,
-                  0
+                  0,
                 );
                 const percentage =
                   total > 0 ? Math.round(((value as number) / total) * 100) : 0;
@@ -260,7 +257,7 @@ const initCompletionChart = async () => {
                 const value = context.raw || 0;
                 const total = context.dataset.data.reduce(
                   (a: number, b: number) => a + b,
-                  0
+                  0,
                 );
                 const percentage =
                   total > 0 ? Math.round(((value as number) / total) * 100) : 0;
@@ -294,7 +291,7 @@ watch(
       completionChart.update();
     }
   },
-  { deep: true }
+  { deep: true },
 );
 
 // コンポーネントのマウント時にグラフを初期化

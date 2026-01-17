@@ -2,10 +2,10 @@
   <div class="relative w-full">
     <!-- フィルターとソートオプション -->
     <TableActions
-      v-model:searchQuery="searchQuery"
-      v-model:statusFilter="statusFilter"
-      :selectedCount="selectedTodos.length"
-      @deleteTodos="deleteSelectedTodos"
+      v-model:search-query="searchQuery"
+      v-model:status-filter="statusFilter"
+      :selected-count="selectedTodos.length"
+      @delete-todos="deleteSelectedTodos"
     />
 
     <!-- メインテーブル -->
@@ -13,11 +13,11 @@
       <div class="overflow-x-auto">
         <table class="w-full whitespace-nowrap">
           <TableHeader
-            :sortColumn="sortColumn"
-            :sortDirection="sortDirection"
+            :sort-column="sortColumn"
+            :sort-direction="sortDirection"
             :select-all="selectAll"
             @sort="sortBy"
-            @toggleSelectAll="toggleSelectAll"
+            @toggle-select-all="toggleSelectAll"
           />
           <draggable
             v-model="draggedTodos"
@@ -25,29 +25,29 @@
             handle=".handle"
             :animation="200"
             class="bg-white divide-y divide-gray-200"
-            @change="handleDragChange"
-            @start="handleDragStart"
-            @end="handleDragEnd"
             :group="{ name: 'todos', pull: true, put: true }"
             item-key="id"
             ghost-class="ghost-card"
             chosen-class="chosen-item"
             drag-class="drag-item"
             :delay="50"
-            :delayOnTouchOnly="true"
-            :fallbackTolerance="5"
+            :delay-on-touch-only="true"
+            :fallback-tolerance="5"
             :force-fallback="true"
+            @change="handleDragChange"
+            @start="handleDragStart"
+            @end="handleDragEnd"
           >
             <template #item="{ element }">
               <TableRow
                 :todo="element"
                 :is-selected="selectedTodos.includes(element.id)"
-                @toggleSelect="toggleSelect"
-                @updateTodo="updateTodo"
-                @closeAllEditors="closeAllEditors"
+                @toggle-select="toggleSelect"
+                @update-todo="updateTodo"
+                @close-all-editors="closeAllEditors"
               />
             </template>
-            <template #footer v-if="filteredAndSortedTodos.length === 0">
+            <template v-if="filteredAndSortedTodos.length === 0" #footer>
               <tr>
                 <td
                   colspan="7"
@@ -93,9 +93,9 @@
           >
           <UButton
             color="red"
-            @click="confirmDelete"
             :loading="isDeleting"
             :disabled="isDeleting"
+            @click="confirmDelete"
           >
             削除
           </UButton>
@@ -106,7 +106,6 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, watch, onUnmounted } from "vue";
 import { useTodoStore } from "../../../stores/tasks";
 import { useTagStore } from "../../../stores/tags";
 import { TASK_STATUS } from "../../utils/constants";
@@ -173,14 +172,14 @@ onMounted(async () => {
   // 完了タスク表示切り替えイベントを監視
   window.addEventListener(
     "completedTasksVisibilityToggle",
-    handleCompletedTasksVisibilityToggle,
+    handleCompletedTasksVisibilityToggle
   );
 
   // クリーンアップ
   onUnmounted(() => {
     window.removeEventListener(
       "completedTasksVisibilityToggle",
-      handleCompletedTasksVisibilityToggle,
+      handleCompletedTasksVisibilityToggle
     );
   });
 });
@@ -305,7 +304,9 @@ const filteredAndSortedTodos = computed<Todo[]>(() => {
   } else {
     // 他のカラムでソート
     result = result.sort((a, b) => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       let valueA: any = a[sortColumn.value as keyof Todo];
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       let valueB: any = b[sortColumn.value as keyof Todo];
 
       // ステータスの場合は特別な順序を適用
@@ -365,12 +366,13 @@ const filteredAndSortedTodos = computed<Todo[]>(() => {
     });
   }
 
-  // ドラッグ中でなければ内部状態も更新
-  if (!isInternalDragActive.value) {
-    internalDraggedTodos.value = [...result];
-  }
-
   return result;
+});
+
+watch(filteredAndSortedTodos, (todos) => {
+  if (!isInternalDragActive.value) {
+    internalDraggedTodos.value = [...todos];
+  }
 });
 
 // ドラッグの開始ハンドラを追加
@@ -393,6 +395,7 @@ function handleDragEnd() {
 }
 
 // ドラッグ変更のハンドラ
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 async function handleDragChange(evt: any) {
   console.log("ドラッグ変更イベント:", JSON.stringify(evt, null, 2));
 

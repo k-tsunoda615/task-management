@@ -19,8 +19,8 @@
           color="green"
           variant="solid"
           size="sm"
-          @click="stopTiming(currentTimingTodo)"
           icon="i-heroicons-pause"
+          @click="stopTiming(currentTimingTodo)"
         >
           停止
         </UButton>
@@ -51,8 +51,8 @@
           <UButton
             variant="ghost"
             color="gray"
-            @click="toggleLayout"
             class="flex items-center"
+            @click="toggleLayout"
           >
             <UIcon :name="getLayoutIcon()" class="w-5 h-5 mr-1" />
             <span class="text-sm">レイアウト</span>
@@ -102,6 +102,7 @@
           </div>
           <div class="flex-1 min-h-[300px]">
             <draggable
+              :key="'priority-container'"
               v-model="todosByStatus[TASK_STATUS.PRIORITY]"
               :group="{ name: 'todos', pull: true, put: true }"
               item-key="id"
@@ -111,7 +112,6 @@
               ghost-class="ghost-card"
               drag-class="drag-item"
               chosen-class="chosen-item"
-              :key="'priority-container'"
               :class="{
                 'border-2 border-dashed border-gray-200 rounded-[6px] p-4':
                   todosByStatus[TASK_STATUS.PRIORITY].length === 0,
@@ -123,9 +123,9 @@
               <template #item="{ element }">
                 <TodoCard
                   :todo="element"
-                  :showTimerBar="showTimerBar"
-                  :showTagBar="showTagBar"
-                  :timerLoading="timerButtonLoading === element.id"
+                  :show-timer-bar="showTimerBar"
+                  :show-tag-bar="showTagBar"
+                  :timer-loading="timerButtonLoading === element.id"
                   @edit="openEditModal"
                   @start-timing="startTiming"
                   @stop-timing="stopTiming"
@@ -176,6 +176,7 @@
             </UTooltip>
           </div>
           <draggable
+            :key="'next-container'"
             v-model="todosByStatus[TASK_STATUS.NEXT]"
             :group="{ name: 'todos', pull: true, put: true }"
             item-key="id"
@@ -185,7 +186,6 @@
             ghost-class="ghost-card"
             drag-class="drag-item"
             chosen-class="chosen-item"
-            :key="'next-container'"
             @change="handleDragChange"
             @start="handleDragStart"
             @end="handleDragEnd"
@@ -193,9 +193,9 @@
             <template #item="{ element }">
               <TodoCard
                 :todo="element"
-                :showTimerBar="showTimerBar"
-                :showTagBar="showTagBar"
-                :timerLoading="timerButtonLoading === element.id"
+                :show-timer-bar="showTimerBar"
+                :show-tag-bar="showTagBar"
+                :timer-loading="timerButtonLoading === element.id"
                 @edit="openEditModal"
                 @start-timing="startTiming"
                 @stop-timing="stopTiming"
@@ -229,6 +229,7 @@
           {{ TASK_STATUS_LABELS[TASK_STATUS.PRIORITY] }}
         </h2>
         <draggable
+          :key="'priority-container'"
           v-model="todosByStatus[TASK_STATUS.PRIORITY]"
           :group="{ name: 'todos', pull: true, put: true }"
           item-key="id"
@@ -238,7 +239,6 @@
           ghost-class="ghost-card"
           drag-class="drag-item"
           chosen-class="chosen-item"
-          :key="'priority-container'"
           @change="handleDragChange"
           @start="handleDragStart"
           @end="handleDragEnd"
@@ -246,9 +246,9 @@
           <template #item="{ element }">
             <TodoCard
               :todo="element"
-              :showTimerBar="showTimerBar"
-              :showTagBar="showTagBar"
-              :timerLoading="timerButtonLoading === element.id"
+              :show-timer-bar="showTimerBar"
+              :show-tag-bar="showTagBar"
+              :timer-loading="timerButtonLoading === element.id"
               @edit="openEditModal"
               @start-timing="startTiming"
               @stop-timing="stopTiming"
@@ -278,6 +278,7 @@
           {{ TASK_STATUS_LABELS[TASK_STATUS.NEXT] }}
         </h2>
         <draggable
+          :key="'next-container'"
           v-model="todosByStatus[TASK_STATUS.NEXT]"
           :group="{ name: 'todos', pull: true, put: true }"
           item-key="id"
@@ -287,7 +288,6 @@
           ghost-class="ghost-card"
           drag-class="drag-item"
           chosen-class="chosen-item"
-          :key="'next-container'"
           @change="handleDragChange"
           @start="handleDragStart"
           @end="handleDragEnd"
@@ -295,9 +295,9 @@
           <template #item="{ element }">
             <TodoCard
               :todo="element"
-              :showTimerBar="showTimerBar"
-              :showTagBar="showTagBar"
-              :timerLoading="timerButtonLoading === element.id"
+              :show-timer-bar="showTimerBar"
+              :show-tag-bar="showTagBar"
+              :timer-loading="timerButtonLoading === element.id"
               @edit="openEditModal"
               @start-timing="startTiming"
               @stop-timing="stopTiming"
@@ -328,6 +328,7 @@
         {{ TASK_STATUS_LABELS[TASK_STATUS.ARCHIVED] }}
       </h2>
       <draggable
+        :key="'archived-container'"
         v-model="todosByStatus[TASK_STATUS.ARCHIVED]"
         :group="{ name: 'todos', pull: true, put: true }"
         item-key="id"
@@ -337,7 +338,6 @@
         ghost-class="ghost-card"
         drag-class="drag-item"
         chosen-class="chosen-item"
-        :key="'archived-container'"
         @change="handleDragChange"
         @start="handleDragStart"
         @end="handleDragEnd"
@@ -345,9 +345,9 @@
         <template #item="{ element }">
           <TodoCard
             :todo="element"
-            :showTimerBar="showTimerBar"
-            :showTagBar="showTagBar"
-            :timerLoading="timerButtonLoading === element.id"
+            :show-timer-bar="showTimerBar"
+            :show-tag-bar="showTagBar"
+            :timer-loading="timerButtonLoading === element.id"
             @edit="openEditModal"
             @start-timing="startTiming"
             @stop-timing="stopTiming"
@@ -365,22 +365,22 @@
     <!-- 新規タスクモーダル -->
     <TaskCreateModal
       :show="showNewTaskModal"
-      :newTodo="newTodo"
-      :timeInput="timeInput"
-      :tagStore="tagStore"
-      :isCreating="isCreating"
-      :newTagName="newTagName"
+      :new-todo="newTodo"
+      :time-input="timeInput"
+      :tag-store="tagStore"
+      :is-creating="isCreating"
+      :new-tag-name="newTagName"
       @close="showNewTaskModal = false"
       @create="createTodo"
       @add-tag="addTag"
       @toggle-tag="toggleTagOnNewTodo"
       @validate-time="validateTimeInput"
-      @update:newTodoTitle="(val: string) => (newTodo.title = val)"
-      @update:newTodoMemo="(val: string) => (newTodo.memo = val)"
-      @update:newTodoStatus="(val: any) => (newTodo.status = val)"
-      @update:newTodoIsPrivate="(val: boolean) => (newTodo.is_private = val)"
-      @update:timeInput="(val: string) => (timeInput = val)"
-      @update:newTagName="(val: string) => (newTagName = val)"
+      @update:new-todo-title="(val: string) => (newTodo.title = val)"
+      @update:new-todo-memo="(val: string) => (newTodo.memo = val)"
+      @update:new-todo-status="updateNewTodoStatus"
+      @update:new-todo-is-private="(val: boolean) => (newTodo.is_private = val)"
+      @update:time-input="(val: string) => (timeInput = val)"
+      @update:new-tag-name="(val: string) => (newTagName = val)"
     />
 
     <!-- 編集タスクモーダル -->
@@ -401,13 +401,13 @@
               variant="ghost"
               icon="i-heroicons-trash"
               size="sm"
-              @click="confirmDeleteTodo"
               title="タスクを削除"
               class="hover:bg-red-50"
+              @click="confirmDeleteTodo"
             />
           </div>
         </template>
-        <form @submit.prevent="updateTodo" class="space-y-4">
+        <form class="space-y-4" @submit.prevent="updateTodo">
           <UFormGroup label="タイトル">
             <UInput v-model="editingTodo.title" required />
           </UFormGroup>
@@ -424,8 +424,8 @@
               <UButton
                 size="sm"
                 variant="soft"
-                @click="showPreviewModal = true"
                 icon="i-heroicons-eye"
+                @click="showPreviewModal = true"
               >
                 プレビュー
               </UButton>
@@ -450,8 +450,8 @@
               <UInput
                 v-model="editTimeInput"
                 placeholder="00:00:00"
-                @input="validateTimeInput"
                 :disabled="editingTodo.is_timing"
+                @input="validateTimeInput"
               />
               <UTooltip
                 v-if="editingTodo.is_timing"
@@ -508,7 +508,7 @@
             <UButton variant="ghost" @click="showEditModal = false">
               キャンセル
             </UButton>
-            <UButton color="primary" @click="updateTodo" :loading="isUpdating">
+            <UButton color="primary" :loading="isUpdating" @click="updateTodo">
               更新
             </UButton>
           </div>
@@ -529,10 +529,12 @@
             <template #header>
               <h3 class="text-lg font-medium text-gray-900">プレビュー</h3>
             </template>
+            <!-- eslint-disable vue/no-v-html -->
             <div
               class="prose prose-sm max-w-none min-h-[300px] overflow-y-auto max-h-[60vh]"
               v-html="parsedPreviewMemo"
             />
+            <!-- eslint-enable vue/no-v-html -->
             <template #footer>
               <div class="flex justify-end">
                 <UButton variant="ghost" @click="showPreviewModal = false">
@@ -547,7 +549,7 @@
 
     <DeleteConfirmModal
       :show="showDeleteConfirmModal"
-      :editingTodo="editingTodo"
+      :editing-todo="editingTodo"
       @close="showDeleteConfirmModal = false"
       @delete="deleteCurrentTodo"
     />
@@ -590,7 +592,6 @@ import {
   TASK_STATUS_LABELS,
 } from "../../utils/constants";
 import type { TaskStatus } from "../../utils/constants";
-import { ref, onMounted, onUnmounted } from "vue";
 import { useTodoSearch } from "../../composables/useTodoSearch";
 // アナリティクス用のユーティリティをインポート
 import {
@@ -607,7 +608,6 @@ import {
 import AnalogTimer from "./AnalogTimer.vue";
 import { calculateNewOrders } from "../../utils/todoUtils";
 import type { TimerNavigationEvent } from "../../plugins/timer-guard.global";
-// @ts-ignore
 import DOMPurify from "dompurify";
 
 const todoStore = useTodoStore();
@@ -682,6 +682,11 @@ const newTodo = ref<NewTodo>({
   is_timing: false,
   tags: [] as Tag[],
 });
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const updateNewTodoStatus = (val: any) => {
+  newTodo.value.status = val;
+};
 
 const editingTodo = ref<EditingTodo>({
   id: "",
@@ -950,16 +955,19 @@ defineExpose({ isMobile });
 // コンポーネントがマウントされたときの処理
 onMounted(() => {
   // タイマー表示切り替えイベントを監視する関数を定義
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const handleTimerVisibilityToggle = (event: any) => {
     showTimerBar.value = event.detail.showTimer;
   };
 
   // タグ表示切り替えイベントを監視する関数を定義
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const handleTagVisibilityToggle = (event: any) => {
     showTagBar.value = event.detail.showTagBar;
   };
 
   // 完了タスク表示切り替えイベントを監視する関数を定義
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const handleCompletedTasksVisibilityToggle = (event: any) => {
     showCompletedTasks.value = event.detail.showCompletedTasks;
   };
@@ -1046,6 +1054,8 @@ onMounted(() => {
 
     // タイトルを元に戻す
     resetTitle();
+
+    unsubscribe();
   });
 
   // 初期タイマー表示状態を設定
@@ -1183,7 +1193,7 @@ const createTodo = async () => {
 // Todo更新
 const updateTodo = async () => {
   if (!editingTodo.value.title) return;
-  let totalTimeSeconds = editingTodo.value.is_timing
+  const totalTimeSeconds = editingTodo.value.is_timing
     ? currentTotalTime.value
     : parseTimeToSeconds(editTimeInput.value);
 
@@ -1222,6 +1232,7 @@ const updateTodo = async () => {
 };
 
 // ドラッグ&ドロップ時の処理を更新
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const handleDragChange = async (evt: any) => {
   console.log("ドラッグイベント:", evt); // デバッグ用
 
@@ -1432,28 +1443,6 @@ const handleDragChange = async (evt: any) => {
   }
 };
 
-// コンテナからステータスを抽出するヘルパー関数
-const extractStatusFromContainer = (container: any): TaskStatus => {
-  // コンテナのクラスやデータ属性などから判断
-  if (!container) return TASK_STATUS.PRIORITY;
-
-  const dataStatus = container.getAttribute?.("data-status");
-  if (dataStatus === "priority") return TASK_STATUS.PRIORITY;
-  if (dataStatus === "next") return TASK_STATUS.NEXT;
-  if (dataStatus === "archived") return TASK_STATUS.ARCHIVED;
-
-  // その他のプロパティからの判断
-  const classList = container.classList || [];
-  const classString = Array.from(classList).join(" ");
-
-  if (classString.includes("priority")) return TASK_STATUS.PRIORITY;
-  if (classString.includes("next")) return TASK_STATUS.NEXT;
-  if (classString.includes("archived")) return TASK_STATUS.ARCHIVED;
-
-  // デフォルト値
-  return TASK_STATUS.PRIORITY;
-};
-
 // タイミング開始
 const startTiming = async (todo: Todo) => {
   // 既に計測中のタスクがある場合は停止
@@ -1490,7 +1479,7 @@ const startTiming = async (todo: Todo) => {
       description: `「${todo.title}」の計測を開始しました`,
       color: "blue",
     });
-  } catch (error) {
+  } catch {
     // エラー時は状態を元に戻す
     currentTimingTodo.value = null;
     currentTotalTime.value = 0;
@@ -1533,7 +1522,7 @@ const stopTiming = async (todo: Todo) => {
       description: `「${todo.title}」の計測を停止しました (${formatTime(finalTime)})`,
       color: "green",
     });
-  } catch (error) {
+  } catch {
     // エラー時は状態を元に戻す
     currentTimingTodo.value = prevTodo;
     startTimerForTodo(todo, (total) => {
@@ -1545,45 +1534,6 @@ const stopTiming = async (todo: Todo) => {
       description: "タイマーの停止に失敗しました",
       color: "red",
     });
-  }
-};
-
-// todoリスト内の計測中のタスクを更新する
-const updateTimingTodoInLists = (
-  todoId: string,
-  newTotalTime: number,
-  isTimingValue = true
-) => {
-  // 各リスト内のタスクを検索して更新
-  const updateInList = (list: Todo[]) => {
-    const index = list.findIndex((t) => t.id === todoId);
-    if (index !== -1 && list[index]) {
-      // 新しいオブジェクトを作成して置き換え（リアクティブな更新のため）
-      list[index] = {
-        ...list[index],
-        total_time: newTotalTime,
-        is_timing: isTimingValue,
-      } as Todo;
-    }
-  };
-
-  updateInList(todosByStatus[TASK_STATUS.PRIORITY]);
-  updateInList(todosByStatus[TASK_STATUS.NEXT]);
-  updateInList(todosByStatus[TASK_STATUS.ARCHIVED]);
-};
-
-// バックグラウンドでタイマー情報を更新
-const updateTimerInBackground = async () => {
-  if (!currentTimingTodo.value) return;
-
-  try {
-    await todoStore.updateTodo({
-      id: currentTimingTodo.value.id,
-      total_time: [currentTotalTime.value], // 配列として送信
-      is_timing: true,
-    });
-  } catch (error) {
-    console.error("タイマー情報の更新に失敗:", error);
   }
 };
 

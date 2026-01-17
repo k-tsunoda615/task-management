@@ -1,4 +1,3 @@
-import { computed } from "vue";
 import { useTodoStore } from "../../stores/tasks";
 
 const DEFAULT_INTERVAL_FALLBACK = 1800000;
@@ -36,7 +35,7 @@ export function useTodoSync() {
   };
 
   const startAutoRefresh = (options?: { intervalMs?: number }) => {
-    if (!process.client || autoRefreshState.value.started) {
+    if (!import.meta.client || autoRefreshState.value.started) {
       return;
     }
 
