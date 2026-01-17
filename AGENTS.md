@@ -32,12 +32,12 @@
 
 - `app/components/`: 画面機能ごとのフォルダに置き、1ファイル=1コンポーネントを原則とする。補助ロジックは同フォルダに `*.ts` で同居可。
 - `app/composables/`: 単一責務の関数単位で分割し、I/O が明確な API だけを公開する。UI 依存とデータ取得を混在させない。
-- `server/api/`: ルート単位で 1 ファイル。外部サービス呼び出しや権限チェックはここに閉じ、フロントからは `useFetch` で呼び出す。
+- `server/api/`: ルート単位で 1 ファイル。外部サービス呼び出しや権限チェックはここに閉じ、フロントからは原則 `useFetch` で呼び出す。
 
 ## API fetch ルール
 
 - クライアントから直接 Supabase に触れる処理は `app/composables/*Repository.ts` に集約する。
-- 外部 API や権限チェックが必要な処理は `server/api/*` に閉じる。フロントは `useFetch` で呼ぶ。
+- 外部 API や権限チェックが必要な処理は `server/api/*` に閉じる。フロントは原則 `useFetch` で呼ぶ。
 - 取得系は `useAsyncData` を使い、`server: false` など実行環境を明示する。
 - エラーは `createError` か明示的なメッセージに揃え、UI 側で一貫して扱える形にする。
 - 依存の増加を避け、同じ API に対する重複 fetch はストア/キャッシュで統合する。
@@ -55,10 +55,38 @@
 
 ```ts
 /**
- * なぜこの関数が必要なのかを書く。
- * @description この関数が何をしているのかを記述する
- * @returns 戻り値を記述する
+ * {関数の役割}
+ * @description {詳細な挙動や副作用の説明}
+ * @param {引数名} - {説明}
+ * @param {引数名} - {説明}（デフォルト: {値}）
+ * @returns {{型}} {戻り値の概要}
  */
+```
+
+## 実装統一ルール (JS/TS)
+
+- 関数定義はすべてアロー関数で統一する（コンポーネント、Composables、Utils、API ハンドラーを含む）。`function` キーワードは禁止。
+- 型定義は `type` を使用する。`interface` は禁止。命名は PascalCase、プロパティには可能な限り説明コメントを付与する。
+- Vue 3.5+ の書き方に合わせる。Props は Reactive Props Destructuring を使う。
+- Emits は call-signature 形式の `defineEmits` を使う。
+
+例:
+
+```ts
+type Props = {
+  /** タイトル表示用 */
+  title?: string;
+};
+
+const { title = "Default" } = defineProps<Props>();
+
+const emit = defineEmits<{
+  (e: "submit", payload: { id: string }): void;
+}>();
+
+const fetchTasks = async (): Promise<void> => {
+  // ...
+};
 ```
 
 ## リファクタリング指針
