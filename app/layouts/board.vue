@@ -130,6 +130,28 @@ const showDataLoadingOverlay = computed(
   () => !!user.value && (todoStore.isLoading || isSyncing.value),
 );
 
+/**
+ * サイドバー開閉イベントを反映する。
+ * @description カスタムイベントの detail から状態を更新する。
+ * @param {Event} event - サイドバー切り替えイベント。
+ * @returns {void} なし。
+ */
+const handleSidebarToggle = (event: Event) => {
+  const detail = (event as CustomEvent<{ isOpen: boolean }>).detail;
+  if (typeof detail?.isOpen === "boolean") {
+    sidebarOpen.value = detail.isOpen;
+  }
+};
+
+/**
+ * 画面幅からモバイル状態を判定する。
+ * @description 768px 未満をモバイルとして扱う。
+ * @returns {void} なし。
+ */
+const checkMobile = () => {
+  isMobile.value = window.innerWidth < 768;
+};
+
 watch(
   () => user.value?.id,
   (currentUserId) => {
@@ -158,16 +180,9 @@ onMounted(() => {
   }
 
   // サイドバーの状態変更を監視（カスタムイベント）
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  window.addEventListener("sidebarToggle", (event: any) => {
-    sidebarOpen.value = event.detail.isOpen;
-  });
+  window.addEventListener("sidebarToggle", handleSidebarToggle);
 
   // 画面サイズの監視
-  const checkMobile = () => {
-    isMobile.value = window.innerWidth < 768;
-  };
-
   checkMobile();
   window.addEventListener("resize", checkMobile);
 });

@@ -127,6 +127,12 @@ const statusFilter = ref("");
 const privateFilter = ref<boolean | null>(null);
 const showCompletedTasks = ref(false);
 
+/**
+ * 完了タスク表示の切り替えを反映する。
+ * @description カスタムイベントの detail から状態を更新する。
+ * @param {Event} event - 完了タスク表示切替イベント。
+ * @returns {void} なし。
+ */
 const handleCompletedTasksVisibilityToggle = (event: Event) => {
   const detail = (event as CustomEvent<{ showCompletedTasks: boolean }>).detail;
   if (typeof detail?.showCompletedTasks === "boolean") {
@@ -184,8 +190,12 @@ onMounted(async () => {
   });
 });
 
-// ストアのtaskFilterからprivateFilterを更新
-function updatePrivateFilterFromStore() {
+/**
+ * ストアの taskFilter から privateFilter を更新する。
+ * @description taskFilter の値に応じて表示条件を切り替える。
+ * @returns {void} なし。
+ */
+const updatePrivateFilterFromStore = () => {
   if (todoStore.taskFilter === "all") {
     privateFilter.value = null;
   } else if (todoStore.taskFilter === "private") {
@@ -193,20 +203,31 @@ function updatePrivateFilterFromStore() {
   } else if (todoStore.taskFilter === "public") {
     privateFilter.value = false;
   }
-}
+};
 
-// 全選択の切り替え
-function toggleSelectAll(value: boolean) {
+/**
+ * 全選択の切り替えを行う。
+ * @description 表示中の Todo を一括で選択する。
+ * @param {boolean} value - 全選択の状態。
+ * @returns {void} なし。
+ */
+const toggleSelectAll = (value: boolean) => {
   selectAll.value = value;
   if (value) {
     selectedTodos.value = filteredAndSortedTodos.value.map((todo) => todo.id);
   } else {
     selectedTodos.value = [];
   }
-}
+};
 
-// 個別選択の切り替え
-function toggleSelect(id: string, selected: boolean) {
+/**
+ * 個別選択の切り替えを行う。
+ * @description Todo の選択状態を更新する。
+ * @param {string} id - 対象 Todo ID。
+ * @param {boolean} selected - 選択状態。
+ * @returns {void} なし。
+ */
+const toggleSelect = (id: string, selected: boolean) => {
   if (selected) {
     selectedTodos.value.push(id);
   } else {
@@ -217,16 +238,24 @@ function toggleSelect(id: string, selected: boolean) {
   selectAll.value =
     selectedTodos.value.length === filteredAndSortedTodos.value.length &&
     filteredAndSortedTodos.value.length > 0;
-}
+};
 
-// 選択したタスクの削除
-function deleteSelectedTodos() {
+/**
+ * 選択したタスクの削除確認を開く。
+ * @description 1件以上選択されている場合にモーダルを表示する。
+ * @returns {void} なし。
+ */
+const deleteSelectedTodos = () => {
   if (selectedTodos.value.length === 0) return;
   showDeleteModal.value = true;
-}
+};
 
-// 削除の確認
-async function confirmDelete() {
+/**
+ * 選択済みタスクの削除を実行する。
+ * @description 選択中の ID を順次削除する。
+ * @returns {Promise<void>} 削除処理の完了。
+ */
+const confirmDelete = async () => {
   if (selectedTodos.value.length === 0) return;
 
   const selectedCount = selectedTodos.value.length;
@@ -250,7 +279,7 @@ async function confirmDelete() {
   } finally {
     isDeleting.value = false;
   }
-}
+};
 
 // ドラッグ可能なTodo一覧
 const draggedTodos = computed<Todo[]>({
@@ -375,28 +404,41 @@ watch(filteredAndSortedTodos, (todos) => {
   }
 });
 
-// ドラッグの開始ハンドラを追加
-function handleDragStart() {
+/**
+ * ドラッグ開始時の状態を更新する。
+ * @description 内部ドラッグ状態とフラグを更新する。
+ * @returns {void} なし。
+ */
+const handleDragStart = () => {
   console.log("ドラッグ開始");
   // 内部ドラッグ状態をアクティブに
   isInternalDragActive.value = true;
   // グローバルフラグも設定
   isDragging.value = true;
-}
+};
 
-// ドラッグの終了ハンドラを追加
-function handleDragEnd() {
+/**
+ * ドラッグ終了時の状態を更新する。
+ * @description 状態フラグをリセットする。
+ * @returns {void} なし。
+ */
+const handleDragEnd = () => {
   console.log("ドラッグ終了 - 成功時は状態はhandleDragChangeで処理済み");
   // ドラッグ変更がなかった場合のみここでフラグをリセット
   if (isInternalDragActive.value) {
     isInternalDragActive.value = false;
     isDragging.value = false;
   }
-}
+};
 
-// ドラッグ変更のハンドラ
+/**
+ * ドラッグ変更イベントを処理する。
+ * @description 移動後の並び順を計算して更新する。
+ * @param {any} evt - ドラッグイベント。
+ * @returns {Promise<void>} 更新処理の完了。
+ */
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-async function handleDragChange(evt: any) {
+const handleDragChange = async (evt: any) => {
   console.log("ドラッグ変更イベント:", JSON.stringify(evt, null, 2));
 
   // ドラッグ&ドロップの種類を特定（moved: 同じリスト内の移動）
@@ -556,10 +598,15 @@ async function handleDragChange(evt: any) {
       isDragging.value = false;
     }, 100); // 遅延を少し長めに
   }
-}
+};
 
-// Todoを更新
-async function updateTodo(updatedData: Partial<Todo>) {
+/**
+ * Todo を更新する。
+ * @description ストア更新後にトーストを表示する。
+ * @param {Partial<Todo>} updatedData - 更新対象のデータ。
+ * @returns {Promise<unknown>} 更新結果。
+ */
+const updateTodo = async (updatedData: Partial<Todo>) => {
   try {
     console.log("TodoRow からの更新データ:", updatedData);
 
@@ -590,7 +637,7 @@ async function updateTodo(updatedData: Partial<Todo>) {
 
     throw error;
   }
-}
+};
 
 // 合計時間を計算
 const totalTime = computed(() => {
@@ -600,8 +647,13 @@ const totalTime = computed(() => {
   }, 0);
 });
 
-// ソートの切り替え
-function sortBy(column: string) {
+/**
+ * ソート条件を切り替える。
+ * @description 同じカラムは順序を循環させる。
+ * @param {string} column - ソート対象のカラム。
+ * @returns {void} なし。
+ */
+const sortBy = (column: string) => {
   // ドラッグ中は何もしない
   if (isInternalDragActive.value || isDragging.value) return;
 
@@ -622,10 +674,14 @@ function sortBy(column: string) {
     // 最初は降順から始める
     sortDirection.value = "desc";
   }
-}
+};
 
-// すべての編集状態を閉じる関数
-function closeAllEditors() {
+/**
+ * すべての編集状態を閉じる。
+ * @description テーブル内の行にカスタムイベントを送る。
+ * @returns {void} なし。
+ */
+const closeAllEditors = () => {
   // 全てのTableRowコンポーネントに通知するためのイベントバスを使う方法もあります
   // 単純な実装として、イベントをブロードキャストします
   const tableRows = document.querySelectorAll("tbody tr");
@@ -634,7 +690,7 @@ function closeAllEditors() {
     // カスタムイベントでDOM経由で通知
     row.dispatchEvent(new CustomEvent("close-editors", { bubbles: true }));
   });
-}
+};
 </script>
 
 <style>

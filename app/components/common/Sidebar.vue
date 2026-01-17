@@ -497,7 +497,13 @@ const totalAssetSize = computed(() => {
 
 const formattedStorageUsage = computed(() => formatBytes(totalAssetSize.value));
 
-function formatBytes(bytes: number) {
+/**
+ * バイト数を人間可読な単位に変換する。
+ * @description B/KB/MB/GB の範囲で表示する。
+ * @param {number} bytes - 変換対象のバイト数。
+ * @returns {string} 表示用のサイズ文字列。
+ */
+const formatBytes = (bytes: number) => {
   if (!bytes || bytes <= 0) {
     return "0MB";
   }
@@ -514,17 +520,27 @@ function formatBytes(bytes: number) {
   const decimals = unitIndex <= 1 ? 0 : 1;
   const value = size.toFixed(decimals);
   return `${decimals === 0 ? value : value.replace(/\.0$/, "")}${units[unitIndex]}`;
-}
+};
 
-// 現在のルートをチェックするメソッド
-function isCurrentRoute(path: string): boolean {
+/**
+ * 現在のルートが指定パス配下かを判定する。
+ * @description ルートの prefix で一致を確認する。
+ * @param {string} path - 判定対象のパス。
+ * @returns {boolean} 一致する場合 true。
+ */
+const isCurrentRoute = (path: string): boolean => {
   return route.path.startsWith(path);
-}
+};
 
-// ページ遷移用関数
-function navigateTo(path: string): void {
+/**
+ * 指定パスへ遷移する。
+ * @description Router を使ってページ遷移する。
+ * @param {string} path - 遷移先パス。
+ * @returns {void} なし。
+ */
+const navigateTo = (path: string): void => {
   router.push(path);
-}
+};
 
 // ページ読み込み時に状態を初期化
 onMounted(async () => {
@@ -556,11 +572,21 @@ onMounted(async () => {
 });
 
 // ボードビューに移動
+/**
+ * ボードビューへ移動する。
+ * @description /board へ遷移する。
+ * @returns {void} なし。
+ */
 const navigateToBoard = () => {
   navigateTo("/board");
 };
 
 // サイドバーの開閉を切り替える
+/**
+ * サイドバーの開閉状態を切り替える。
+ * @description 状態を保存し、カスタムイベントを発行する。
+ * @returns {void} なし。
+ */
 const toggleSidebar = () => {
   isOpen.value = !isOpen.value;
   // サイドバーの状態をローカルストレージに保存
@@ -575,6 +601,11 @@ const toggleSidebar = () => {
 };
 
 // タイマー表示の切り替え
+/**
+ * タイマー表示の切り替えを行う。
+ * @description 状態を保存し、カスタムイベントを発行する。
+ * @returns {void} なし。
+ */
 const toggleTimerVisibility = () => {
   showTimer.value = !showTimer.value;
   // タイマー表示状態をローカルストレージに保存
@@ -589,6 +620,11 @@ const toggleTimerVisibility = () => {
 };
 
 // タグ表示の切り替え
+/**
+ * タグ表示の切り替えを行う。
+ * @description 状態を保存し、カスタムイベントを発行する。
+ * @returns {void} なし。
+ */
 const toggleTagVisibility = () => {
   showTagBar.value = !showTagBar.value;
   localStorage.setItem("showTagBar", showTagBar.value.toString());
@@ -600,6 +636,11 @@ const toggleTagVisibility = () => {
 };
 
 // 完了タスク表示の切り替え
+/**
+ * 完了タスク表示の切り替えを行う。
+ * @description 状態を保存し、カスタムイベントを発行する。
+ * @returns {void} なし。
+ */
 const toggleCompletedTasksVisibility = () => {
   showCompletedTasks.value = !showCompletedTasks.value;
   localStorage.setItem(
@@ -614,6 +655,11 @@ const toggleCompletedTasksVisibility = () => {
 };
 
 // フィルターに応じたラベルを取得
+/**
+ * 現在のフィルターに応じたラベルを返す。
+ * @description taskFilter の値から表示ラベルを決定する。
+ * @returns {string} 表示ラベル。
+ */
 const getFilterLabel = () => {
   switch (todoStore.taskFilter) {
     case "all":
@@ -628,6 +674,11 @@ const getFilterLabel = () => {
 };
 
 // フィルターに応じたアイコンを取得
+/**
+ * 現在のフィルターに応じたアイコン名を返す。
+ * @description taskFilter の値からアイコンを決定する。
+ * @returns {string} アイコン名。
+ */
 const getFilterIcon = () => {
   switch (todoStore.taskFilter) {
     case "all":
@@ -641,6 +692,11 @@ const getFilterIcon = () => {
   }
 };
 
+/**
+ * フィルターのボタン色を取得する。
+ * @description taskFilter の値から色を決定する。
+ * @returns {string} 色名。
+ */
 const getFilterButtonColor = () => {
   switch (todoStore.taskFilter) {
     case "all":
@@ -654,6 +710,11 @@ const getFilterButtonColor = () => {
   }
 };
 
+/**
+ * フィルター状態を順番に切り替える。
+ * @description all → private → public → all の順で切り替える。
+ * @returns {void} なし。
+ */
 const toggleTaskFilter = () => {
   if (todoStore.taskFilter === "all") {
     todoStore.setTaskFilter("private");
@@ -666,6 +727,12 @@ const toggleTaskFilter = () => {
 
 // ゴミ箱へのドロップを処理
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
+/**
+ * ゴミ箱へのドロップを処理する。
+ * @description DragEvent から todoId を取得し削除イベントを送る。
+ * @param {any} event - ドロップイベント。
+ * @returns {void} なし。
+ */
 const handleTrashDrop = (event: any) => {
   const todoId = event.dataTransfer.getData("todoId");
   if (todoId) {

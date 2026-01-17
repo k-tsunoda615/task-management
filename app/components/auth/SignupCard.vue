@@ -116,7 +116,12 @@ const loading = ref(false);
 const errorMessage = ref("");
 const agreeTerms = ref(false);
 
-async function handleSubmit() {
+/**
+ * 新規登録を実行する。
+ * @description 匿名ユーザーの場合は昇格、通常は新規登録を行う。
+ * @returns {Promise<void>} 登録処理の完了。
+ */
+const handleSubmit = async () => {
   if (!email.value || !password.value) return;
   if (!agreeTerms.value) {
     errorMessage.value = "利用規約とプライバシーポリシーに同意してください。";
@@ -156,5 +161,5 @@ async function handleSubmit() {
   } finally {
     loading.value = false;
   }
-}
+};
 </script>

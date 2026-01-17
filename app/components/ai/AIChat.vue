@@ -124,10 +124,12 @@
 </template>
 
 <script setup lang="ts">
-interface ChatMessage {
+type ChatMessage = {
+  /** 送信ロール */
   role: "user" | "model";
+  /** メッセージ本文 */
   text: string;
-}
+};
 
 const models = [
   { label: "Gemini 2.5 Flash", value: "gemini-2.5-flash" },
@@ -143,7 +145,11 @@ const isLoading = ref(false);
 const messages = ref<ChatMessage[]>([]);
 const selectedModel = ref(models[0]?.value || "gemini-2.5-flash");
 
-// Gemini API 用の履歴フォーマットに変換
+/**
+ * Gemini API 用の履歴フォーマットに変換する。
+ * @description role と text を parts 形式に変換する。
+ * @returns {Array<{ role: string; parts: Array<{ text: string }> }>} 履歴配列。
+ */
 const getHistory = () => {
   return messages.value.map((m) => ({
     role: m.role,
@@ -151,6 +157,11 @@ const getHistory = () => {
   }));
 };
 
+/**
+ * 入力メッセージを送信する。
+ * @description Gemini API を呼び出し、応答を履歴に追加する。
+ * @returns {Promise<void>} 送信処理の完了。
+ */
 const sendMessage = async () => {
   if (!input.value.trim() || isLoading.value) return;
 

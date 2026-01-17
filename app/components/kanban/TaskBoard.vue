@@ -641,6 +641,12 @@ const timeInput = ref("00:00:00");
 const editTimeInput = ref("00:00:00");
 
 // 新規タスクモーダルを開く時に現在のフィルター状態に基づいて初期値を設定
+/**
+ * 新規タスクモーダルを開く。
+ * @description フィルター状態に応じて初期値を設定する。
+ * @param {TaskStatus} [status] - 初期ステータス。
+ * @returns {void} なし。
+ */
 const openNewTaskModal = (status?: TaskStatus) => {
   // フィルターがプライベートの場合はチェックを入れる
   newTodo.value.is_private = todoStore.taskFilter === "private";
@@ -649,28 +655,45 @@ const openNewTaskModal = (status?: TaskStatus) => {
   showNewTaskModal.value = true;
 };
 
-interface NewTodo {
+type NewTodo = {
+  /** タイトル */
   title: string;
+  /** メモ本文 */
   memo: string;
+  /** ステータス */
   status: TaskStatus;
+  /** 非公開フラグ */
   is_private: boolean;
+  /** 完了フラグ */
   is_finished: boolean;
+  /** 累計時間 */
   total_time: number;
+  /** 計測中フラグ */
   is_timing: boolean;
+  /** タグ一覧 */
   tags: Tag[];
-}
+};
 
-interface EditingTodo {
+type EditingTodo = {
+  /** Todo ID */
   id: string;
+  /** タイトル */
   title: string;
+  /** メモ本文 */
   memo: string;
+  /** ステータス */
   status: TaskStatus;
+  /** 非公開フラグ */
   is_private: boolean;
+  /** 完了フラグ */
   is_finished: boolean;
+  /** 累計時間 */
   total_time: number;
+  /** 計測中フラグ */
   is_timing: boolean;
+  /** タグ一覧 */
   tags: Tag[];
-}
+};
 
 const newTodo = ref<NewTodo>({
   title: "",
@@ -684,6 +707,12 @@ const newTodo = ref<NewTodo>({
 });
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
+/**
+ * 新規 Todo のステータスを更新する。
+ * @description セレクト変更時の値を反映する。
+ * @param {any} val - ステータス値。
+ * @returns {void} なし。
+ */
 const updateNewTodoStatus = (val: any) => {
   newTodo.value.status = val;
 };
@@ -754,7 +783,12 @@ const parsedPreviewMemo = computed(() => {
 //   });
 // };
 
-// 時間のフォーマット関数（秒数を hh:mm:ss 形式に変換）
+/**
+ * 秒数を hh:mm:ss 形式に変換する。
+ * @description number | number[] を正規化して表示用文字列にする。
+ * @param {number | number[]} seconds - 変換対象の秒数。
+ * @returns {string} フォーマット済みの文字列。
+ */
 const formatTime = (seconds: number | number[]) => {
   // 配列の場合は最初の要素を使用
   let totalSeconds = 0;
@@ -777,7 +811,12 @@ const formatTime = (seconds: number | number[]) => {
   ].join(":");
 };
 
-// 時間文字列（hh:mm:ss）を秒数に変換
+/**
+ * hh:mm:ss 形式の文字列を秒数に変換する。
+ * @description 不正な形式は 0 を返す。
+ * @param {string} timeStr - 変換対象の文字列。
+ * @returns {number} 秒数。
+ */
 const parseTimeToSeconds = (timeStr: string): number => {
   if (!timeStr) return 0;
 
@@ -838,6 +877,11 @@ const timerButtonLoading = ref<string | null>(null);
 
 // タグ追加用
 const newTagName = ref("");
+/**
+ * タグを追加する。
+ * @description 入力を検証し、タグ作成後に状態をリセットする。
+ * @returns {Promise<void>} 追加処理の完了。
+ */
 const addTag = async () => {
   const name = newTagName.value.trim();
   if (!name) return;
@@ -880,6 +924,11 @@ const filteredTodos = computed(() => {
 });
 
 // updateTodosByStatusを検索結果で分類するよう修正
+/**
+ * ステータス別の Todo 一覧を更新する。
+ * @description 検索結果を分類し、sort_order で並べ替える。
+ * @returns {void} なし。
+ */
 const updateTodosByStatus = () => {
   // ドラッグ中は再分類をスキップ
   if (isDragging.value) return;
@@ -942,40 +991,98 @@ watch(
 );
 
 const isMobile = ref(false);
+/**
+ * 画面幅からモバイル判定を更新する。
+ * @description 767px 以下をモバイルとして扱う。
+ * @returns {void} なし。
+ */
 const checkMobile = () => {
   isMobile.value = window.matchMedia("(max-width: 767px)").matches;
 };
-checkMobile();
-window.addEventListener("resize", checkMobile);
-onUnmounted(() => {
-  window.removeEventListener("resize", checkMobile);
-});
+
 defineExpose({ isMobile });
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+/**
+ * タイマー表示の切り替えを反映する。
+ * @description カスタムイベントの detail から状態を更新する。
+ * @param {any} event - タイマー表示切替イベント。
+ * @returns {void} なし。
+ */
+const handleTimerVisibilityToggle = (event: any) => {
+  showTimerBar.value = event.detail.showTimer;
+};
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+/**
+ * タグ表示の切り替えを反映する。
+ * @description カスタムイベントの detail から状態を更新する。
+ * @param {any} event - タグ表示切替イベント。
+ * @returns {void} なし。
+ */
+const handleTagVisibilityToggle = (event: any) => {
+  showTagBar.value = event.detail.showTagBar;
+};
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+/**
+ * 完了タスク表示の切り替えを反映する。
+ * @description カスタムイベントの detail から状態を更新する。
+ * @param {any} event - 完了タスク表示切替イベント。
+ * @returns {void} なし。
+ */
+const handleCompletedTasksVisibilityToggle = (event: any) => {
+  showCompletedTasks.value = event.detail.showCompletedTasks;
+};
+
+/**
+ * ページ表示状態の変化を処理する。
+ * @description 非表示時は状態保存、表示時はタイマー復帰を行う。
+ * @returns {void} なし。
+ */
+const handleVisibilityChange = () => {
+  if (document.visibilityState === "hidden") {
+    // ページが非表示になった時の処理
+    // タイマーは続行するが、UIの更新は停止
+    console.log("ページが非表示になりました");
+
+    // 現在のタイマー状態をローカルストレージに保存
+    if (currentTimingTodo.value) {
+      localStorage.setItem(
+        "timerState",
+        JSON.stringify({
+          todoId: currentTimingTodo.value.id,
+          startTime: startTime.value,
+          currentTotalTime: currentTotalTime.value,
+          title: currentTimingTodo.value.title,
+        })
+      );
+    }
+  } else {
+    // ページが再表示された時の処理
+    console.log("ページが再表示されました");
+
+    // タイマーの状態を復元
+    if (currentTimingTodo.value && timerInterval.value === null) {
+      startTimerForTodo(currentTimingTodo.value, (total) => {
+        // タイトルを更新する
+        updateTitle(total, currentTimingTodo.value!.title);
+      });
+    }
+  }
+};
+
+const timerNavigationBus = useEventBus<TimerNavigationEvent>("timer-navigation");
+let unsubscribeTimerNavigation: (() => void) | null = null;
+let unsubscribeTrashDrop: (() => void) | null = null;
 
 // コンポーネントがマウントされたときの処理
 onMounted(() => {
-  // タイマー表示切り替えイベントを監視する関数を定義
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const handleTimerVisibilityToggle = (event: any) => {
-    showTimerBar.value = event.detail.showTimer;
-  };
-
-  // タグ表示切り替えイベントを監視する関数を定義
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const handleTagVisibilityToggle = (event: any) => {
-    showTagBar.value = event.detail.showTagBar;
-  };
-
-  // 完了タスク表示切り替えイベントを監視する関数を定義
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const handleCompletedTasksVisibilityToggle = (event: any) => {
-    showCompletedTasks.value = event.detail.showCompletedTasks;
-  };
+  checkMobile();
+  window.addEventListener("resize", checkMobile);
 
   // タイマーナビゲーションイベントをリッスン
-  const timerNavigationBus =
-    useEventBus<TimerNavigationEvent>("timer-navigation");
-  const unsubscribe = timerNavigationBus.on((event) => {
+  unsubscribeTimerNavigation = timerNavigationBus.on((event) => {
     if (
       event.action === "stop-timer" &&
       currentTimingTodo.value &&
@@ -989,39 +1096,6 @@ onMounted(() => {
     }
   });
 
-  // ページの表示状態変化を監視するリスナー
-  const handleVisibilityChange = () => {
-    if (document.visibilityState === "hidden") {
-      // ページが非表示になった時の処理
-      // タイマーは続行するが、UIの更新は停止
-      console.log("ページが非表示になりました");
-
-      // 現在のタイマー状態をローカルストレージに保存
-      if (currentTimingTodo.value) {
-        localStorage.setItem(
-          "timerState",
-          JSON.stringify({
-            todoId: currentTimingTodo.value.id,
-            startTime: startTime.value,
-            currentTotalTime: currentTotalTime.value,
-            title: currentTimingTodo.value.title,
-          })
-        );
-      }
-    } else {
-      // ページが再表示された時の処理
-      console.log("ページが再表示されました");
-
-      // タイマーの状態を復元
-      if (currentTimingTodo.value && timerInterval.value === null) {
-        startTimerForTodo(currentTimingTodo.value, (total) => {
-          // タイトルを更新する
-          updateTitle(total, currentTimingTodo.value!.title);
-        });
-      }
-    }
-  };
-
   // イベントリスナーを追加
   window.addEventListener("timerVisibilityToggle", handleTimerVisibilityToggle);
   window.addEventListener("tagVisibilityToggle", handleTagVisibilityToggle);
@@ -1030,33 +1104,6 @@ onMounted(() => {
     handleCompletedTasksVisibilityToggle
   );
   document.addEventListener("visibilitychange", handleVisibilityChange);
-
-  // コンポーネントがアンマウントされたときにイベントリスナーを削除
-  onUnmounted(() => {
-    window.removeEventListener(
-      "timerVisibilityToggle",
-      handleTimerVisibilityToggle
-    );
-    window.removeEventListener(
-      "tagVisibilityToggle",
-      handleTagVisibilityToggle
-    );
-    window.removeEventListener(
-      "completedTasksVisibilityToggle",
-      handleCompletedTasksVisibilityToggle
-    );
-    document.removeEventListener("visibilitychange", handleVisibilityChange);
-
-    // タイマーを停止
-    if (timerInterval.value) {
-      cancelAnimationFrame(timerInterval.value);
-    }
-
-    // タイトルを元に戻す
-    resetTitle();
-
-    unsubscribe();
-  });
 
   // 初期タイマー表示状態を設定
   const savedTimerState = localStorage.getItem("showTimer");
@@ -1077,6 +1124,11 @@ onMounted(() => {
   }
 
   // 初期データの取得
+  /**
+   * 初期データを取得する。
+   * @description Todo とタグを取得して初期状態を整える。
+   * @returns {Promise<void>} 取得処理の完了。
+   */
   const fetchInitialData = async () => {
     try {
       await todoStore.fetchTodos();
@@ -1098,7 +1150,7 @@ onMounted(() => {
   updateTodosByStatus();
 
   // ゴミ箱へのドロップイベントを監視
-  trashEventBus.on((todoId) => {
+  unsubscribeTrashDrop = trashEventBus.on((todoId) => {
     if (confirm("このタスクを削除しますか？")) {
       deleteTodo(todoId as string);
     }
@@ -1111,7 +1163,37 @@ onMounted(() => {
   }
 });
 
-// 編集モーダルを開く
+onUnmounted(() => {
+  window.removeEventListener("resize", checkMobile);
+  window.removeEventListener(
+    "timerVisibilityToggle",
+    handleTimerVisibilityToggle
+  );
+  window.removeEventListener("tagVisibilityToggle", handleTagVisibilityToggle);
+  window.removeEventListener(
+    "completedTasksVisibilityToggle",
+    handleCompletedTasksVisibilityToggle
+  );
+  document.removeEventListener("visibilitychange", handleVisibilityChange);
+
+  // タイマーを停止
+  if (timerInterval.value) {
+    cancelAnimationFrame(timerInterval.value);
+  }
+
+  // タイトルを元に戻す
+  resetTitle();
+
+  unsubscribeTimerNavigation?.();
+  unsubscribeTrashDrop?.();
+});
+
+/**
+ * 編集モーダルを開く。
+ * @description 編集対象の Todo を整形して状態にセットする。
+ * @param {Todo} todo - 編集対象の Todo。
+ * @returns {void} なし。
+ */
 const openEditModal = (todo: Todo) => {
   editingTodo.value = {
     id: todo.id,
@@ -1128,7 +1210,11 @@ const openEditModal = (todo: Todo) => {
   showEditModal.value = true;
 };
 
-// 新規Todo作成
+/**
+ * 新規 Todo を作成する。
+ * @description 入力内容から Todo を作成し、ストアを更新する。
+ * @returns {Promise<void>} 作成処理の完了。
+ */
 const createTodo = async () => {
   if (!newTodo.value.title) return;
   let minSortOrder = 0;
@@ -1190,7 +1276,11 @@ const createTodo = async () => {
   }
 };
 
-// Todo更新
+/**
+ * Todo を更新する。
+ * @description 編集内容を保存し、必要な通知を行う。
+ * @returns {Promise<void>} 更新処理の完了。
+ */
 const updateTodo = async () => {
   if (!editingTodo.value.title) return;
   const totalTimeSeconds = editingTodo.value.is_timing
@@ -1231,7 +1321,12 @@ const updateTodo = async () => {
   }
 };
 
-// ドラッグ&ドロップ時の処理を更新
+/**
+ * ドラッグ&ドロップの変更を処理する。
+ * @description 移動先ステータスと順序を更新する。
+ * @param {any} evt - ドラッグイベント。
+ * @returns {Promise<void>} 更新処理の完了。
+ */
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const handleDragChange = async (evt: any) => {
   console.log("ドラッグイベント:", evt); // デバッグ用
@@ -1443,7 +1538,12 @@ const handleDragChange = async (evt: any) => {
   }
 };
 
-// タイミング開始
+/**
+ * タイマー計測を開始する。
+ * @description 計測中の Todo を更新し、タイマーを起動する。
+ * @param {Todo} todo - 計測対象の Todo。
+ * @returns {Promise<void>} 計測開始の完了。
+ */
 const startTiming = async (todo: Todo) => {
   // 既に計測中のタスクがある場合は停止
   if (currentTimingTodo.value && currentTimingTodo.value.id !== todo.id) {
@@ -1493,7 +1593,12 @@ const startTiming = async (todo: Todo) => {
   }
 };
 
-// タイミング停止
+/**
+ * タイマー計測を停止する。
+ * @description 計測結果を保存し、タイマーを停止する。
+ * @param {Todo} todo - 計測対象の Todo。
+ * @returns {Promise<void>} 計測停止の完了。
+ */
 const stopTiming = async (todo: Todo) => {
   // 現在の時間を保存
   const finalTime = currentTotalTime.value;
@@ -1537,7 +1642,12 @@ const stopTiming = async (todo: Todo) => {
   }
 };
 
-// Todo削除関数
+/**
+ * Todo を削除する。
+ * @description ストアから削除し、通知を表示する。
+ * @param {string} todoId - 削除対象の Todo ID。
+ * @returns {Promise<void>} 削除処理の完了。
+ */
 const deleteTodo = async (todoId: string) => {
   try {
     await todoStore.deleteTodo(todoId);
@@ -1560,12 +1670,20 @@ const deleteTodo = async (todoId: string) => {
   }
 };
 
-// ドラッグ開始時のハンドラ
+/**
+ * ドラッグ開始時の状態を更新する。
+ * @description ドラッグ中フラグを立てる。
+ * @returns {void} なし。
+ */
 const handleDragStart = () => {
   isDragging.value = true;
 };
 
-// ドラッグ終了時のハンドラ
+/**
+ * ドラッグ終了時の状態を更新する。
+ * @description 少し遅延してフラグを戻す。
+ * @returns {void} なし。
+ */
 const handleDragEnd = () => {
   // 少し遅延させてドラッグ終了を処理
   setTimeout(() => {
@@ -1573,7 +1691,12 @@ const handleDragEnd = () => {
   }, 50);
 };
 
-// 時間入力の検証
+/**
+ * 時間入力を検証する。
+ * @description 不正な形式の場合はトーストを表示する。
+ * @param {Event} event - 入力イベント。
+ * @returns {void} なし。
+ */
 const validateTimeInput = (event: Event) => {
   const input = event.target as HTMLInputElement;
   const value = input.value;
@@ -1586,14 +1709,22 @@ const validateTimeInput = (event: Event) => {
   }
 };
 
-// 削除確認モーダルを開く
+/**
+ * 削除確認モーダルを開く。
+ * @description 編集中の Todo がある場合に表示する。
+ * @returns {void} なし。
+ */
 const confirmDeleteTodo = () => {
   if (editingTodo.value && editingTodo.value.id) {
     showDeleteConfirmModal.value = true;
   }
 };
 
-// 削除確認モーダルで削除を確認したときの処理
+/**
+ * 削除確認モーダルの削除処理を実行する。
+ * @description 削除後にモーダルを閉じる。
+ * @returns {Promise<void>} 削除処理の完了。
+ */
 const deleteCurrentTodo = async () => {
   if (editingTodo.value && editingTodo.value.id) {
     try {
@@ -1607,7 +1738,11 @@ const deleteCurrentTodo = async () => {
   }
 };
 
-// レイアウトに関する関数
+/**
+ * 現在のレイアウトに対応するクラスを取得する。
+ * @description カラム数に応じたクラス名を返す。
+ * @returns {string} クラス名。
+ */
 const getLayoutClass = () => {
   switch (currentLayout.value) {
     case "4-1":
@@ -1623,6 +1758,11 @@ const getLayoutClass = () => {
   }
 };
 
+/**
+ * Priority 列のレイアウトクラスを取得する。
+ * @description レイアウトに応じた列幅を返す。
+ * @returns {string} クラス名。
+ */
 const getPriorityClass = () => {
   switch (currentLayout.value) {
     case "4-1":
@@ -1638,6 +1778,11 @@ const getPriorityClass = () => {
   }
 };
 
+/**
+ * Next 列のレイアウトクラスを取得する。
+ * @description レイアウトに応じた列幅を返す。
+ * @returns {string} クラス名。
+ */
 const getNextUpClass = () => {
   switch (currentLayout.value) {
     case "4-1":
@@ -1653,6 +1798,11 @@ const getNextUpClass = () => {
   }
 };
 
+/**
+ * レイアウト切り替えのツールチップを取得する。
+ * @description 現在のレイアウトに応じた説明を返す。
+ * @returns {string} ツールチップ。
+ */
 const getLayoutTooltip = () => {
   const labels = {
     "4-1": "レイアウト: 4:1",
@@ -1668,7 +1818,11 @@ type LayoutType = "4-1" | "3-2" | "1-1" | "1-col";
 // レイアウト状態の管理
 const currentLayout = ref<LayoutType>("3-2");
 
-// レイアウトを切り替える
+/**
+ * レイアウトを切り替える。
+ * @description 次のレイアウトへ循環し、設定を保存する。
+ * @returns {void} なし。
+ */
 const toggleLayout = () => {
   const layouts: LayoutType[] = ["4-1", "3-2", "1-1", "1-col"];
   const currentIndex = layouts.indexOf(currentLayout.value);
@@ -1685,22 +1839,12 @@ const toggleLayout = () => {
   localStorage.setItem("todoLayout", currentLayout.value);
 };
 
-// 色を暗くするユーティリティ関数
-// function darkenColor(hex: string, amount = 0.2) {
-//   // hex: #RRGGBB
-//   let c = hex.replace("#", "");
-//   if (c.length === 3) c = c[0] + c[0] + c[1] + c[1] + c[2] + c[2];
-//   const num = parseInt(c, 16);
-//   let r = (num >> 16) & 0xff;
-//   let g = (num >> 8) & 0xff;
-//   let b = num & 0xff;
-//   r = Math.max(0, Math.floor(r * (1 - amount)));
-//   g = Math.max(0, Math.floor(g * (1 - amount)));
-//   b = Math.max(0, Math.floor(b * (1 - amount)));
-//   return `#${r.toString(16).padStart(2, "0")}${g.toString(16).padStart(2, "0")}${b.toString(16).padStart(2, "0")}`;
-// }
-
-// タグのON/OFF切り替え用関数を追加
+/**
+ * 新規 Todo のタグ選択を切り替える。
+ * @description 選択済みなら削除し、未選択なら追加する。
+ * @param {Tag} tag - 対象のタグ。
+ * @returns {void} なし。
+ */
 const toggleTagOnNewTodo = (tag: Tag) => {
   const idx = newTodo.value.tags.findIndex((t: Tag) => t.id === tag.id);
   if (idx !== -1) {
@@ -1744,7 +1888,11 @@ watch(selectedTagId, (newTagId, oldTagId) => {
   }
 });
 
-// レイアウトアイコンを取得
+/**
+ * レイアウトアイコンを取得する。
+ * @description 現在のレイアウトに応じたアイコン名を返す。
+ * @returns {string} アイコン名。
+ */
 const getLayoutIcon = () => {
   switch (currentLayout.value) {
     case "4-1":

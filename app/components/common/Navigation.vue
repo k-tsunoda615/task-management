@@ -111,6 +111,11 @@ const lastSyncedLabel = computed(() => {
   return dayjs(lastSyncedAt.value).format("HH:mm:ss");
 });
 
+/**
+ * 手動で最新データを再取得する。
+ * @description 同期処理を実行し、失敗時はログを出す。
+ * @returns {Promise<void>} 再取得の完了。
+ */
 const handleManualRefresh = async () => {
   try {
     await refresh();
@@ -119,6 +124,11 @@ const handleManualRefresh = async () => {
   }
 };
 
+/**
+ * サインアウトを実行する。
+ * @description Supabase からサインアウトし、認証画面へ遷移する。
+ * @returns {Promise<void>} サインアウト処理の完了。
+ */
 const logout = async () => {
   await client.auth.signOut();
   router.push("/auth");

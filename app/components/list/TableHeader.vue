@@ -136,8 +136,13 @@ const props = defineProps({
 
 defineEmits(["sort", "toggleSelectAll"]);
 
-// ソートアイコンの取得
-function getSortIcon(column: string): string {
+/**
+ * ソートアイコンを取得する。
+ * @description 現在のソート状態に応じてアイコン名を返す。
+ * @param {string} column - 対象カラム名。
+ * @returns {string} アイコン名。
+ */
+const getSortIcon = (column: string): string => {
   if (column !== props.sortColumn) {
     return "i-heroicons-arrows-up-down";
   }
@@ -149,5 +154,5 @@ function getSortIcon(column: string): string {
   } else {
     return "i-heroicons-arrows-up-down";
   }
-}
+};
 </script>

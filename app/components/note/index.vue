@@ -285,6 +285,11 @@ const formattedUpdateDate = computed(() => {
   return date.toLocaleString("ja-JP");
 });
 
+/**
+ * 前の画面へ戻る。
+ * @description 戻れない場合はボードへ遷移する。
+ * @returns {void} なし。
+ */
 const goBack = () => {
   if (window.history.length > 1) {
     window.history.back();
@@ -295,20 +300,31 @@ const goBack = () => {
 };
 
 // タスクの取得
-async function fetchTask() {
+/**
+ * タスクを取得する。
+ * @description ストアから対象タスクを取得し状態を更新する。
+ * @returns {Promise<void>} 取得処理の完了。
+ */
+const fetchTask = async () => {
+  if (!props.taskId) return;
   isLoading.value = true;
   try {
     if (!todoStore.isLoaded) {
       await todoStore.fetchTodos();
     }
 
-    const foundTask = todoStore.todos.find((t) => t.id === props.taskId);
+    let foundTask = todoStore.todos.find((t) => t.id === props.taskId);
+    if (!foundTask) {
+      await todoStore.refreshTodo(props.taskId);
+      foundTask = todoStore.todos.find((t) => t.id === props.taskId);
+    }
+
     if (foundTask) {
       task.value = foundTask;
       editedTask.value = { ...foundTask };
 
       // 時間の初期化
-      currentTime.value = extractTotalTime(task.value.total_time);
+      currentTime.value = extractTotalTime(foundTask.total_time);
     } else {
       console.error("タスクが見つかりません:", props.taskId);
       // エラー処理（リダイレクトなど）
@@ -318,10 +334,16 @@ async function fetchTask() {
   } finally {
     isLoading.value = false;
   }
-}
+};
 
 // タスクの更新
-async function updateTask(field: string) {
+/**
+ * タスクを更新する。
+ * @description 指定フィールドを更新し、トーストを表示する。
+ * @param {string} field - 更新するフィールド名。
+ * @returns {Promise<void>} 更新処理の完了。
+ */
+const updateTask = async (field: string) => {
   if (!task.value) return;
 
   try {
@@ -350,10 +372,15 @@ async function updateTask(field: string) {
       editedTask.value[fieldKey] = task.value[fieldKey];
     }
   }
-}
+};
 
 // タイマー開始
-function startTimer() {
+/**
+ * タイマーを開始する。
+ * @description タスクの現在時間を同期し計測を開始する。
+ * @returns {void} なし。
+ */
+const startTimer = () => {
   if (!task.value) return;
 
   // タイマー開始前に、タスクの最新の時間を取得して設定
@@ -373,10 +400,15 @@ function startTimer() {
   startTimerForTodo(task.value, (total) => {
     currentTime.value = total;
   });
-}
+};
 
 // タイマー停止
-async function stopTimer() {
+/**
+ * タイマーを停止する。
+ * @description 計測時間を保存し状態を更新する。
+ * @returns {Promise<void>} 停止処理の完了。
+ */
+const stopTimer = async () => {
   if (!task.value) return;
   isTimerRunning.value = false;
   timerStop(task.value);
@@ -404,9 +436,15 @@ async function stopTimer() {
   } catch (error) {
     console.error("時間の保存に失敗しました:", error);
   }
-}
+};
 
-function handleAssetUploaded(asset: TodoAsset) {
+/**
+ * 添付アップロード完了を反映する。
+ * @description ローカルの添付一覧に反映する。
+ * @param {TodoAsset} asset - 追加された添付情報。
+ * @returns {void} なし。
+ */
+const handleAssetUploaded = (asset: TodoAsset) => {
   if (!task.value) return;
   const currentAssets = task.value.assets ? [...task.value.assets] : [];
   const existingIndex = currentAssets.findIndex((item) => item.id === asset.id);
@@ -416,16 +454,27 @@ function handleAssetUploaded(asset: TodoAsset) {
     currentAssets.push(asset);
   }
   task.value.assets = currentAssets;
-}
+};
 
-function handleAssetDeleted(assetId: string) {
+/**
+ * 添付削除を反映する。
+ * @description ローカルの添付一覧から削除する。
+ * @param {string} assetId - 削除対象の添付 ID。
+ * @returns {void} なし。
+ */
+const handleAssetDeleted = (assetId: string) => {
   if (!task.value) return;
   const currentAssets = task.value.assets || [];
   task.value.assets = currentAssets.filter((asset) => asset.id !== assetId);
-}
+};
 
 // タスク削除
-async function handleDelete() {
+/**
+ * タスクを削除する。
+ * @description 削除後にボードへ遷移する。
+ * @returns {Promise<void>} 削除処理の完了。
+ */
+const handleDelete = async () => {
   const router = useRouter();
   if (!task.value) return;
 
@@ -447,10 +496,16 @@ async function handleDelete() {
   } finally {
     showDeleteModal.value = false;
   }
-}
+};
 
 // タスクIDが変わったら再取得
-watch(() => props.taskId, fetchTask, { immediate: true });
+watch(
+  () => [props.taskId, todoStore.todos.length],
+  () => {
+    fetchTask();
+  },
+  { immediate: true }
+);
 
 // 現在の時間が変わったらタスクの時間も更新（ただし、タイマー実行中は除く）
 watch(currentTime, (newVal) => {

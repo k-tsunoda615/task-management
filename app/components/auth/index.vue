@@ -224,7 +224,12 @@ onMounted(() => {
   });
 });
 
-async function handleSubmit() {
+/**
+ * 認証フォームの送信を処理する。
+ * @description ログイン/新規登録の分岐を行い、必要な認証処理を実行する。
+ * @returns {Promise<void>} 送信処理の完了。
+ */
+const handleSubmit = async () => {
   if (!email.value || !password.value) return;
   loading.value = true;
   errorMessage.value = "";
@@ -283,9 +288,14 @@ async function handleSubmit() {
   } finally {
     loading.value = false;
   }
-}
+};
 
-async function handleResetPassword() {
+/**
+ * パスワードリセットを実行する。
+ * @description 入力メールへリセットメールを送信する。
+ * @returns {Promise<void>} リセット処理の完了。
+ */
+const handleResetPassword = async () => {
   resetMessage.value = "";
   if (!resetEmail.value) {
     resetMessage.value = "メールアドレスを入力してください。";
@@ -305,10 +315,15 @@ async function handleResetPassword() {
   } finally {
     resetLoading.value = false;
   }
-}
+};
 
-// ゲストログインのエラーハンドリング
-function handleGuestLoginError(message: string) {
+/**
+ * ゲストログインのエラーを反映する。
+ * @description エラーメッセージを表示用に保存する。
+ * @param {string} message - 表示するエラーメッセージ。
+ * @returns {void} なし。
+ */
+const handleGuestLoginError = (message: string) => {
   errorMessage.value = message;
-}
+};
 </script>

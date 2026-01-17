@@ -183,7 +183,12 @@ const resetEmail = ref("");
 const resetMessage = ref("");
 const resetLoading = ref(false);
 
-async function handleSubmit() {
+/**
+ * ログイン処理を実行する。
+ * @description メール/パスワードで認証し、成功時に遷移する。
+ * @returns {Promise<void>} ログイン処理の完了。
+ */
+const handleSubmit = async () => {
   if (!email.value || !password.value) return;
   loading.value = true;
   errorMessage.value = "";
@@ -207,9 +212,14 @@ async function handleSubmit() {
   } finally {
     loading.value = false;
   }
-}
+};
 
-async function handleResetPassword() {
+/**
+ * パスワードリセットを実行する。
+ * @description 入力メールへリセットメールを送信する。
+ * @returns {Promise<void>} リセット処理の完了。
+ */
+const handleResetPassword = async () => {
   resetMessage.value = "";
   if (!resetEmail.value) {
     resetMessage.value = "メールアドレスを入力してください。";
@@ -229,10 +239,14 @@ async function handleResetPassword() {
   } finally {
     resetLoading.value = false;
   }
-}
+};
 
-// ゲストログイン処理
-async function handleGuestLogin() {
+/**
+ * ゲストログインを実行する。
+ * @description 匿名ログイン後、必要なら遷移する。
+ * @returns {Promise<void>} ゲストログインの完了。
+ */
+const handleGuestLogin = async () => {
   loading.value = true;
   errorMessage.value = "";
   try {
@@ -250,10 +264,14 @@ async function handleGuestLogin() {
   } finally {
     loading.value = false;
   }
-}
+};
 
-// Googleサインイン関数
-async function handleGoogleSignIn() {
+/**
+ * Google サインインを実行する。
+ * @description OAuth ログインを開始する。
+ * @returns {Promise<void>} サインイン開始の完了。
+ */
+const handleGoogleSignIn = async () => {
   loading.value = true;
   errorMessage.value = "";
   try {
@@ -274,5 +292,5 @@ async function handleGoogleSignIn() {
   } finally {
     loading.value = false;
   }
-}
+};
 </script>

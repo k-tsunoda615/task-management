@@ -2,7 +2,7 @@
 
 ## プロジェクト概要
 
-- タスク管理の Nuxt 4 (Vue 3) SPA。カンバン/リスト/アナリティクス/ノート画面を提供。
+- タスク管理の Nuxt 4 (Vue 3)。カンバン/リスト/アナリティクス/ノート画面を提供。
 - 認証 + Postgres は Supabase、クライアント状態は Pinia ストアで管理。
 - UI は Tailwind + Nuxt UI、E2E は Playwright。
 

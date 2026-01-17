@@ -181,6 +181,12 @@ const props = defineProps({
 
 const emit = defineEmits(["edit", "start-timing", "stop-timing"]);
 
+/**
+ * タスク編集を開始する。
+ * @description クリックイベントを停止し、編集イベントを送る。
+ * @param {Event} event - クリックイベント。
+ * @returns {void} なし。
+ */
 const editTodo = (event: Event) => {
   event.preventDefault();
   event.stopPropagation();
@@ -189,6 +195,12 @@ const editTodo = (event: Event) => {
 
 // ドラッグ開始時にTodoのIDをデータ転送オブジェクトに設定
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
+/**
+ * ドラッグ開始時にデータを設定する。
+ * @description DataTransfer に Todo ID を設定する。
+ * @param {any} event - ドラッグイベント。
+ * @returns {void} なし。
+ */
 const handleDragStart = (event: any) => {
   event.dataTransfer.setData("todoId", props.todo.id);
   event.dataTransfer.effectAllowed = "move";
@@ -231,7 +243,12 @@ const parsedMemo = computed(() => {
   });
 });
 
-// タイミング開始 - イベント伝播を明示的に停止
+/**
+ * タイミング開始を通知する。
+ * @description イベント伝播を止めて開始イベントを送る。
+ * @param {Event} event - クリックイベント。
+ * @returns {void} なし。
+ */
 const startTiming = (event: Event) => {
   event.preventDefault();
   event.stopPropagation();
@@ -244,24 +261,15 @@ const startTiming = (event: Event) => {
   });
 };
 
-// タイミング停止 - イベント伝播を明示的に停止
+/**
+ * タイミング停止を通知する。
+ * @description イベント伝播を止めて停止イベントを送る。
+ * @param {Event} event - クリックイベント。
+ * @returns {void} なし。
+ */
 const stopTiming = (event: Event) => {
   event.preventDefault();
   event.stopPropagation();
   emit("stop-timing", props.todo);
 };
-
-// 色を暗くするユーティリティ関数
-// function darkenColor(hex: string, amount = 0.2) {
-//   let c = hex.replace("#", "");
-//   if (c.length === 3) c = c[0] + c[0] + c[1] + c[1] + c[2] + c[2];
-//   const num = parseInt(c, 16);
-//   let r = (num >> 16) & 0xff;
-//   let g = (num >> 8) & 0xff;
-//   let b = num & 0xff;
-//   r = Math.max(0, Math.floor(r * (1 - amount)));
-//   g = Math.max(0, Math.floor(g * (1 - amount)));
-//   b = Math.max(0, Math.floor(b * (1 - amount)));
-//   return `#${r.toString(16).padStart(2, "0")}${g.toString(16).padStart(2, "0")}${b.toString(16).padStart(2, "0")}`;
-// }
 </script>

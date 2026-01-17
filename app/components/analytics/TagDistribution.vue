@@ -15,7 +15,11 @@ const chartContainer = ref<HTMLElement | null>(null);
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 let chart: any = null;
 
-// タグ別にタスクをカウント
+/**
+ * タグ別にタスク数を集計する。
+ * @description 上位10件のタグに絞り、表示用のデータを返す。
+ * @returns {Record<string, { count: number; color: string }>} タグ名ごとの集計結果。
+ */
 const getTagCounts = () => {
   const counts: Record<string, { count: number; color: string }> = {};
 
@@ -51,7 +55,11 @@ const getTagCounts = () => {
   );
 };
 
-// グラフの初期化
+/**
+ * タグ分布グラフを初期化する。
+ * @description Chart.js を遅延ロードしてグラフを描画する。
+ * @returns {Promise<void>} 初期化の完了。
+ */
 const initChart = async () => {
   if (!chartContainer.value) return;
 
