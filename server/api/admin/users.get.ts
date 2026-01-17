@@ -2,19 +2,43 @@ import { serverSupabaseClient, serverSupabaseUser } from "#supabase/server";
 import type { H3Event } from "h3";
 
 type AdminUserMetricsRow = {
+  /** ユーザー ID */
   user_id: string;
+  /** メールアドレス */
   email: string | null;
+  /** 表示名 */
   display_name: string | null;
+  /** Todo 件数 */
   todo_count: number | null;
+  /** 使用ストレージ容量 */
   storage_bytes: number | null;
 };
 
 /**
- * 管理者専用のユーザー利用状況サマリー API
- * - 現在ログイン中のユーザーが app_admins に登録されているか確認
- * - admin_user_metrics ビューを service role で読み取り、JSON を返す
+ * 管理者向けユーザー利用状況のレスポンス。
  */
-export default defineEventHandler(async (event: H3Event) => {
+type AdminUserMetricsResponse = {
+  /** ユーザー ID */
+  id: string;
+  /** メールアドレス */
+  email: string | null;
+  /** 表示名 */
+  displayName: string;
+  /** Todo 件数 */
+  todoCount: number;
+  /** 使用ストレージ容量 */
+  storageBytes: number;
+};
+
+/**
+ * 管理者専用のユーザー利用状況サマリー API。
+ * @description 管理者権限を検証し、メトリクスビューを返す。
+ * @param {H3Event} event - H3 のリクエストイベント。
+ * @returns {Promise<AdminUserMetricsResponse[]>} メトリクス一覧。
+ */
+const handler = async (
+  event: H3Event,
+): Promise<AdminUserMetricsResponse[]> => {
   const supabase = await serverSupabaseClient(event);
 
   // 現在のセッションユーザーを取得
@@ -62,4 +86,6 @@ export default defineEventHandler(async (event: H3Event) => {
     todoCount: row.todo_count ?? 0,
     storageBytes: row.storage_bytes ?? 0,
   }));
-});
+};
+
+export default defineEventHandler(handler);

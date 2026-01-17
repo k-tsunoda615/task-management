@@ -1,12 +1,17 @@
-import type { AuthError } from "@supabase/supabase-js";
+type AuthErrorMessageSource = {
+  /** 表示用のエラーメッセージ本文 */
+  message?: string;
+};
 
-type ErrorLike = Partial<Pick<AuthError, "message">> | null | undefined;
+type ErrorLike = AuthErrorMessageSource | null | undefined;
 
 /**
  * Supabase 認証エラーのメッセージをユーザー向けに整形する。
- * 他コンポーネントでも再利用できるように共通化。
+ * @description エラー内容に応じて表示文言を出し分ける。
+ * @param {ErrorLike} error - Supabase 由来のエラー情報。
+ * @returns {string} 表示用のエラーメッセージ。
  */
-export function mapAuthErrorToMessage(error: ErrorLike): string {
+export const mapAuthErrorToMessage = (error: ErrorLike): string => {
   if (!error || !error.message) {
     return "認証に失敗しました";
   }
@@ -48,4 +53,4 @@ export function mapAuthErrorToMessage(error: ErrorLike): string {
   }
 
   return msg; // その他は原文表示
-}
+};
