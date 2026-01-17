@@ -27,8 +27,14 @@
 
 <script setup lang="ts">
 defineProps({
-  show: Boolean,
-  editingTodo: Object,
+  show: {
+    type: Boolean,
+    default: false,
+  },
+  editingTodo: {
+    type: Object,
+    default: null,
+  },
 });
 defineEmits(["close", "delete", "update:show"]);
 </script>

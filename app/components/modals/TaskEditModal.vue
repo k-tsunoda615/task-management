@@ -198,13 +198,34 @@ const handleGenerateTitle = async () => {
 };
 
 const props = defineProps({
-  show: Boolean,
-  editingTodo: Object,
-  editTimeInput: String,
-  tagStore: Object,
-  isUpdating: Boolean,
-  showPreviewModal: Boolean,
-  parsedPreviewMemo: String,
+  show: {
+    type: Boolean,
+    default: false,
+  },
+  editingTodo: {
+    type: Object,
+    default: null,
+  },
+  editTimeInput: {
+    type: String,
+    default: "",
+  },
+  tagStore: {
+    type: Object,
+    default: null,
+  },
+  isUpdating: {
+    type: Boolean,
+    default: false,
+  },
+  showPreviewModal: {
+    type: Boolean,
+    default: false,
+  },
+  parsedPreviewMemo: {
+    type: String,
+    default: "",
+  },
 });
 const emit = defineEmits([
   "close",

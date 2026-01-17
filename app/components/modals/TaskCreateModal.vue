@@ -114,11 +114,26 @@ import { computed } from "vue";
 import { useAITitleGenerator } from "../../composables/useAITitleGenerator";
 
 const props = defineProps({
-  show: Boolean,
-  newTodo: Object,
-  timeInput: String,
-  tagStore: Object,
-  isCreating: Boolean,
+  show: {
+    type: Boolean,
+    default: false,
+  },
+  newTodo: {
+    type: Object,
+    default: null,
+  },
+  timeInput: {
+    type: String,
+    default: "",
+  },
+  tagStore: {
+    type: Object,
+    default: null,
+  },
+  isCreating: {
+    type: Boolean,
+    default: false,
+  },
 });
 const emit = defineEmits([
   "close",

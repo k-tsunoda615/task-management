@@ -268,10 +268,22 @@ import type { Tag } from "../../../types/todo";
 import draggable from "vuedraggable";
 
 const props = defineProps({
-  show: Boolean,
-  tagStore: Object,
-  newTagName: String,
-  newTagColor: String,
+  show: {
+    type: Boolean,
+    default: false,
+  },
+  tagStore: {
+    type: Object,
+    default: null,
+  },
+  newTagName: {
+    type: String,
+    default: "",
+  },
+  newTagColor: {
+    type: String,
+    default: "",
+  },
 });
 
 const emit = defineEmits([
