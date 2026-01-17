@@ -189,6 +189,11 @@ import type { Tag } from "../../../types/todo";
 import { useAITitleGenerator } from "../../composables/useAITitleGenerator";
 const { isGenerating, generateTitle } = useAITitleGenerator();
 
+/**
+ * メモからタイトルを生成する。
+ * @description AI タイトル生成を実行し、結果を親へ通知する。
+ * @returns {Promise<void>} タイトル生成の完了。
+ */
 const handleGenerateTitle = async () => {
   if (!props.editingTodo?.memo) return;
   const title = await generateTitle(props.editingTodo.memo);

@@ -44,7 +44,11 @@ const props = defineProps({
   },
 });
 
-// ゲストログイン処理
+/**
+ * ゲストログインを実行する。
+ * @description 匿名ログイン後に遷移し、エラーは親へ通知する。
+ * @returns {Promise<void>} ゲストログインの完了。
+ */
 const handleGuestLogin = async () => {
   loading.value = true;
   errorMessage.value = "";

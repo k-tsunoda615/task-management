@@ -22,19 +22,31 @@ definePageMeta({
 const route = useRoute();
 const isSignUpTab = ref(route.query.signup === "1");
 
-// ログイン成功時のハンドラー
+/**
+ * ログイン成功時の処理をまとめる。
+ * @description 追加処理が必要な場合はここに集約する。
+ * @returns {void} なし。
+ */
 const handleLoginSuccess = () => {
   // ここに追加のログイン成功時の処理を記述
   console.log("ログイン成功");
 };
 
-// 新規登録成功時のハンドラー
+/**
+ * 新規登録成功時の処理をまとめる。
+ * @description 追加処理が必要な場合はここに集約する。
+ * @returns {void} なし。
+ */
 const handleSignupSuccess = () => {
   // ここに追加の新規登録成功時の処理を記述
   console.log("新規登録成功");
 };
 
-// ゲストログイン成功時のハンドラー
+/**
+ * ゲストログイン成功時の処理をまとめる。
+ * @description 追加処理が必要な場合はここに集約する。
+ * @returns {void} なし。
+ */
 const handleGuestLogin = () => {
   // ここに追加のゲストログイン成功時の処理を記述
   console.log("ゲストログイン成功");

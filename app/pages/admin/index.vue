@@ -149,6 +149,11 @@ const error = ref<Error | null>(null);
 const adminCheckError = ref<string | null>(null);
 const isAdmin = ref(false);
 
+/**
+ * 管理メトリクスを再取得する。
+ * @description 管理者権限を確認し、取得結果を状態に反映する。
+ * @returns {Promise<void>} 再取得処理の完了。
+ */
 const refresh = async () => {
   pending.value = true;
   error.value = null;
@@ -187,6 +192,12 @@ await refresh();
 
 const users = computed<AdminUserSummary[]>(() => usersData.value ?? []);
 
+/**
+ * ストレージ容量を読みやすい単位に変換する。
+ * @description バイト数を KB/MB/GB などに換算する。
+ * @param {number} bytes - 変換対象のバイト数。
+ * @returns {string} 表示用のサイズ文字列。
+ */
 const formatStorage = (bytes: number) => {
   if (!bytes || bytes <= 0) {
     return "0 MB";

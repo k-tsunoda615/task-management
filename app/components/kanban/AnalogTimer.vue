@@ -66,8 +66,14 @@ const radius = center - arcWidth - 8; // 円弧とテキストが重ならない
 const lapCount = computed(() => Math.floor(props.seconds / 3600));
 const percentInLap = computed(() => (props.seconds % 3600) / 3600);
 
-// グラデーション色（グリーン→オレンジ→レッドを繰り返す）
-function getLapColor(lap: number, percent: number) {
+/**
+ * 周回位置に応じたグラデーション色を取得する。
+ * @description グリーン→オレンジ→レッドの順で色を補間する。
+ * @param {number} lap - 現在の周回数。
+ * @param {number} percent - 周内の進捗率。
+ * @returns {string} HEX カラー。
+ */
+const getLapColor = (lap: number, percent: number) => {
   if (percent < 0.5) {
     // 0-30分: グリーン→オレンジ
     return interpolateColor("#22c55e", "#fb923c", percent / 0.5);
@@ -75,9 +81,17 @@ function getLapColor(lap: number, percent: number) {
     // 30-60分: オレンジ→レッド
     return interpolateColor("#fb923c", "#ef4444", (percent - 0.5) / 0.5);
   }
-}
+};
 
-function interpolateColor(color1: string, color2: string, ratio: number) {
+/**
+ * 2色の中間色を計算する。
+ * @description RGB を補間して HEX を返す。
+ * @param {string} color1 - 開始色。
+ * @param {string} color2 - 終了色。
+ * @param {number} ratio - 補間率（0-1）。
+ * @returns {string} 補間後の HEX カラー。
+ */
+const interpolateColor = (color1: string, color2: string, ratio: number) => {
   // #rrggbb → [r,g,b]
   const hexToRgb = (hex: string) => [
     parseInt(hex.slice(1, 3), 16),
@@ -90,10 +104,17 @@ function interpolateColor(color1: string, color2: string, ratio: number) {
   const rgb2 = hexToRgb(color2);
   const rgb = rgb1.map((v, i) => Math.round(v + (rgb2[i] || 0 - v) * ratio));
   return rgbToHex(rgb);
-}
+};
 
 // 各周の円弧パス
-function arcPathForLap(lap: number, percent: number) {
+/**
+ * 周回の円弧パスを生成する。
+ * @description SVG の arc パス文字列を作成する。
+ * @param {number} lap - 現在の周回数。
+ * @param {number} percent - 周内の進捗率。
+ * @returns {string} SVG パス文字列。
+ */
+const arcPathForLap = (lap: number, percent: number) => {
   if (percent <= 0) return "";
   const startAngle = -Math.PI / 2;
   const endAngle = startAngle + percent * 2 * Math.PI;
@@ -103,7 +124,7 @@ function arcPathForLap(lap: number, percent: number) {
   const y2 = center + radius * Math.sin(endAngle);
   const largeArc = percent > 0.5 ? 1 : 0;
   return `M ${x1} ${y1} A ${radius} ${radius} 0 ${largeArc} 1 ${x2} ${y2}`;
-}
+};
 
 // 経過時間のフォーマット（hh:mm:ss）
 const formattedTime = computed(() => {
@@ -116,6 +137,8 @@ const formattedTime = computed(() => {
   const s = (props.seconds % 60).toString().padStart(2, "0");
   return `${h}:${m}:${s}`;
 });
+
+const minutes = computed(() => Math.floor(props.seconds / 60));
 
 // テキストサイズと位置の調整（100分超で小さく）
 const fontSize = computed(() => {

@@ -7,20 +7,46 @@ import type { TaskStatus } from "./constants";
 import type { Todo, TodoAsset } from "../../types/todo";
 
 /**
- * ステータスを正規化するヘルパー関数
+ * ステータスの正規化結果を表す更新情報。
  */
-export function normalizeStatus(status: string): TaskStatus {
+type TodoOrderUpdate = {
+  /** 対象 Todo の ID */
+  id: string;
+  /** 新しい並び順 */
+  sort_order: number;
+};
+
+/**
+ * ソート順の更新結果をまとめたオブジェクト。
+ */
+type TodoOrderUpdateResult = {
+  /** 移動した Todo の更新情報 */
+  mainTodoUpdate: TodoOrderUpdate;
+  /** それ以外の Todo の更新情報 */
+  otherTodosUpdates: TodoOrderUpdate[];
+};
+
+/**
+ * ステータスを正規化する。
+ * @description 旧ステータスを新形式に変換し、未対応は既定値にする。
+ * @param {string} status - 正規化対象のステータス。
+ * @returns {TaskStatus} 正規化済みのステータス。
+ */
+export const normalizeStatus = (status: string): TaskStatus => {
   if (Object.keys(LEGACY_STATUS_MAPPING).includes(status)) {
     return LEGACY_STATUS_MAPPING[status as keyof typeof LEGACY_STATUS_MAPPING];
   }
   // マッピングにない場合はデフォルト値を返す
   return TASK_STATUS.PRIORITY;
-}
+};
 
 /**
- * Todoデータを正規化する関数
+ * Todo データを正規化する。
+ * @description ステータス/タグ/添付を UI 側で扱いやすい形に変換する。
+ * @param {Record<string, unknown>} todo - 正規化対象の Todo 生データ。
+ * @returns {Todo} 正規化済みの Todo。
  */
-export function normalizeTodo(todo: Record<string, unknown>): Todo {
+export const normalizeTodo = (todo: Record<string, unknown>): Todo => {
   // ステータスを新しい形式に正規化
   if (!todo.status) {
     todo.status = TASK_STATUS.PRIORITY;
@@ -50,12 +76,17 @@ export function normalizeTodo(todo: Record<string, unknown>): Todo {
   }
 
   return todo as Todo;
-}
+};
 
 /**
- * DBへの保存用にTodoデータを変換する関数
+ * DB への保存用に Todo データを変換する。
+ * @description UI 用のプロパティを除外し、DB 形式に合わせる。
+ * @param {Partial<Todo>} todo - 変換対象の Todo。
+ * @returns {Record<string, unknown>} DB 保存用のデータ。
  */
-export function convertTodoForDB(todo: Partial<Todo>): Record<string, unknown> {
+export const convertTodoForDB = (
+  todo: Partial<Todo>
+): Record<string, unknown> => {
   const dbData = { ...todo };
 
   // tags属性を除外
@@ -80,20 +111,21 @@ export function convertTodoForDB(todo: Partial<Todo>): Record<string, unknown> {
     // 更新時間を現在に設定（常に更新されるように）
     updated_at: new Date().toISOString(),
   };
-}
+};
 
 /**
- * ドラッグ＆ドロップ操作後のTodoリストのsort_orderを更新するユーティリティ
- * @param todo 移動したTodo
- * @param newIndex 新しいインデックス
- * @param targetList 移動先のリスト
- * @returns 更新対象のTodoと必要な他のTodoのsort_order更新情報
+ * ドラッグ＆ドロップ操作後の sort_order を更新する。
+ * @description 既存順序をもとに、移動後の順序を算出する。
+ * @param {Todo} todo - 移動した Todo。
+ * @param {number} newIndex - 新しいインデックス。
+ * @param {Todo[]} targetList - 移動先のリスト。
+ * @returns {TodoOrderUpdateResult} 更新対象の Todo 情報。
  */
-export function calculateNewOrders(
+export const calculateNewOrders = (
   todo: Todo,
   newIndex: number,
-  targetList: Todo[],
-) {
+  targetList: Todo[]
+): TodoOrderUpdateResult => {
   console.log("calculateNewOrders実行:", {
     todoId: todo.id,
     newIndex,
@@ -102,7 +134,7 @@ export function calculateNewOrders(
 
   // リストを一度ソートして順序を確保
   const sortedList = [...targetList].sort(
-    (a, b) => (a.sort_order || 0) - (b.sort_order || 0),
+    (a, b) => (a.sort_order || 0) - (b.sort_order || 0)
   );
 
   // 順序値が同じアイテムが複数あるかチェック（バグ検出）
@@ -110,12 +142,12 @@ export function calculateNewOrders(
 
   // 新しい位置のsort_orderを計算
   let newSortOrder: number;
-  let otherTodosUpdates: { id: string; sort_order: number }[] = [];
+  let otherTodosUpdates: TodoOrderUpdate[] = [];
 
   // 順序の重複があるか、アイテムが多い場合は全体を再計算
   if (hasDuplicateOrders || targetList.length > 10) {
     console.log(
-      "重複したsort_orderが見つかったか、アイテム数が多いため全体を再計算",
+      "重複したsort_orderが見つかったか、アイテム数が多いため全体を再計算"
     );
 
     // 移動後の新しい順序でリストを再構築
@@ -123,7 +155,7 @@ export function calculateNewOrders(
 
     // 移動元のアイテムを一度削除
     const movedItemIndex = reorderedList.findIndex(
-      (item) => item.id === todo.id,
+      (item) => item.id === todo.id
     );
     if (movedItemIndex !== -1) {
       reorderedList.splice(movedItemIndex, 1);
@@ -186,12 +218,15 @@ export function calculateNewOrders(
     mainTodoUpdate,
     otherTodosUpdates,
   };
-}
+};
 
 /**
- * リスト内にsort_orderの重複があるかチェックする関数
+ * リスト内に sort_order の重複があるかチェックする。
+ * @description 同じ sort_order を持つ Todo があるか確認する。
+ * @param {Todo[]} list - チェック対象のリスト。
+ * @returns {boolean} 重複があれば true。
  */
-function hasDuplicateSortOrders(list: Todo[]): boolean {
+const hasDuplicateSortOrders = (list: Todo[]): boolean => {
   const orderCounts = new Map<number, number>();
 
   for (const item of list) {
@@ -201,15 +236,19 @@ function hasDuplicateSortOrders(list: Todo[]): boolean {
 
   // 重複がある場合はtrueを返す
   return Array.from(orderCounts.values()).some((count) => count > 1);
-}
+};
 
 /**
- * 単一のTodoのsort_orderだけを更新する簡易バージョン
- * @param todo 移動したTodo
- * @param newIndex 新しいインデックス
- * @returns 更新すべきTodoの情報
+ * 単一の Todo の sort_order だけを更新する簡易版。
+ * @description 新しいインデックスに 1000 を掛けた値で更新する。
+ * @param {Todo} todo - 移動した Todo。
+ * @param {number} newIndex - 新しいインデックス。
+ * @returns {TodoOrderUpdate} 更新すべき Todo の情報。
  */
-export function calculateSimpleOrder(todo: Todo, newIndex: number) {
+export const calculateSimpleOrder = (
+  todo: Todo,
+  newIndex: number
+): TodoOrderUpdate => {
   // 単純に新しいインデックスに1000を掛けた値を使用
   const newSortOrder = (newIndex + 1) * 1000; // 1000, 2000, 3000, ...
 
@@ -217,16 +256,19 @@ export function calculateSimpleOrder(todo: Todo, newIndex: number) {
     id: todo.id,
     sort_order: newSortOrder,
   };
-}
+};
 
 /**
- * 必要に応じて全アイテムの順序を再計算する
- * 注意: この関数は通常は必要ないが、順序が混乱した場合のリセット用
- * @param todos Todoリスト
- * @param status 対象のステータス
- * @returns 更新すべきTodoの配列 (id, sort_orderのみ)
+ * 必要に応じて全アイテムの順序を再計算する。
+ * @description 順序が混乱した場合のリセット用。
+ * @param {Todo[]} todos - Todo リスト。
+ * @param {TaskStatus} status - 対象のステータス。
+ * @returns {TodoOrderUpdate[]} 更新すべき Todo の配列。
  */
-export function recalculateAllOrders(todos: Todo[], status: TaskStatus) {
+export const recalculateAllOrders = (
+  todos: Todo[],
+  status: TaskStatus
+): TodoOrderUpdate[] => {
   // ステータスでフィルタリングしてから順序を再計算
   const filteredTodos = todos
     .filter((todo) => todo.status === status)
@@ -237,4 +279,4 @@ export function recalculateAllOrders(todos: Todo[], status: TaskStatus) {
     id: todo.id,
     sort_order: index * 100,
   }));
-}
+};

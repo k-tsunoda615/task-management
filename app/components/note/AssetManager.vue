@@ -302,6 +302,82 @@ const modalUrl = ref<string | null>(null);
 const modalTextPreview = ref<string | null>(null);
 const modalLoading = ref(false);
 
+/**
+ * プレビューキャッシュを整理する。
+ * @description 現在の assets に存在しないものを削除する。
+ * @returns {void} なし。
+ */
+const cleanupPreviewCache = () => {
+  const currentIds = new Set(props.assets.map((asset) => asset.id));
+  Object.keys(previewUrls).forEach((key) => {
+    if (!currentIds.has(key)) {
+      Reflect.deleteProperty(previewUrls, key);
+    }
+  });
+  Object.keys(textPreviews).forEach((key) => {
+    if (!currentIds.has(key)) {
+      Reflect.deleteProperty(textPreviews, key);
+    }
+  });
+};
+
+/**
+ * 既存添付のプレビューを事前生成する。
+ * @description 画像/動画のプレビューを先読みする。
+ * @returns {Promise<void>} 生成処理の完了。
+ */
+const warmPreviews = async () => {
+  for (const asset of props.assets) {
+    await warmPreviewForAsset(asset);
+  }
+};
+
+/**
+ * 単一添付のプレビューを事前生成する。
+ * @description 画像/動画のみを対象にする。
+ * @param {TodoAsset} asset - 添付情報。
+ * @returns {Promise<void>} 生成処理の完了。
+ */
+const warmPreviewForAsset = async (asset: TodoAsset) => {
+  if (!isClient) return;
+  if (isImage(asset) || isVideo(asset)) {
+    await loadPreview(asset, 300);
+  }
+};
+
+/**
+ * 添付のプレビューを取得する。
+ * @description 署名 URL を取得してプレビューを保存する。
+ * @param {TodoAsset} asset - 添付情報。
+ * @param {number} [expiresIn] - 署名 URL の有効秒数。
+ * @returns {Promise<void>} プレビュー取得の完了。
+ */
+const loadPreview = async (asset: TodoAsset, expiresIn = 120) => {
+  if (!isClient) return;
+  if (previewingAssetId.value && previewingAssetId.value !== asset.id) {
+    // another preview is in progress, allow concurrently
+  }
+  previewingAssetId.value = asset.id;
+  try {
+    const signedUrl = await repository.getTodoAssetUrl(asset, expiresIn);
+    previewUrls[asset.id] = signedUrl;
+    if (isText(asset)) {
+      const response = await fetch(signedUrl);
+      const text = await response.text();
+      textPreviews[asset.id] = text.slice(0, 1200);
+    }
+  } catch (error) {
+    console.error("[AssetManager] プレビュー生成でエラー:", error);
+    toast.add({
+      title: "プレビューを取得できません",
+      description: "時間をおいて再度お試しください。",
+      color: "red",
+    });
+  } finally {
+    previewingAssetId.value = null;
+  }
+};
+
 onMounted(() => {
   if (!isClient) return;
   warmPreviews();
@@ -317,25 +393,48 @@ watch(
   { immediate: true }
 );
 
-function triggerFilePicker() {
+/**
+ * ファイルピッカーを起動する。
+ * @description 無効状態の場合は何もしない。
+ * @returns {void} なし。
+ */
+const triggerFilePicker = () => {
   if (props.isDisabled) {
     return;
   }
   fileInput.value?.click();
-}
+};
 
-async function handleFileSelected(event: Event) {
+/**
+ * ファイル選択時の処理を行う。
+ * @description 選択ファイルを処理し、入力をリセットする。
+ * @param {Event} event - ファイル選択イベント。
+ * @returns {Promise<void>} 処理の完了。
+ */
+const handleFileSelected = async (event: Event) => {
   const input = event.target as HTMLInputElement;
   const files = input.files ? Array.from(input.files) : [];
   await processFiles(files);
   resetFileInput(input);
-}
+};
 
-function resetFileInput(input: HTMLInputElement) {
+/**
+ * ファイル入力をリセットする。
+ * @description 同じファイルの再選択を可能にする。
+ * @param {HTMLInputElement} input - ファイル入力要素。
+ * @returns {void} なし。
+ */
+const resetFileInput = (input: HTMLInputElement) => {
   input.value = "";
-}
+};
 
-async function handleDownload(asset: TodoAsset) {
+/**
+ * 添付ファイルをダウンロードする。
+ * @description 署名 URL を取得して新規タブで開く。
+ * @param {TodoAsset} asset - ダウンロード対象の添付情報。
+ * @returns {Promise<void>} ダウンロード処理の完了。
+ */
+const handleDownload = async (asset: TodoAsset) => {
   if (!import.meta.client) return;
 
   downloadingAssetId.value = asset.id;
@@ -352,9 +451,15 @@ async function handleDownload(asset: TodoAsset) {
   } finally {
     downloadingAssetId.value = null;
   }
-}
+};
 
-async function handleDelete(asset: TodoAsset) {
+/**
+ * 添付ファイルを削除する。
+ * @description 確認後に削除し、結果を通知する。
+ * @param {TodoAsset} asset - 削除対象の添付情報。
+ * @returns {Promise<void>} 削除処理の完了。
+ */
+const handleDelete = async (asset: TodoAsset) => {
   if (props.isDisabled) {
     return;
   }
@@ -381,9 +486,15 @@ async function handleDelete(asset: TodoAsset) {
   } finally {
     deletingAssetId.value = null;
   }
-}
+};
 
-function formatSize(bytes?: number) {
+/**
+ * サイズを人間可読な単位に変換する。
+ * @description B/KB/MB/GB の範囲で表示する。
+ * @param {number} [bytes] - 変換対象のバイト数。
+ * @returns {string} 表示用のサイズ文字列。
+ */
+const formatSize = (bytes?: number) => {
   if (!bytes && bytes !== 0) return "サイズ不明";
   const units = ["B", "KB", "MB", "GB"];
   let size = bytes;
@@ -393,16 +504,28 @@ function formatSize(bytes?: number) {
     unitIndex += 1;
   }
   return `${size.toFixed(unitIndex === 0 ? 0 : 1)}${units[unitIndex]}`;
-}
+};
 
-function formatDate(dateString?: string) {
+/**
+ * 日付文字列をローカル表示に変換する。
+ * @description 無効な日付は空文字を返す。
+ * @param {string} [dateString] - 日付文字列。
+ * @returns {string} 表示用の日時文字列。
+ */
+const formatDate = (dateString?: string) => {
   if (!dateString) return "";
   const date = new Date(dateString);
   if (Number.isNaN(date.getTime())) return "";
   return date.toLocaleString("ja-JP");
-}
+};
 
-function iconForAsset(asset: TodoAsset) {
+/**
+ * 添付ファイル種別に対応するアイコンを返す。
+ * @description MIME タイプからアイコン名を選択する。
+ * @param {TodoAsset} asset - 添付情報。
+ * @returns {string} アイコン名。
+ */
+const iconForAsset = (asset: TodoAsset) => {
   const mime = asset.mime_type || "";
   if (mime.startsWith("image/")) {
     return "i-heroicons-photo";
@@ -417,52 +540,104 @@ function iconForAsset(asset: TodoAsset) {
     return "i-heroicons-musical-note";
   }
   return "i-heroicons-document-duplicate";
-}
+};
 
-function isImage(asset: TodoAsset) {
+/**
+ * 画像ファイルか判定する。
+ * @description MIME タイプで判定する。
+ * @param {TodoAsset} asset - 添付情報。
+ * @returns {boolean} 画像なら true。
+ */
+const isImage = (asset: TodoAsset) => {
   return (asset.mime_type || "").startsWith("image/");
-}
+};
 
-function isVideo(asset: TodoAsset) {
+/**
+ * 動画ファイルか判定する。
+ * @description MIME タイプで判定する。
+ * @param {TodoAsset} asset - 添付情報。
+ * @returns {boolean} 動画なら true。
+ */
+const isVideo = (asset: TodoAsset) => {
   return (asset.mime_type || "").startsWith("video/");
-}
+};
 
-function isText(asset: TodoAsset) {
+/**
+ * テキスト系ファイルか判定する。
+ * @description MIME タイプから判定する。
+ * @param {TodoAsset} asset - 添付情報。
+ * @returns {boolean} テキストなら true。
+ */
+const isText = (asset: TodoAsset) => {
   const mime = asset.mime_type || "";
   return (
     mime.startsWith("text/") ||
     mime === "application/json" ||
     mime === "application/xml"
   );
-}
+};
 
-function isPreviewableOnDemand(asset: TodoAsset) {
+/**
+ * オンデマンドでプレビュー可能か判定する。
+ * @description テキスト or PDF を対象にする。
+ * @param {TodoAsset} asset - 添付情報。
+ * @returns {boolean} プレビュー可能なら true。
+ */
+const isPreviewableOnDemand = (asset: TodoAsset) => {
   return isText(asset) || isPdf(asset);
-}
+};
 
-function isPdf(asset: TodoAsset) {
+/**
+ * PDF ファイルか判定する。
+ * @description MIME タイプで判定する。
+ * @param {TodoAsset} asset - 添付情報。
+ * @returns {boolean} PDF なら true。
+ */
+const isPdf = (asset: TodoAsset) => {
   return asset.mime_type === "application/pdf";
-}
+};
 
-function handleDragOver() {
+/**
+ * ドラッグ中の表示状態を更新する。
+ * @description ドロップ可能状態を示す。
+ * @returns {void} なし。
+ */
+const handleDragOver = () => {
   if (props.isDisabled) return;
   isDragOver.value = true;
-}
+};
 
-function handleDragLeave() {
+/**
+ * ドラッグ離脱時の状態を更新する。
+ * @description ドロップ表示を解除する。
+ * @returns {void} なし。
+ */
+const handleDragLeave = () => {
   isDragOver.value = false;
-}
+};
 
-async function handleDrop(event: DragEvent) {
+/**
+ * ドロップされたファイルを処理する。
+ * @description ドラッグ&ドロップからファイルを取得する。
+ * @param {DragEvent} event - ドロップイベント。
+ * @returns {Promise<void>} 処理の完了。
+ */
+const handleDrop = async (event: DragEvent) => {
   if (props.isDisabled) return;
   isDragOver.value = false;
   const files = event.dataTransfer?.files
     ? Array.from(event.dataTransfer.files)
     : [];
   await processFiles(files);
-}
+};
 
-async function processFiles(files: File[]) {
+/**
+ * ファイル一覧を処理してアップロードする。
+ * @description サイズ/形式を検証し、順次アップロードする。
+ * @param {File[]} files - アップロード対象のファイル群。
+ * @returns {Promise<void>} 処理の完了。
+ */
+const processFiles = async (files: File[]) => {
   if (!isClient) return;
   if (!files.length) return;
 
@@ -536,66 +711,25 @@ async function processFiles(files: File[]) {
       }, 1200);
     }
   }
-}
+};
 
-async function warmPreviews() {
-  for (const asset of props.assets) {
-    await warmPreviewForAsset(asset);
-  }
-}
-
-async function warmPreviewForAsset(asset: TodoAsset) {
-  if (!isClient) return;
-  if (isImage(asset) || isVideo(asset)) {
-    await loadPreview(asset, 300);
-  }
-}
-
-async function loadPreview(asset: TodoAsset, expiresIn = 120) {
-  if (!isClient) return;
-  if (previewingAssetId.value && previewingAssetId.value !== asset.id) {
-    // another preview is in progress, allow concurrently
-  }
-  previewingAssetId.value = asset.id;
-  try {
-    const signedUrl = await repository.getTodoAssetUrl(asset, expiresIn);
-    previewUrls[asset.id] = signedUrl;
-    if (isText(asset)) {
-      const response = await fetch(signedUrl);
-      const text = await response.text();
-      textPreviews[asset.id] = text.slice(0, 1200);
-    }
-  } catch (error) {
-    console.error("[AssetManager] プレビュー生成でエラー:", error);
-    toast.add({
-      title: "プレビューを取得できません",
-      description: "時間をおいて再度お試しください。",
-      color: "red",
-    });
-  } finally {
-    previewingAssetId.value = null;
-  }
-}
-
-function cleanupPreviewCache() {
-  const currentIds = new Set(props.assets.map((asset) => asset.id));
-  Object.keys(previewUrls).forEach((key) => {
-    if (!currentIds.has(key)) {
-      Reflect.deleteProperty(previewUrls, key);
-    }
-  });
-  Object.keys(textPreviews).forEach((key) => {
-    if (!currentIds.has(key)) {
-      Reflect.deleteProperty(textPreviews, key);
-    }
-  });
-}
-
-function refreshPreview(asset: TodoAsset) {
+/**
+ * 添付のプレビューを再取得する。
+ * @description 既存プレビューを上書きする。
+ * @param {TodoAsset} asset - 添付情報。
+ * @returns {void} なし。
+ */
+const refreshPreview = (asset: TodoAsset) => {
   loadPreview(asset);
-}
+};
 
-function uploadStatusLabel(status: UploadQueueItem["status"]) {
+/**
+ * アップロード状態のラベルを取得する。
+ * @description ステータスに応じた表示文字列を返す。
+ * @param {UploadQueueItem["status"]} status - アップロード状態。
+ * @returns {string} 表示ラベル。
+ */
+const uploadStatusLabel = (status: UploadQueueItem["status"]) => {
   switch (status) {
     case "uploading":
       return "アップロード中...";
@@ -606,31 +740,60 @@ function uploadStatusLabel(status: UploadQueueItem["status"]) {
     default:
       return "";
   }
-}
+};
 
-function isPreviewing(asset: TodoAsset) {
+/**
+ * プレビュー中か判定する。
+ * @description 現在プレビュー中の ID と比較する。
+ * @param {TodoAsset} asset - 添付情報。
+ * @returns {boolean} プレビュー中なら true。
+ */
+const isPreviewing = (asset: TodoAsset) => {
   return previewingAssetId.value === asset.id;
-}
+};
 
-function handleVideoLoaded(event: Event) {
+/**
+ * 動画読み込み完了時の処理を行う。
+ * @description 自動再生を試みる。
+ * @param {Event} event - 動画読み込みイベント。
+ * @returns {void} なし。
+ */
+const handleVideoLoaded = (event: Event) => {
   const video = event.target as HTMLVideoElement;
   video.play().catch(() => {
     // autoplay may be blocked; ignore
   });
-}
+};
 
-function generateId() {
+/**
+ * アップロードキュー用の ID を生成する。
+ * @description randomUUID があれば使用し、なければ疑似 ID を返す。
+ * @returns {string} 生成した ID。
+ */
+const generateId = () => {
   if (typeof crypto !== "undefined" && "randomUUID" in crypto) {
     return crypto.randomUUID();
   }
   return `upload-${Date.now()}-${Math.random().toString(16).slice(2)}`;
-}
+};
 
-function canOpenPreview(asset: TodoAsset) {
+/**
+ * プレビューを開けるか判定する。
+ * @description 画像/動画/テキスト/PDF の場合に true を返す。
+ * @param {TodoAsset} asset - 添付情報。
+ * @returns {boolean} プレビュー可能なら true。
+ */
+const canOpenPreview = (asset: TodoAsset) => {
   return isImage(asset) || isVideo(asset) || isText(asset) || isPdf(asset);
-}
+};
 
-async function openPreview(asset: TodoAsset) {
+/**
+ * プレビューを開く。
+ * @description モーダルを開き、必要なプレビューを取得する。
+ * @param {TodoAsset} asset - 添付情報。
+ * @returns {Promise<void>} プレビュー表示の完了。
+ */
+const openPreview = async (asset: TodoAsset) => {
   if (!isClient) return;
   modalAsset.value = asset;
   isPreviewModalOpen.value = true;
@@ -642,12 +805,17 @@ async function openPreview(asset: TodoAsset) {
   } finally {
     modalLoading.value = false;
   }
-}
+};
 
-function closePreview() {
+/**
+ * プレビューを閉じる。
+ * @description モーダル状態とプレビュー情報をリセットする。
+ * @returns {void} なし。
+ */
+const closePreview = () => {
   isPreviewModalOpen.value = false;
   modalAsset.value = null;
   modalUrl.value = null;
   modalTextPreview.value = null;
-}
+};
 </script>

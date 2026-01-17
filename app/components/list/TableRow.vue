@@ -287,12 +287,17 @@ const editedStatus = ref(props.todo.status);
 const editedTags = ref(props.todo.tags?.map((tag) => tag.id) || []);
 const titleInput = ref<HTMLInputElement | null>(null);
 
-// グローバルなエスケープキーハンドラを追加
-function handleEscapeKey(event: KeyboardEvent) {
+/**
+ * Escape キーで編集状態を解除する。
+ * @description Escape 押下時に編集モードを終了する。
+ * @param {KeyboardEvent} event - キーボードイベント。
+ * @returns {void} なし。
+ */
+const handleEscapeKey = (event: KeyboardEvent) => {
   if (event.key === "Escape") {
     closeAllEditors();
   }
-}
+};
 
 // コンポーネントマウント時にイベントリスナーを追加
 onMounted(() => {
@@ -318,8 +323,12 @@ onUnmounted(() => {
   }
 });
 
-// 全ての編集状態をリセット
-function closeAllEditors() {
+/**
+ * 全ての編集状態をリセットする。
+ * @description 編集中の入力を閉じ、他行にも閉じる通知を送る。
+ * @returns {void} なし。
+ */
+const closeAllEditors = () => {
   if (isEditingTitle.value) {
     cancelTitleEdit();
   }
@@ -328,15 +337,20 @@ function closeAllEditors() {
 
   // 他のコンポーネントの編集状態も閉じるイベントを発行
   emit("closeAllEditors");
-}
+};
 
 // 編集の開始前に他の編集状態をすべて閉じる
-function beforeStartEdit() {
+/**
+ * 編集開始前に他の編集状態を閉じる。
+ * @description 他行と自身の編集状態をリセットする。
+ * @returns {void} なし。
+ */
+const beforeStartEdit = () => {
   // 他のコンポーネントのエディタを閉じる
   emit("closeAllEditors");
   // 自身のエディタを閉じる
   closeAllEditors();
-}
+};
 
 // ステータスオプションを作成
 const statusOptions = computed(() => {
@@ -363,8 +377,12 @@ watch(
   }
 );
 
-// タイトル編集を開始
-function startTitleEdit() {
+/**
+ * タイトル編集を開始する。
+ * @description 入力欄へフォーカスを移動する。
+ * @returns {void} なし。
+ */
+const startTitleEdit = () => {
   beforeStartEdit();
   editedTitle.value = props.todo.title;
   isEditingTitle.value = true;
@@ -373,10 +391,15 @@ function startTitleEdit() {
       titleInput.value.focus();
     }
   });
-}
+};
 
 // タイトル編集を保存
-function saveTitleEdit() {
+/**
+ * タイトル編集を保存する。
+ * @description 変更があれば更新イベントを送る。
+ * @returns {void} なし。
+ */
+const saveTitleEdit = () => {
   if (
     editedTitle.value.trim() !== "" &&
     editedTitle.value !== props.todo.title
@@ -387,23 +410,38 @@ function saveTitleEdit() {
     });
   }
   isEditingTitle.value = false;
-}
+};
 
 // タイトル編集をキャンセル
-function cancelTitleEdit() {
+/**
+ * タイトル編集をキャンセルする。
+ * @description 編集内容を元に戻す。
+ * @returns {void} なし。
+ */
+const cancelTitleEdit = () => {
   editedTitle.value = props.todo.title;
   isEditingTitle.value = false;
-}
+};
 
 // ステータス編集を開始
-function startStatusEdit() {
+/**
+ * ステータス編集を開始する。
+ * @description 編集用の値と状態を設定する。
+ * @returns {void} なし。
+ */
+const startStatusEdit = () => {
   beforeStartEdit();
   editedStatus.value = props.todo.status;
   isEditingStatus.value = true;
-}
+};
 
 // ステータス編集を保存
-function saveStatus() {
+/**
+ * ステータス編集を保存する。
+ * @description 変更があれば更新イベントを送る。
+ * @returns {void} なし。
+ */
+const saveStatus = () => {
   if (editedStatus.value !== props.todo.status) {
     console.log("ステータス更新:", editedStatus.value); // デバッグ用
     emit("updateTodo", {
@@ -412,17 +450,27 @@ function saveStatus() {
     });
   }
   isEditingStatus.value = false;
-}
+};
 
 // タグ編集を開始
-function startTagsEdit() {
+/**
+ * タグ編集を開始する。
+ * @description 編集用のタグ配列を初期化する。
+ * @returns {void} なし。
+ */
+const startTagsEdit = () => {
   beforeStartEdit();
   editedTags.value = props.todo.tags?.map((tag) => tag.id) || [];
   isEditingTags.value = true;
-}
+};
 
 // タグ編集を保存
-function saveTagsEdit() {
+/**
+ * タグ編集を保存する。
+ * @description 変更があれば更新イベントを送る。
+ * @returns {void} なし。
+ */
+const saveTagsEdit = () => {
   if (
     !arraysEqual(editedTags.value, props.todo.tags?.map((tag) => tag.id) || [])
   ) {
@@ -447,23 +495,34 @@ function saveTagsEdit() {
     });
   }
   isEditingTags.value = false;
-}
+};
 
 // 外部からのエディタ閉じるイベントのハンドラ
-function onCloseEditorsFromExternal() {
+/**
+ * 外部からの編集終了通知を処理する。
+ * @description すべての編集状態を解除する。
+ * @returns {void} なし。
+ */
+const onCloseEditorsFromExternal = () => {
   isEditingTitle.value = false;
   isEditingStatus.value = false;
   isEditingTags.value = false;
-}
+};
 
-// 配列が等しいかチェック
+/**
+ * 配列が等しいかをチェックする。
+ * @description ソート後の配列を比較する。
+ * @param {any[]} a - 比較対象の配列。
+ * @param {any[]} b - 比較対象の配列。
+ * @returns {boolean} 一致する場合 true。
+ */
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-function arraysEqual(a: any[], b: any[]): boolean {
+const arraysEqual = (a: any[], b: any[]): boolean => {
   if (a.length !== b.length) return false;
   const sortedA = [...a].sort();
   const sortedB = [...b].sort();
   return sortedA.every((val, idx) => val === sortedB[idx]);
-}
+};
 
 // ステータスラベルを計算
 const statusLabel = computed(() => {
@@ -489,8 +548,13 @@ const formattedTime = computed(() => {
   return formatTime(totalSeconds);
 });
 
-// ステータスアイコンを計算
-function getStatusIcon(status: TaskStatus | string) {
+/**
+ * ステータスに応じたアイコン名を返す。
+ * @description ステータス種別ごとのアイコン名を返す。
+ * @param {TaskStatus | string} status - ステータス値。
+ * @returns {string} アイコン名。
+ */
+const getStatusIcon = (status: TaskStatus | string) => {
   switch (status) {
     case TASK_STATUS.PRIORITY:
       return "i-heroicons-exclamation-circle";
@@ -501,9 +565,15 @@ function getStatusIcon(status: TaskStatus | string) {
     default:
       return "i-heroicons-question-mark-circle";
   }
-}
+};
 
-function getStatusIconClass(status: TaskStatus | string) {
+/**
+ * ステータスに応じたアイコンクラスを返す。
+ * @description ステータス種別ごとの色クラスを返す。
+ * @param {TaskStatus | string} status - ステータス値。
+ * @returns {string} クラス名。
+ */
+const getStatusIconClass = (status: TaskStatus | string) => {
   switch (status) {
     case TASK_STATUS.PRIORITY:
       return "text-yellow-400";
@@ -514,40 +584,76 @@ function getStatusIconClass(status: TaskStatus | string) {
     default:
       return "text-gray-400";
   }
-}
+};
 
 // タグの色を計算
-function getTagColor(tagId: string) {
+/**
+ * タグの色を取得する。
+ * @description タグストアから色を引く。
+ * @param {string} tagId - タグ ID。
+ * @returns {string} タグ色。
+ */
+const getTagColor = (tagId: string) => {
   const tag = tagStore.tags.find((tag) => tag.id === tagId);
   return tag?.color || "#888888";
-}
+};
 
-function getTagName(tagId: string) {
+/**
+ * タグ名を取得する。
+ * @description タグストアから名前を引く。
+ * @param {string} tagId - タグ ID。
+ * @returns {string} タグ名。
+ */
+const getTagName = (tagId: string) => {
   const tag = tagStore.tags.find((tag) => tag.id === tagId);
   return tag?.name || "未命名タグ";
-}
+};
 
-function removeTag(tagId: string) {
+/**
+ * 編集中タグから指定タグを除外する。
+ * @description タグ ID を配列から取り除く。
+ * @param {string} tagId - タグ ID。
+ * @returns {void} なし。
+ */
+const removeTag = (tagId: string) => {
   editedTags.value = editedTags.value.filter((id) => id !== tagId);
-}
+};
 
-function toggleTag(tagId: string) {
+/**
+ * タグの選択状態を切り替える。
+ * @description 既にある場合は削除、なければ追加する。
+ * @param {string} tagId - タグ ID。
+ * @returns {void} なし。
+ */
+const toggleTag = (tagId: string) => {
   if (editedTags.value.includes(tagId)) {
     editedTags.value = editedTags.value.filter((id) => id !== tagId);
   } else {
     editedTags.value.push(tagId);
   }
-}
+};
 
-function selectAndSaveStatus(status: TaskStatus) {
+/**
+ * ステータスを選択して即保存する。
+ * @description 編集状態を更新して保存処理を呼ぶ。
+ * @param {TaskStatus} status - 新しいステータス。
+ * @returns {void} なし。
+ */
+const selectAndSaveStatus = (status: TaskStatus) => {
   editedStatus.value = status;
   saveStatus();
-}
+};
 
-function toggleFinished(value: boolean) {
+/**
+ * 完了フラグを更新する。
+ * @description 完了/未完了の変更を通知する。
+ * @param {boolean} value - 完了フラグ。
+ * @returns {void} なし。
+ */
+const toggleFinished = (value: boolean) => {
   emit("updateTodo", {
     id: props.todo.id,
     is_finished: value,
   });
-}
+};
 </script>

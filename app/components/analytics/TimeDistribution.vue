@@ -15,7 +15,11 @@ const chartContainer = ref<HTMLElement | null>(null);
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 let chart: any = null;
 
-// タスクの時間を抽出
+/**
+ * タスクの作業時間データを抽出する。
+ * @description 作業時間の多い上位10件を取得する。
+ * @returns {{ titles: string[]; times: number[] }} 表示用タイトルと時間配列。
+ */
 const getTaskTimeData = () => {
   // 時間データを持つタスクのみ抽出
   const tasksWithTime = props.tasks
@@ -51,7 +55,11 @@ const getTaskTimeData = () => {
   };
 };
 
-// グラフの初期化
+/**
+ * 作業時間グラフを初期化する。
+ * @description Chart.js を遅延ロードしてグラフを描画する。
+ * @returns {Promise<void>} 初期化の完了。
+ */
 const initChart = async () => {
   if (!chartContainer.value) return;
 
@@ -115,10 +123,9 @@ const initChart = async () => {
           x: {
             beginAtZero: true,
             ticks: {
-              callback: function (tickValue: number | string) {
+              callback: (tickValue: number | string) =>
                 // 目盛りに時間表示を使用
-                return formatTime(Number(tickValue));
-              },
+                formatTime(Number(tickValue)),
             },
           },
         },

@@ -97,6 +97,11 @@ const passwordConfirm = ref("");
 const errorMessage = ref("");
 const loading = ref(false);
 
+/**
+ * パスワード設定を実行する。
+ * @description 入力検証後に親へパスワードを送信する。
+ * @returns {Promise<void>} 設定処理の完了。
+ */
 const setPassword = async () => {
   errorMessage.value = "";
 
@@ -114,10 +119,20 @@ const setPassword = async () => {
   emit("set-password", password.value);
 };
 
+/**
+ * 確認メールの再送を依頼する。
+ * @description resend イベントを発火する。
+ * @returns {void} なし。
+ */
 const resendVerification = () => {
   emit("resend");
 };
 
+/**
+ * モーダルを閉じる。
+ * @description 開閉状態を false にする。
+ * @returns {void} なし。
+ */
 const close = () => {
   isOpen.value = false;
 };

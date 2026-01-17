@@ -1,6 +1,11 @@
 import { GoogleGenAI } from "@google/genai";
 
-export default defineEventHandler(async () => {
+/**
+ * Gemini のモデル一覧を取得する。
+ * @description SDK の list 結果をそのまま返却する。
+ * @returns {Promise<{ models: unknown }>} モデル一覧。
+ */
+const handler = async (): Promise<{ models: unknown }> => {
   const config = useRuntimeConfig();
   const apiKey = config.geminiApiKey;
 
@@ -22,12 +27,13 @@ export default defineEventHandler(async () => {
     const models = response.models || response;
 
     return { models };
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error("Gemini ListModels Error:", error);
     throw createError({
       statusCode: 500,
-      statusMessage: error.message,
+      statusMessage: (error as { message?: string }).message,
     });
   }
-});
+};
+
+export default defineEventHandler(handler);

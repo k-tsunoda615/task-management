@@ -43,6 +43,12 @@ let statusChart: any = null;
 let completionChart: any = null;
 const showCompletedTasks = ref(false);
 
+/**
+ * 完了タスク表示の切り替えを反映する。
+ * @description カスタムイベントから表示状態を更新する。
+ * @param {Event} event - 完了タスク表示切替イベント。
+ * @returns {void} なし。
+ */
 const handleCompletedTasksVisibilityToggle = (event: Event) => {
   const detail = (event as CustomEvent<{ showCompletedTasks: boolean }>).detail;
   if (typeof detail?.showCompletedTasks === "boolean") {
@@ -58,7 +64,12 @@ onMounted(() => {
   }
 });
 
-// ステータスの色を取得（constants.tsのSTATUS_COLORSから抽出）
+/**
+ * ステータスに対応する色を取得する。
+ * @description STATUS_COLORS の icon クラスから色を推定する。
+ * @param {string} status - ステータス値。
+ * @returns {string} 表示色（HEX）。
+ */
 const getStatusColor = (status: string) => {
   const statusStyle = STATUS_COLORS[status as keyof typeof STATUS_COLORS];
   if (!statusStyle) return "#94a3b8"; // デフォルト色
@@ -80,7 +91,11 @@ const getStatusColor = (status: string) => {
   }
 };
 
-// 完了・未完了でタスクをカウント
+/**
+ * 完了/未完了のタスク数を集計する。
+ * @description 完了フラグで件数を分けて返す。
+ * @returns {{ finished: number; unfinished: number }} 集計結果。
+ */
 const getCompletionCounts = () => {
   const finished = props.tasks.filter((task) => task.is_finished).length;
   const unfinished = props.tasks.length - finished;
@@ -94,7 +109,11 @@ const completionRate = computed(() => {
   return Math.round((finished / props.tasks.length) * 100);
 });
 
-// ステータス別にタスクをカウント
+/**
+ * ステータス別のタスク数を集計する。
+ * @description priority/next/archived の件数を返す。
+ * @returns {Record<string, number>} ステータス別件数。
+ */
 const getStatusCounts = () => {
   const counts = {
     [TASK_STATUS.PRIORITY]: 0,
@@ -111,7 +130,11 @@ const getStatusCounts = () => {
   return counts;
 };
 
-// グラフ共通のオプション
+/**
+ * グラフ共通のオプションを生成する。
+ * @description doughnut チャートの共通設定を返す。
+ * @returns {object} Chart.js オプション。
+ */
 const getCommonChartOptions = () => {
   return {
     responsive: true,
@@ -131,7 +154,11 @@ const getCommonChartOptions = () => {
   };
 };
 
-// ステータス分布グラフの初期化
+/**
+ * ステータス分布グラフを初期化する。
+ * @description Chart.js を遅延ロードしてグラフを描画する。
+ * @returns {Promise<void>} 初期化の完了。
+ */
 const initStatusChart = async () => {
   if (!statusChartContainer.value) return;
 
@@ -208,7 +235,11 @@ const initStatusChart = async () => {
   }
 };
 
-// 完了率グラフの初期化
+/**
+ * 完了率グラフを初期化する。
+ * @description Chart.js を遅延ロードしてグラフを描画する。
+ * @returns {Promise<void>} 初期化の完了。
+ */
 const initCompletionChart = async () => {
   if (!completionChartContainer.value) return;
 

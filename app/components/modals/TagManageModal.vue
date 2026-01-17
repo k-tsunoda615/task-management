@@ -364,7 +364,11 @@ watch(isOpen, (newVal) => {
   }
 });
 
-// 入力値の変更をプロパゲート (デバウンス処理を追加)
+/**
+ * 新規タグ入力の変更を伝播する。
+ * @description デバウンスで親へ通知する。
+ * @returns {void} なし。
+ */
 const updateNewTagValues = useDebounceFn(() => {
   emit("updateNewTagName", localName.value);
   emit("updateNewTagColor", localColor.value);
@@ -373,7 +377,11 @@ const updateNewTagValues = useDebounceFn(() => {
 // ローカル名前/色の変更を監視して親コンポーネントに通知
 watch([localName, localColor], updateNewTagValues);
 
-// 新しいタグを追加
+/**
+ * 新しいタグを追加する。
+ * @description 入力検証後に追加し、状態を初期化する。
+ * @returns {Promise<void>} 追加処理の完了。
+ */
 const handleAddTag = async () => {
   if (localName.value.trim() === "") return;
 
@@ -386,14 +394,23 @@ const handleAddTag = async () => {
   localColor.value = "#3b82f6";
 };
 
-// 新規タグ追加をキャンセル
+/**
+ * 新規タグ追加をキャンセルする。
+ * @description 入力状態を初期化する。
+ * @returns {void} なし。
+ */
 const cancelNewTag = () => {
   isCreatingNewTag.value = false;
   localName.value = "";
   localColor.value = "#3b82f6";
 };
 
-// タグ編集開始
+/**
+ * タグ編集を開始する。
+ * @description 対象タグの編集状態を設定する。
+ * @param {Tag} tag - 編集対象のタグ。
+ * @returns {void} なし。
+ */
 const startEditing = (tag: Tag) => {
   // 既存の編集をキャンセル
   cancelEditing();
@@ -408,7 +425,11 @@ const startEditing = (tag: Tag) => {
   editColor.value = tag.color || "#3b82f6";
 };
 
-// 編集をキャンセル
+/**
+ * タグ編集をキャンセルする。
+ * @description 編集中の状態をリセットする。
+ * @returns {void} なし。
+ */
 const cancelEditing = () => {
   isEditing.value = false;
   editingTagId.value = null;
@@ -416,7 +437,11 @@ const cancelEditing = () => {
   editColor.value = "#3b82f6";
 };
 
-// タグ更新を処理
+/**
+ * タグ更新を処理する。
+ * @description 親へ更新内容を通知し編集を閉じる。
+ * @returns {Promise<void>} 更新処理の完了。
+ */
 const handleUpdateTag = async () => {
   if (!editingTagId.value || !editName.value.trim()) return;
 
@@ -432,22 +457,40 @@ const handleUpdateTag = async () => {
   cancelEditing();
 };
 
-// タグ削除の確認
+/**
+ * タグ削除を確認する。
+ * @description 削除イベントを親へ通知する。
+ * @param {string} tagId - 削除対象のタグ ID。
+ * @returns {void} なし。
+ */
 const confirmDeleteTag = (tagId: string) => {
   emit("deleteTag", tagId);
 };
 
-// モーダルを閉じる
+/**
+ * モーダルを閉じる。
+ * @description 開閉状態を false にする。
+ * @returns {void} なし。
+ */
 const closeModal = () => {
   isOpen.value = false;
 };
 
-// ドラッグ終了時の処理
+/**
+ * ドラッグ終了時の処理を行う。
+ * @description ドラッグ中フラグを解除する。
+ * @returns {void} なし。
+ */
 const handleDragEnd = () => {
   isDragging.value = false;
 };
 
-// ドラッグ&ドロップの変更を処理
+/**
+ * ドラッグ&ドロップの変更を処理する。
+ * @description 並び順を再計算して保存する。
+ * @param {any} _evt - ドラッグイベント。
+ * @returns {Promise<void>} 更新処理の完了。
+ */
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const handleDragChange = async (_evt: any) => {
   if (!props.tagStore) return;

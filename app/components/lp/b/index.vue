@@ -372,6 +372,11 @@ definePageMeta({
 const _user = useSupabaseUser();
 
 // 機能セクションまでスクロール
+/**
+ * 機能セクションまでスクロールする。
+ * @description スムーズスクロールで features セクションへ移動する。
+ * @returns {void} なし。
+ */
 const scrollToFeatures = () => {
   document.getElementById("features")?.scrollIntoView({ behavior: "smooth" });
 };

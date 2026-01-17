@@ -63,17 +63,29 @@ const emit = defineEmits(["login-success", "signup-success", "guest-login"]);
 
 const isSignUp = ref(props.initialSignUp);
 
-// ログイン成功時のハンドラー
+/**
+ * ログイン成功時の通知を送る。
+ * @description 親コンポーネントへイベントを送信する。
+ * @returns {void} なし。
+ */
 const handleLoginSuccess = () => {
   emit("login-success");
 };
 
-// 新規登録成功時のハンドラー
+/**
+ * 新規登録成功時の通知を送る。
+ * @description 親コンポーネントへイベントを送信する。
+ * @returns {void} なし。
+ */
 const handleSignupSuccess = () => {
   emit("signup-success");
 };
 
-// ゲストログイン成功時のハンドラー
+/**
+ * ゲストログイン成功時の通知を送る。
+ * @description 親コンポーネントへイベントを送信する。
+ * @returns {void} なし。
+ */
 const handleGuestLogin = () => {
   emit("guest-login");
 };

@@ -1,6 +1,48 @@
 import { GoogleGenAI } from "@google/genai";
+import type { H3Event } from "h3";
 
-export default defineEventHandler(async (event) => {
+type GeminiChatHistoryItem = {
+  /** 送信ロール */
+  role?: string;
+  /** パーツ配列 */
+  parts?: Array<{
+    /** テキスト本文 */
+    text?: string;
+  }>;
+  /** 旧形式のテキスト本文 */
+  text?: string;
+};
+
+type GeminiChatRequest = {
+  /** 会話履歴 */
+  history?: GeminiChatHistoryItem[];
+  /** チャットメッセージ */
+  message?: string;
+  /** 単発プロンプト */
+  prompt?: string;
+  /** 利用モデル */
+  model?: string;
+};
+
+type GeminiChatContentPart = {
+  /** テキスト本文 */
+  text: string;
+};
+
+type GeminiChatContent = {
+  /** ロール */
+  role: "user" | "model";
+  /** 送信パーツ */
+  parts: GeminiChatContentPart[];
+};
+
+/**
+ * Gemini チャット/プロンプト API のハンドラー。
+ * @description リクエスト形式に応じて Gemini API を呼び出す。
+ * @param {H3Event} event - H3 のリクエストイベント。
+ * @returns {Promise<{ text: string }>} 生成テキスト。
+ */
+const handler = async (event: H3Event): Promise<{ text: string }> => {
   const config = useRuntimeConfig();
   const apiKey = config.geminiApiKey;
 
@@ -11,7 +53,7 @@ export default defineEventHandler(async (event) => {
     });
   }
 
-  const body = await readBody(event);
+  const body = (await readBody(event)) as GeminiChatRequest;
   const { history, message, prompt, model: userModel } = body;
 
   const client = new GoogleGenAI({ apiKey });
@@ -28,13 +70,11 @@ export default defineEventHandler(async (event) => {
       // However, usually for REST-like usage, we just pass contents.
       // Let's interpret 'history' to build the contents array.
 
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      let contents: any[] = [];
+      let contents: GeminiChatContent[] = [];
       if (history && Array.isArray(history)) {
         // Transform history format from frontend
         // Frontend (AIChat.vue) sends: { role: 'user'|'model', parts: [{ text: '...' }] }
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        contents = history.map((msg: any) => {
+        contents = history.map((msg) => {
           // If frontend sends formatted parts
           if (msg.parts && Array.isArray(msg.parts) && msg.parts[0]?.text) {
             return {
@@ -62,34 +102,35 @@ export default defineEventHandler(async (event) => {
         contents: contents,
       });
 
-      return { text: response.text };
+      return { text: response.text ?? "" };
     } else if (prompt) {
       // Single prompt mode
       const response = await client.models.generateContent({
         model: targetModel,
         contents: [{ role: "user", parts: [{ text: prompt }] }],
       });
-      return { text: response.text };
+      return { text: response.text ?? "" };
     } else {
       throw createError({
         statusCode: 400,
         statusMessage: "Invalid request body",
       });
     }
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error("Gemini API Error:", error);
 
     // Handle Rate Limiting (429)
     if (
-      error.status === 429 ||
-      error.code === 429 ||
-      error.message?.includes("429") ||
-      error.message?.includes("quota")
+      (error as { status?: number }).status === 429 ||
+      (error as { code?: number }).code === 429 ||
+      (error as { message?: string }).message?.includes("429") ||
+      (error as { message?: string }).message?.includes("quota")
     ) {
       // Try to extract retry delay from message like "Please retry in 59.071555733s."
-      const match = error.message?.match(/Please retry in ([0-9.]+)s/);
-      const retrySeconds = match ? Math.ceil(parseFloat(match[1])) : 60;
+      const match = (error as { message?: string }).message?.match(
+        /Please retry in ([0-9.]+)s/
+      );
+      const retrySeconds = match ? Math.ceil(parseFloat(match[1] ?? "0")) : 60;
 
       throw createError({
         statusCode: 429,
@@ -100,7 +141,9 @@ export default defineEventHandler(async (event) => {
 
     throw createError({
       statusCode: 500,
-      statusMessage: error.message,
+      statusMessage: (error as { message?: string }).message,
     });
   }
-});
+};
+
+export default defineEventHandler(handler);

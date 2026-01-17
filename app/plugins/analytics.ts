@@ -1,6 +1,13 @@
 import { initDataLayer, pushEvent } from "../utils/analytics";
+import type { NuxtApp } from "nuxt/app";
 
-export default defineNuxtPlugin((nuxtApp) => {
+/**
+ * 画面遷移と認証状態のイベント送信を統一する。
+ * @description ページビュー/ログイン状態のイベントを dataLayer に送る。
+ * @param {NuxtApp} nuxtApp - Nuxt アプリケーションのインスタンス。
+ * @returns {object} Nuxt プラグインの提供値。
+ */
+const plugin = (nuxtApp: NuxtApp) => {
   // クライアントサイドでのみ実行
   if (import.meta.client) {
     // dataLayer初期化
@@ -41,14 +48,18 @@ export default defineNuxtPlugin((nuxtApp) => {
       },
     },
   };
-});
+};
+
+export default defineNuxtPlugin(plugin);
 
 /**
- * フォーム送信イベント
- * @param formId フォームID
- * @param formName フォーム名
- * @param formDestination フォーム送信先URL
- * @param formLength フォームフィールド数
+ * フォーム送信イベントを送信する。
+ * @description 送信先やフィールド数を dataLayer に送る。
+ * @param {string} formId - フォーム ID。
+ * @param {string | null} formName - フォーム名。
+ * @param {string} formDestination - フォーム送信先 URL。
+ * @param {number} formLength - フォームフィールド数。
+ * @returns {void} なし。
  */
 export const trackFormSubmit = (
   formId: string,
@@ -68,11 +79,13 @@ export const trackFormSubmit = (
 };
 
 /**
- * フォーム完了イベント
- * @param formId フォームID
- * @param formName フォーム名
- * @param formType フォームタイプ
- * @param formLength フォームフィールド数
+ * フォーム完了イベントを送信する。
+ * @description フォームの属性を dataLayer に送る。
+ * @param {string} formId - フォーム ID。
+ * @param {string} formName - フォーム名。
+ * @param {string} formType - フォームタイプ。
+ * @param {number} formLength - フォームフィールド数。
+ * @returns {void} なし。
  */
 export const trackFormComplete = (
   formId: string,
@@ -89,11 +102,13 @@ export const trackFormComplete = (
 };
 
 /**
- * フォームエラーイベント
- * @param formId フォームID
- * @param formName フォーム名
- * @param errorMessage エラーメッセージ
- * @param errorField エラーが発生したフィールド名
+ * フォームエラーイベントを送信する。
+ * @description エラー内容を dataLayer に送る。
+ * @param {string} formId - フォーム ID。
+ * @param {string} formName - フォーム名。
+ * @param {string} errorMessage - エラーメッセージ。
+ * @param {string} [errorField] - エラーが発生したフィールド名。
+ * @returns {void} なし。
  */
 export const trackFormError = (
   formId: string,
@@ -110,10 +125,12 @@ export const trackFormError = (
 };
 
 /**
- * フォーム開始イベント
- * @param formId フォームID
- * @param formName フォーム名
- * @param formType フォームタイプ
+ * フォーム開始イベントを送信する。
+ * @description 開始時のフォーム情報を dataLayer に送る。
+ * @param {string} formId - フォーム ID。
+ * @param {string} formName - フォーム名。
+ * @param {string} formType - フォームタイプ。
+ * @returns {void} なし。
  */
 export const trackFormStart = (
   formId: string,

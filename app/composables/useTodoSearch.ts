@@ -1,16 +1,18 @@
 import type { Todo } from "../../types/todo";
 
 /**
- * タスク検索用composable
- * @param todosRef - タスク配列（ref/computed）
- * @param queryRef - 検索クエリ（ref）
- * @param tagIdRef - 選択中のタグID（ref, nullなら全件）
+ * UI 側で検索ロジックを散らさない。
+ * @description タスク配列をクエリ/タグでフィルタする。
+ * @param {Ref<Todo[]>} todosRef - 対象となるタスク配列。
+ * @param {Ref<string>} queryRef - 検索クエリ。
+ * @param {Ref<string | null>} [tagIdRef] - フィルタ対象のタグ ID。
+ * @returns {object} 検索済みタスクの computed。
  */
-export function useTodoSearch(
+export const useTodoSearch = (
   todosRef: Ref<Todo[]>,
   queryRef: Ref<string>,
   tagIdRef?: Ref<string | null>,
-) {
+) => {
   const searchedTodos = computed(() => {
     const query = queryRef.value.trim().toLowerCase();
     const tagId = tagIdRef?.value || null;
@@ -27,4 +29,4 @@ export function useTodoSearch(
     });
   });
   return { searchedTodos };
-}
+};
