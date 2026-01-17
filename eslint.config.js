@@ -9,4 +9,7 @@ export default withNuxt({
     "playwright-report",
     "test-results",
   ],
+  rules: {
+    "vue/no-multiple-template-root": "off",
+  },
 });
