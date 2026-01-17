@@ -14,7 +14,7 @@ export const useAITitleGenerator = () => {
 
       if (error.value) throw error.value;
 
-      // @ts-ignore
+      // @ts-expect-error response typing from useFetch is not narrowed
       const text = data.value?.text;
       return (
         text

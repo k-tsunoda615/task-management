@@ -369,7 +369,7 @@ definePageMeta({
   middleware: ["auth"],
 });
 
-const user = useSupabaseUser();
+const _user = useSupabaseUser();
 
 // 機能セクションまでスクロール
 const scrollToFeatures = () => {

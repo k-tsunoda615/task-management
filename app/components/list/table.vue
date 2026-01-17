@@ -367,12 +367,13 @@ const filteredAndSortedTodos = computed<Todo[]>(() => {
     });
   }
 
-  // ドラッグ中でなければ内部状態も更新
-  if (!isInternalDragActive.value) {
-    internalDraggedTodos.value = [...result];
-  }
-
   return result;
+});
+
+watch(filteredAndSortedTodos, (todos) => {
+  if (!isInternalDragActive.value) {
+    internalDraggedTodos.value = [...todos];
+  }
 });
 
 // ドラッグの開始ハンドラを追加

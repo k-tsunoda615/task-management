@@ -256,7 +256,6 @@ import {
 } from "../../utils/constants";
 import type { Todo } from "../../../types/todo";
 import { formatTime, isRecent } from "./TableUtils";
-import { useTodoStore } from "../../../stores/tasks";
 import { useTagStore } from "../../../stores/tags";
 
 const props = defineProps({
@@ -278,7 +277,6 @@ const emit = defineEmits([
 ]);
 
 const selected = ref(props.isSelected);
-const todoStore = useTodoStore();
 const tagStore = useTagStore();
 
 // 編集状態の管理

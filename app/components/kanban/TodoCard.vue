@@ -143,9 +143,7 @@
 </template>
 
 <script setup lang="ts">
-import { useTodoStore } from "../../../stores/tasks";
 import { marked } from "marked";
-// @ts-ignore
 import DOMPurify from "dompurify";
 import type { PropType } from "vue";
 import type { TaskStatus } from "../../utils/constants";
@@ -183,9 +181,6 @@ const props = defineProps({
 });
 
 const emit = defineEmits(["edit", "start-timing", "stop-timing"]);
-
-const todoStore = useTodoStore();
-const toast = useToast();
 
 const editTodo = (event: Event) => {
   event.preventDefault();

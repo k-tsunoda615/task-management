@@ -458,7 +458,7 @@ defineProps({
   },
 });
 
-const emit = defineEmits(["close-mobile-menu", "open-new-task-modal"]);
+const _emit = defineEmits(["close-mobile-menu", "open-new-task-modal"]);
 
 const todoStore = useTodoStore();
 const { tagStore, newTagName, newTagColor, addTag, deleteTag, updateTag } =

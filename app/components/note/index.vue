@@ -200,7 +200,7 @@
 
 <script setup lang="ts">
 import { useTodoStore } from "../../../stores/tasks";
-import { TASK_STATUS, TASK_STATUS_LABELS } from "../../utils/constants";
+import { TASK_STATUS_LABELS } from "../../utils/constants";
 import { useTaskTimer } from "../../composables/useTaskTimer";
 import { formatTime } from "../../utils/time";
 import type { Todo, TodoAsset } from "../../../types/todo";
@@ -208,7 +208,6 @@ import AnalogTimer from "../kanban/AnalogTimer.vue";
 import AssetManager from "./AssetManager.vue";
 import DeleteConfirmModal from "../modals/DeleteConfirmModal.vue";
 import { marked } from "marked";
-// @ts-ignore
 import DOMPurify from "dompurify";
 
 const props = defineProps<{
@@ -347,7 +346,7 @@ async function updateTask(field: string) {
     // エラー時は元の値に戻す
     if (task.value && field in task.value) {
       const fieldKey = field as keyof typeof task.value;
-      // @ts-ignore
+      // @ts-expect-error dynamic field assignment relies on runtime keys
       editedTask.value[fieldKey] = task.value[fieldKey];
     }
   }

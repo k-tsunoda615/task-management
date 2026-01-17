@@ -62,10 +62,6 @@ const center = size / 2;
 const arcWidth = 5; // ミニマルな太さ
 const radius = center - arcWidth - 8; // 円弧とテキストが重ならないように調整
 
-// 経過時間を分単位で取得
-const minutes = computed(() => Math.floor(props.seconds / 60));
-const seconds = computed(() => props.seconds % 60);
-
 // 周回数と現在の周の進捗
 const lapCount = computed(() => Math.floor(props.seconds / 3600));
 const percentInLap = computed(() => (props.seconds % 3600) / 3600);

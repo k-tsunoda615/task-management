@@ -582,12 +582,12 @@ function cleanupPreviewCache() {
   const currentIds = new Set(props.assets.map((asset) => asset.id));
   Object.keys(previewUrls).forEach((key) => {
     if (!currentIds.has(key)) {
-      delete previewUrls[key];
+      Reflect.deleteProperty(previewUrls, key);
     }
   });
   Object.keys(textPreviews).forEach((key) => {
     if (!currentIds.has(key)) {
-      delete textPreviews[key];
+      Reflect.deleteProperty(textPreviews, key);
     }
   });
 }

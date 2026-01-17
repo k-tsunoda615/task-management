@@ -609,7 +609,6 @@ import {
 import AnalogTimer from "./AnalogTimer.vue";
 import { calculateNewOrders } from "../../utils/todoUtils";
 import type { TimerNavigationEvent } from "../../plugins/timer-guard.global";
-// @ts-ignore
 import DOMPurify from "dompurify";
 
 const todoStore = useTodoStore();
@@ -1056,6 +1055,8 @@ onMounted(() => {
 
     // タイトルを元に戻す
     resetTitle();
+
+    unsubscribe();
   });
 
   // 初期タイマー表示状態を設定
@@ -1443,29 +1444,6 @@ const handleDragChange = async (evt: any) => {
   }
 };
 
-// コンテナからステータスを抽出するヘルパー関数
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const extractStatusFromContainer = (container: any): TaskStatus => {
-  // コンテナのクラスやデータ属性などから判断
-  if (!container) return TASK_STATUS.PRIORITY;
-
-  const dataStatus = container.getAttribute?.("data-status");
-  if (dataStatus === "priority") return TASK_STATUS.PRIORITY;
-  if (dataStatus === "next") return TASK_STATUS.NEXT;
-  if (dataStatus === "archived") return TASK_STATUS.ARCHIVED;
-
-  // その他のプロパティからの判断
-  const classList = container.classList || [];
-  const classString = Array.from(classList).join(" ");
-
-  if (classString.includes("priority")) return TASK_STATUS.PRIORITY;
-  if (classString.includes("next")) return TASK_STATUS.NEXT;
-  if (classString.includes("archived")) return TASK_STATUS.ARCHIVED;
-
-  // デフォルト値
-  return TASK_STATUS.PRIORITY;
-};
-
 // タイミング開始
 const startTiming = async (todo: Todo) => {
   // 既に計測中のタスクがある場合は停止
@@ -1502,7 +1480,7 @@ const startTiming = async (todo: Todo) => {
       description: `「${todo.title}」の計測を開始しました`,
       color: "blue",
     });
-  } catch (error) {
+  } catch {
     // エラー時は状態を元に戻す
     currentTimingTodo.value = null;
     currentTotalTime.value = 0;
@@ -1545,7 +1523,7 @@ const stopTiming = async (todo: Todo) => {
       description: `「${todo.title}」の計測を停止しました (${formatTime(finalTime)})`,
       color: "green",
     });
-  } catch (error) {
+  } catch {
     // エラー時は状態を元に戻す
     currentTimingTodo.value = prevTodo;
     startTimerForTodo(todo, (total) => {
@@ -1557,45 +1535,6 @@ const stopTiming = async (todo: Todo) => {
       description: "タイマーの停止に失敗しました",
       color: "red",
     });
-  }
-};
-
-// todoリスト内の計測中のタスクを更新する
-const updateTimingTodoInLists = (
-  todoId: string,
-  newTotalTime: number,
-  isTimingValue = true
-) => {
-  // 各リスト内のタスクを検索して更新
-  const updateInList = (list: Todo[]) => {
-    const index = list.findIndex((t) => t.id === todoId);
-    if (index !== -1 && list[index]) {
-      // 新しいオブジェクトを作成して置き換え（リアクティブな更新のため）
-      list[index] = {
-        ...list[index],
-        total_time: newTotalTime,
-        is_timing: isTimingValue,
-      } as Todo;
-    }
-  };
-
-  updateInList(todosByStatus[TASK_STATUS.PRIORITY]);
-  updateInList(todosByStatus[TASK_STATUS.NEXT]);
-  updateInList(todosByStatus[TASK_STATUS.ARCHIVED]);
-};
-
-// バックグラウンドでタイマー情報を更新
-const updateTimerInBackground = async () => {
-  if (!currentTimingTodo.value) return;
-
-  try {
-    await todoStore.updateTodo({
-      id: currentTimingTodo.value.id,
-      total_time: [currentTotalTime.value], // 配列として送信
-      is_timing: true,
-    });
-  } catch (error) {
-    console.error("タイマー情報の更新に失敗:", error);
   }
 };
 

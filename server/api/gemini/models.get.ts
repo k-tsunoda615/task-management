@@ -18,7 +18,7 @@ export default defineEventHandler(async () => {
     // The response structure depends on the SDK version, print it to debug
     console.log("Available models:", JSON.stringify(response, null, 2));
 
-    // @ts-ignore
+    // @ts-expect-error response typing from genai SDK is not stable
     const models = response.models || response;
 
     return { models };

@@ -1,11 +1,12 @@
 <template>
   <UModal
-    v-model="show"
+    :model-value="show"
     :ui="{
       container: 'items-start my-20',
       width: 'max-w-4xl',
       height: 'min-h-[300px]',
     }"
+    @update:model-value="$emit('update:show', $event)"
   >
     <UCard>
       <template #header>
@@ -149,13 +150,14 @@
       <!-- プレビューモーダル -->
       <UModal
         v-if="showPreviewModal"
-        v-model="showPreviewModal"
+        :model-value="showPreviewModal"
         :ui="{
           container: 'items-start my-20',
           width: 'max-w-4xl',
           wrapper: 'z-[60]',
           overlay: { base: 'bg-gray-950/75' },
         }"
+        @update:model-value="$emit('update:showPreviewModal', $event)"
       >
         <UCard>
           <template #header>
@@ -188,9 +190,7 @@ import { useAITitleGenerator } from "../../composables/useAITitleGenerator";
 const { isGenerating, generateTitle } = useAITitleGenerator();
 
 const handleGenerateTitle = async () => {
-  // @ts-ignore
   if (!props.editingTodo?.memo) return;
-  // @ts-ignore
   const title = await generateTitle(props.editingTodo.memo);
   if (title) {
     emit("update:editingTodoTitle", title);
@@ -208,12 +208,14 @@ const props = defineProps({
 });
 const emit = defineEmits([
   "close",
+  "update:show",
   "update",
   "toggleTag",
   "validateTime",
   "showPreview",
   "closePreview",
   "confirmDelete",
+  "update:showPreviewModal",
   "update:editingTodoTitle",
   "update:editingTodoMemo",
   "update:editingTodoStatus",

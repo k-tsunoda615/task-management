@@ -57,7 +57,7 @@ const handleGuestLogin = async () => {
       // ログイン成功時にリダイレクト
       router.push(props.redirectTo);
     }
-  } catch (e) {
+  } catch {
     errorMessage.value = "ゲストログイン中にエラーが発生しました。";
     emit("error", errorMessage.value);
   } finally {

@@ -129,7 +129,7 @@ async function handleSubmit() {
   try {
     // 匿名ユーザーから永続的なユーザーへの変換
     if (user.value?.is_anonymous) {
-      const { data: updateData, error: updateError } =
+      const { data: _updateData, error: updateError } =
         await client.auth.updateUser({ email: email.value });
 
       if (updateError) throw updateError;
@@ -139,7 +139,7 @@ async function handleSubmit() {
       router.push(props.redirectUrl || "/board");
     } else {
       // 通常の新規登録
-      const { data, error } = await client.auth.signUp({
+      const { data: _data, error } = await client.auth.signUp({
         email: email.value,
         password: password.value,
       });

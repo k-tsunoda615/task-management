@@ -188,7 +188,7 @@ async function handleSubmit() {
   loading.value = true;
   errorMessage.value = "";
   try {
-    const { data, error } = await client.auth.signInWithPassword({
+    const { data: _data, error } = await client.auth.signInWithPassword({
       email: email.value,
       password: password.value,
     });
@@ -200,7 +200,7 @@ async function handleSubmit() {
         router.push(props.redirectUrl);
       }
     }
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (error: any) {
     console.error("認証エラー:", error);
     errorMessage.value = mapAuthErrorToMessage(error);
@@ -224,7 +224,7 @@ async function handleResetPassword() {
       resetMessage.value =
         "パスワードリセット用のメールを送信しました。メールボックスをご確認ください。";
     }
-  } catch (e) {
+  } catch {
     resetMessage.value = "リセット処理中にエラーが発生しました。";
   } finally {
     resetLoading.value = false;
@@ -245,7 +245,7 @@ async function handleGuestLogin() {
         router.push(props.redirectUrl);
       }
     }
-  } catch (e) {
+  } catch {
     errorMessage.value = "ゲストログイン中にエラーが発生しました。";
   } finally {
     loading.value = false;
@@ -269,7 +269,7 @@ async function handleGoogleSignIn() {
       errorMessage.value = mapAuthErrorToMessage(error);
     }
     // 通常、リダイレクトされるのでここでの処理は不要
-  } catch (e) {
+  } catch {
     errorMessage.value = "Googleログイン中にエラーが発生しました。";
   } finally {
     loading.value = false;

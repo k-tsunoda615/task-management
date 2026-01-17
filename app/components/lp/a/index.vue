@@ -335,9 +335,9 @@ definePageMeta({
   middleware: ["auth"],
 });
 
-const user = useSupabaseUser();
+const _user = useSupabaseUser();
 // デフォルトで最初の機能（priority）を選択状態にする
-const activeFeature = ref<string | null>("priority");
+const _activeFeature = ref<string | null>("priority");
 
 // 機能セクションまでスクロール
 const scrollToFeatures = () => {

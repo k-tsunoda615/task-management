@@ -29,7 +29,7 @@ import {
   STATUS_COLORS,
 } from "../../utils/constants";
 import type { Todo } from "../../../types/todo";
-import type { ChartData, ChartOptions, TooltipItem } from "chart.js";
+import type { TooltipItem } from "chart.js";
 
 const props = defineProps<{
   tasks: Todo[];
@@ -92,11 +92,6 @@ const completionRate = computed(() => {
   if (props.tasks.length === 0) return 0;
   const { finished } = getCompletionCounts();
   return Math.round((finished / props.tasks.length) * 100);
-});
-
-// 完了タスクがあるかどうか
-const hasFinishedTasks = computed(() => {
-  return props.tasks.some((task) => task.is_finished);
 });
 
 // ステータス別にタスクをカウント
