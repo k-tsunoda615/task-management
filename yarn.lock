@@ -688,6 +688,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@eslint/js@npm:^9.31.0":
+  version: 9.39.2
+  resolution: "@eslint/js@npm:9.39.2"
+  checksum: 10c0/00f51c52b04ac79faebfaa65a9652b2093b9c924e945479f1f3945473f78aee83cbc76c8d70bbffbf06f7024626575b16d97b66eab16182e1d0d39daff2f26f5
+  languageName: node
+  linkType: hard
+
 "@eslint/object-schema@npm:^2.1.7":
   version: 2.1.7
   resolution: "@eslint/object-schema@npm:2.1.7"
@@ -1411,7 +1418,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@nuxt/ui@npm:^2.14.2":
+"@nuxt/ui@npm:^2.18.0":
   version: 2.22.3
   resolution: "@nuxt/ui@npm:2.22.3"
   dependencies:
@@ -11438,10 +11445,11 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "task-management-app@workspace:."
   dependencies:
+    "@eslint/js": "npm:^9.31.0"
     "@google/genai": "npm:^1.35.0"
     "@iconify-json/heroicons": "npm:^1.2.2"
     "@nuxt/test-utils": "npm:^3.19.2"
-    "@nuxt/ui": "npm:^2.14.2"
+    "@nuxt/ui": "npm:^2.18.0"
     "@nuxtjs/eslint-config-typescript": "npm:^12.1.0"
     "@nuxtjs/supabase": "npm:^1.1.7"
     "@nuxtjs/tailwindcss": "npm:^6.11.4"
