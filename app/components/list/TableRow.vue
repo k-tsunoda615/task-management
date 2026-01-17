@@ -460,6 +460,7 @@ function onCloseEditorsFromExternal() {
 }
 
 // 配列が等しいかチェック
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 function arraysEqual(a: any[], b: any[]): boolean {
   if (a.length !== b.length) return false;
   const sortedA = [...a].sort();

@@ -22,6 +22,7 @@ export default defineEventHandler(async () => {
     const models = response.models || response;
 
     return { models };
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (error: any) {
     console.error("Gemini ListModels Error:", error);
     throw createError({

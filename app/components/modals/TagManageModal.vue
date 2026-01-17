@@ -436,6 +436,7 @@ const handleDragEnd = () => {
 };
 
 // ドラッグ&ドロップの変更を処理
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const handleDragChange = async (evt: any) => {
   if (!props.tagStore) return;
 

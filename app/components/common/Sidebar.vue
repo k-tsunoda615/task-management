@@ -665,6 +665,7 @@ const toggleTaskFilter = () => {
 };
 
 // ゴミ箱へのドロップを処理
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const handleTrashDrop = (event: any) => {
   const todoId = event.dataTransfer.getData("todoId");
   if (todoId) {

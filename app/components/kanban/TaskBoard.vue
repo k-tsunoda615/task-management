@@ -377,7 +377,7 @@
       @validate-time="validateTimeInput"
       @update:new-todo-title="(val: string) => (newTodo.title = val)"
       @update:new-todo-memo="(val: string) => (newTodo.memo = val)"
-      @update:new-todo-status="(val: any) => (newTodo.status = val)"
+      @update:new-todo-status="updateNewTodoStatus"
       @update:new-todo-is-private="(val: boolean) => (newTodo.is_private = val)"
       @update:time-input="(val: string) => (timeInput = val)"
       @update:new-tag-name="(val: string) => (newTagName = val)"
@@ -489,7 +489,7 @@
                     () => {
                       if (editingTodo.tags.some((t: Tag) => t.id === tag.id)) {
                         editingTodo.tags = editingTodo.tags.filter(
-                          (t: Tag) => t.id !== tag.id,
+                          (t: Tag) => t.id !== tag.id
                         );
                       } else {
                         editingTodo.tags.push(tag);
@@ -529,10 +529,12 @@
             <template #header>
               <h3 class="text-lg font-medium text-gray-900">プレビュー</h3>
             </template>
+            <!-- eslint-disable vue/no-v-html -->
             <div
               class="prose prose-sm max-w-none min-h-[300px] overflow-y-auto max-h-[60vh]"
               v-html="parsedPreviewMemo"
             />
+            <!-- eslint-enable vue/no-v-html -->
             <template #footer>
               <div class="flex justify-end">
                 <UButton variant="ghost" @click="showPreviewModal = false">
@@ -682,6 +684,11 @@ const newTodo = ref<NewTodo>({
   is_timing: false,
   tags: [] as Tag[],
 });
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const updateNewTodoStatus = (val: any) => {
+  newTodo.value.status = val;
+};
 
 const editingTodo = ref<EditingTodo>({
   id: "",
@@ -860,7 +867,7 @@ const tagOptions = computed(() => [
 const { searchedTodos } = useTodoSearch(
   computed(() => todoStore.todosByVisibility),
   searchQuery,
-  computed(() => selectedTagId.value || null),
+  computed(() => selectedTagId.value || null)
 );
 
 // searchedTodosを元に、完了タスクをフィルタリングしたcomputed
@@ -896,13 +903,13 @@ const updateTodosByStatus = () => {
   });
   // 各リストをsort_orderでソート
   todosByStatus[TASK_STATUS.PRIORITY].sort(
-    (a: Todo, b: Todo) => (a.sort_order || 0) - (b.sort_order || 0),
+    (a: Todo, b: Todo) => (a.sort_order || 0) - (b.sort_order || 0)
   );
   todosByStatus[TASK_STATUS.NEXT].sort(
-    (a: Todo, b: Todo) => (a.sort_order || 0) - (b.sort_order || 0),
+    (a: Todo, b: Todo) => (a.sort_order || 0) - (b.sort_order || 0)
   );
   todosByStatus[TASK_STATUS.ARCHIVED].sort(
-    (a: Todo, b: Todo) => (a.sort_order || 0) - (b.sort_order || 0),
+    (a: Todo, b: Todo) => (a.sort_order || 0) - (b.sort_order || 0)
   );
   // 計測中のタスクを確認
   const timingTodo = filteredTodos.value.find((todo: Todo) => todo.is_timing);
@@ -933,7 +940,7 @@ watch(
       }
     }
   },
-  { deep: true },
+  { deep: true }
 );
 
 const isMobile = ref(false);
@@ -950,16 +957,19 @@ defineExpose({ isMobile });
 // コンポーネントがマウントされたときの処理
 onMounted(() => {
   // タイマー表示切り替えイベントを監視する関数を定義
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const handleTimerVisibilityToggle = (event: any) => {
     showTimerBar.value = event.detail.showTimer;
   };
 
   // タグ表示切り替えイベントを監視する関数を定義
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const handleTagVisibilityToggle = (event: any) => {
     showTagBar.value = event.detail.showTagBar;
   };
 
   // 完了タスク表示切り替えイベントを監視する関数を定義
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const handleCompletedTasksVisibilityToggle = (event: any) => {
     showCompletedTasks.value = event.detail.showCompletedTasks;
   };
@@ -997,7 +1007,7 @@ onMounted(() => {
             startTime: startTime.value,
             currentTotalTime: currentTotalTime.value,
             title: currentTimingTodo.value.title,
-          }),
+          })
         );
       }
     } else {
@@ -1019,7 +1029,7 @@ onMounted(() => {
   window.addEventListener("tagVisibilityToggle", handleTagVisibilityToggle);
   window.addEventListener(
     "completedTasksVisibilityToggle",
-    handleCompletedTasksVisibilityToggle,
+    handleCompletedTasksVisibilityToggle
   );
   document.addEventListener("visibilitychange", handleVisibilityChange);
 
@@ -1027,15 +1037,15 @@ onMounted(() => {
   onUnmounted(() => {
     window.removeEventListener(
       "timerVisibilityToggle",
-      handleTimerVisibilityToggle,
+      handleTimerVisibilityToggle
     );
     window.removeEventListener(
       "tagVisibilityToggle",
-      handleTagVisibilityToggle,
+      handleTagVisibilityToggle
     );
     window.removeEventListener(
       "completedTasksVisibilityToggle",
-      handleCompletedTasksVisibilityToggle,
+      handleCompletedTasksVisibilityToggle
     );
     document.removeEventListener("visibilitychange", handleVisibilityChange);
 
@@ -1130,7 +1140,7 @@ const createTodo = async () => {
   if (todosByStatus[currentStatus] && todosByStatus[currentStatus].length > 0) {
     minSortOrder =
       Math.min(
-        ...todosByStatus[currentStatus].map((t: Todo) => t.sort_order || 0),
+        ...todosByStatus[currentStatus].map((t: Todo) => t.sort_order || 0)
       ) - 100;
   }
 
@@ -1157,7 +1167,7 @@ const createTodo = async () => {
         result.id,
         newTaskData.status,
         newTaskData.tags.length > 0,
-        newTaskData.is_private,
+        newTaskData.is_private
       );
     }
 
@@ -1222,6 +1232,7 @@ const updateTodo = async () => {
 };
 
 // ドラッグ&ドロップ時の処理を更新
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const handleDragChange = async (evt: any) => {
   console.log("ドラッグイベント:", evt); // デバッグ用
 
@@ -1305,7 +1316,7 @@ const handleDragChange = async (evt: any) => {
       "新しいステータス:",
       newStatus,
       "ターゲットリスト:",
-      targetList,
+      targetList
     );
 
     if (!todo || !targetList) {
@@ -1339,12 +1350,12 @@ const handleDragChange = async (evt: any) => {
       const { mainTodoUpdate, otherTodosUpdates } = calculateNewOrders(
         todo,
         newIndex,
-        targetList,
+        targetList
       );
 
       // 移動したTodoのローカルの順序とステータスを更新
       const mainIndex = todoStore.todos.findIndex(
-        (t) => t.id === mainTodoUpdate.id,
+        (t) => t.id === mainTodoUpdate.id
       );
       if (mainIndex !== -1) {
         if (todoStore.todos[mainIndex]) {
@@ -1380,7 +1391,7 @@ const handleDragChange = async (evt: any) => {
           todoStore.updateTodoOrder({
             id: updateData.id,
             sort_order: updateData.sort_order || 0,
-          }),
+          })
         );
 
         await Promise.all(updatePromises);
@@ -1433,6 +1444,7 @@ const handleDragChange = async (evt: any) => {
 };
 
 // コンテナからステータスを抽出するヘルパー関数
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const extractStatusFromContainer = (container: any): TaskStatus => {
   // コンテナのクラスやデータ属性などから判断
   if (!container) return TASK_STATUS.PRIORITY;
@@ -1552,7 +1564,7 @@ const stopTiming = async (todo: Todo) => {
 const updateTimingTodoInLists = (
   todoId: string,
   newTotalTime: number,
-  isTimingValue = true,
+  isTimingValue = true
 ) => {
   // 各リスト内のタスクを検索して更新
   const updateInList = (list: Todo[]) => {
@@ -1787,7 +1799,7 @@ watch(selectedTagId, (newTagId, oldTagId) => {
         trackTagFiltered(
           newTagId,
           selectedTag.name,
-          searchedTodos.value.length,
+          searchedTodos.value.length
         );
       }, 300);
     }

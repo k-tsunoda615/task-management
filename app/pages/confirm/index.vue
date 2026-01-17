@@ -179,6 +179,7 @@ onMounted(async () => {
     } else {
       error.value = "不明な確認タイプです。";
     }
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (e: any) {
     console.error("確認エラー:", e);
     error.value = e.message || "確認処理中にエラーが発生しました。";
@@ -212,6 +213,7 @@ const completeAnonymousUpgrade = async () => {
 
     // 成功したらダッシュボードにリダイレクト
     router.push("/board");
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (e: any) {
     console.error("パスワード設定エラー:", e);
     passwordError.value =

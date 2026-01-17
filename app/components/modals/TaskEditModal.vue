@@ -161,10 +161,12 @@
           <template #header>
             <h3 class="text-lg font-medium text-gray-900">プレビュー</h3>
           </template>
+          <!-- eslint-disable vue/no-v-html -->
           <div
             class="prose prose-sm max-w-none min-h-[300px] overflow-y-auto max-h-[60vh]"
             v-html="parsedPreviewMemo"
           />
+          <!-- eslint-enable vue/no-v-html -->
           <template #footer>
             <div class="flex justify-end">
               <UButton variant="ghost" @click="$emit('closePreview')">

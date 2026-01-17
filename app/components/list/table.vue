@@ -305,7 +305,9 @@ const filteredAndSortedTodos = computed<Todo[]>(() => {
   } else {
     // 他のカラムでソート
     result = result.sort((a, b) => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       let valueA: any = a[sortColumn.value as keyof Todo];
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       let valueB: any = b[sortColumn.value as keyof Todo];
 
       // ステータスの場合は特別な順序を適用
@@ -393,6 +395,7 @@ function handleDragEnd() {
 }
 
 // ドラッグ変更のハンドラ
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 async function handleDragChange(evt: any) {
   console.log("ドラッグ変更イベント:", JSON.stringify(evt, null, 2));
 

@@ -177,6 +177,7 @@ const sendMessage = async () => {
     if (data.value?.text) {
       messages.value.push({ role: "model", text: data.value.text });
     }
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (err: any) {
     console.error(err);
     const errorMessage =

@@ -37,7 +37,9 @@ const props = defineProps<{
 
 const statusChartContainer = ref<HTMLElement | null>(null);
 const completionChartContainer = ref<HTMLElement | null>(null);
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 let statusChart: any = null;
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 let completionChart: any = null;
 const showCompletedTasks = ref(false);
 

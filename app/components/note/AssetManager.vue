@@ -477,6 +477,7 @@ async function processFiles(files: File[]) {
       return false;
     }
     if (
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       !TASK_ASSET_ACCEPTED_TYPES.includes("application/octet-stream" as any) &&
       TASK_ASSET_ACCEPTED_TYPES.every((mime) => {
         if (mime.endsWith("/*")) {

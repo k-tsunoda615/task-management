@@ -28,10 +28,12 @@ export default defineEventHandler(async (event) => {
       // However, usually for REST-like usage, we just pass contents.
       // Let's interpret 'history' to build the contents array.
 
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       let contents: any[] = [];
       if (history && Array.isArray(history)) {
         // Transform history format from frontend
         // Frontend (AIChat.vue) sends: { role: 'user'|'model', parts: [{ text: '...' }] }
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         contents = history.map((msg: any) => {
           // If frontend sends formatted parts
           if (msg.parts && Array.isArray(msg.parts) && msg.parts[0]?.text) {
@@ -74,6 +76,7 @@ export default defineEventHandler(async (event) => {
         statusMessage: "Invalid request body",
       });
     }
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (error: any) {
     console.error("Gemini API Error:", error);
 

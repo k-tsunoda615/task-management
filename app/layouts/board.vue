@@ -158,6 +158,7 @@ onMounted(() => {
   }
 
   // サイドバーの状態変更を監視（カスタムイベント）
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   window.addEventListener("sidebarToggle", (event: any) => {
     sidebarOpen.value = event.detail.isOpen;
   });

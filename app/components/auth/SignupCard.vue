@@ -149,6 +149,7 @@ async function handleSubmit() {
       emit("signup-success");
       router.push(props.redirectUrl || "/board");
     }
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (error: any) {
     console.error("認証エラー:", error);
     errorMessage.value = mapAuthErrorToMessage(error);
