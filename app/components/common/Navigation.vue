@@ -88,7 +88,6 @@
 
 <script setup lang="ts">
 import dayjs from "dayjs";
-import { computed } from "vue";
 import { useAuthService } from "../../composables/useAuthService";
 import { useTodoSync } from "../../composables/useTodoSync";
 

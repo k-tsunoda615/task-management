@@ -164,7 +164,7 @@
         class="mt-4 bg-white border border-green-200 p-6 rounded-lg overflow-auto max-h-[90vh]"
       >
         <!-- eslint-disable vue/no-v-html -->
-        <div class="markdown-prose" v-html="renderedMarkdown"/>
+        <div class="markdown-prose" v-html="renderedMarkdown" />
         <!-- eslint-enable vue/no-v-html -->
       </div>
     </div>

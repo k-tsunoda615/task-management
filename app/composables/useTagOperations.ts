@@ -1,4 +1,3 @@
-import { ref, onMounted } from "vue";
 import { useTagStore } from "../../stores/tags";
 import type { Tag } from "../../types/todo";
 

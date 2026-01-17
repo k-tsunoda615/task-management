@@ -1,4 +1,3 @@
-import { computed } from "vue";
 import { useTodoStore } from "../../stores/tasks";
 
 const DEFAULT_INTERVAL_FALLBACK = 1800000;
@@ -24,7 +23,7 @@ export function useTodoSync() {
     () => ({
       started: false,
       cleanup: undefined,
-    }),
+    })
   );
 
   const refresh = async () => {

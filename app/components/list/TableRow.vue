@@ -248,7 +248,6 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch, nextTick, onMounted, onUnmounted } from "vue";
 import {
   TASK_STATUS,
   TASK_STATUS_LABELS,
@@ -361,7 +360,7 @@ watch(
   () => props.isSelected,
   (newValue) => {
     selected.value = newValue;
-  },
+  }
 );
 
 // タイトル編集を開始

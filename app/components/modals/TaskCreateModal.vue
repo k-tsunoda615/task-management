@@ -108,7 +108,6 @@
 <script setup lang="ts">
 import type { Tag } from "../../../types/todo";
 import { TASK_STATUS_LABELS } from "../../utils/constants";
-import { computed } from "vue";
 
 // AI Title Generation
 import { useAITitleGenerator } from "../../composables/useAITitleGenerator";

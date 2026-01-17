@@ -92,8 +92,6 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from "vue";
-
 const client = useSupabaseClient();
 const router = useRouter();
 const route = useRoute();
@@ -121,7 +119,7 @@ onMounted(async () => {
   try {
     // SupabaseのURLからハッシュを取り出す方法（例：#access_token=...&type=...）
     const hashParams = new URLSearchParams(
-      hash.substring(1), // #を除去
+      hash.substring(1) // #を除去
     );
 
     const type = hashParams.get("type");
@@ -160,12 +158,12 @@ onMounted(async () => {
                   Authorization: `Bearer ${accessToken}`,
                 },
                 body: JSON.stringify({ user_id: user.id }),
-              },
+              }
             );
 
             if (!response.ok) {
               console.warn(
-                "メールの自動確認に失敗しました - ユーザーはメール確認が必要です",
+                "メールの自動確認に失敗しました - ユーザーはメール確認が必要です"
               );
             } else {
               console.log("メールが自動的に確認されました");
@@ -179,7 +177,7 @@ onMounted(async () => {
     } else {
       error.value = "不明な確認タイプです。";
     }
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (e: any) {
     console.error("確認エラー:", e);
     error.value = e.message || "確認処理中にエラーが発生しました。";
@@ -213,7 +211,7 @@ const completeAnonymousUpgrade = async () => {
 
     // 成功したらダッシュボードにリダイレクト
     router.push("/board");
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (e: any) {
     console.error("パスワード設定エラー:", e);
     passwordError.value =

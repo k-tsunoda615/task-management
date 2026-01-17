@@ -33,7 +33,6 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch, computed } from "vue";
 import { TASK_STATUS, TASK_STATUS_LABELS } from "../../utils/constants";
 
 const props = defineProps({

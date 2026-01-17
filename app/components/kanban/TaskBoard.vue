@@ -592,7 +592,6 @@ import {
   TASK_STATUS_LABELS,
 } from "../../utils/constants";
 import type { TaskStatus } from "../../utils/constants";
-import { ref, onMounted, onUnmounted } from "vue";
 import { useTodoSearch } from "../../composables/useTodoSearch";
 // アナリティクス用のユーティリティをインポート
 import {

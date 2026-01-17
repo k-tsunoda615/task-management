@@ -145,7 +145,6 @@
 <script setup lang="ts">
 import { marked } from "marked";
 import DOMPurify from "dompurify";
-import type { PropType } from "vue";
 import type { TaskStatus } from "../../utils/constants";
 import { formatTime } from "../../utils/time";
 

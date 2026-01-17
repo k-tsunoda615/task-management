@@ -255,7 +255,6 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref, watch, reactive, onMounted } from "vue";
 import { useTodoStore } from "../../../stores/tasks";
 import { useTaskRepository } from "../../composables/useTaskRepository";
 import {
@@ -315,7 +314,7 @@ watch(
     cleanupPreviewCache();
     warmPreviews();
   },
-  { immediate: true },
+  { immediate: true }
 );
 
 function triggerFilePicker() {
@@ -532,7 +531,7 @@ async function processFiles(files: File[]) {
     } finally {
       setTimeout(() => {
         uploadQueue.value = uploadQueue.value.filter(
-          (item) => item.id !== queueItem.id,
+          (item) => item.id !== queueItem.id
         );
       }, 1200);
     }
