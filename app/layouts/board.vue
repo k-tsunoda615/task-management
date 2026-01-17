@@ -58,7 +58,7 @@
               v-if="isMobileMenuOpen"
               class="fixed inset-0 bg-black bg-opacity-50 z-40"
               @click="isMobileMenuOpen = false"
-            ></div>
+            />
           </Transition>
 
           <!-- モバイルサイドバー -->

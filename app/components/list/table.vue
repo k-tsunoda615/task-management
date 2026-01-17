@@ -33,8 +33,8 @@
             :delay="50"
             :delay-on-touch-only="true"
             :fallback-tolerance="5"
-            @change="handleDragChange"
             :force-fallback="true"
+            @change="handleDragChange"
             @start="handleDragStart"
             @end="handleDragEnd"
           >

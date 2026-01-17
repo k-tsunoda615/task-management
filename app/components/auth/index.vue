@@ -73,7 +73,7 @@
                 v-model="agreeTerms"
                 type="checkbox"
                 class="w-4 h-4"
-              />
+              >
               <label for="agreeTerms" class="text-sm text-gray-700 select-none">
                 <a
                   href="#"

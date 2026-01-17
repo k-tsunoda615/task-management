@@ -1183,7 +1183,7 @@ const createTodo = async () => {
 // Todo更新
 const updateTodo = async () => {
   if (!editingTodo.value.title) return;
-  let totalTimeSeconds = editingTodo.value.is_timing
+  const totalTimeSeconds = editingTodo.value.is_timing
     ? currentTotalTime.value
     : parseTimeToSeconds(editTimeInput.value);
 

@@ -30,7 +30,7 @@
           multiple
           :disabled="isDisabled || uploadQueue.length > 0"
           @change="handleFileSelected"
-        />
+        >
       </div>
     </div>
 
@@ -115,7 +115,7 @@
             alt=""
             class="h-full w-full object-cover"
             @error="refreshPreview(asset)"
-          />
+          >
           <video
             v-else-if="isVideo(asset) && previewUrls[asset.id]"
             :src="previewUrls[asset.id]"
@@ -225,7 +225,7 @@
               :src="modalUrl"
               alt=""
               class="max-h-[70vh] w-full object-contain"
-            />
+            >
             <video
               v-else-if="modalAsset && isVideo(modalAsset) && modalUrl"
               :src="modalUrl"
@@ -236,7 +236,7 @@
               v-else-if="modalAsset && isPdf(modalAsset) && modalUrl"
               :src="modalUrl"
               class="h-[70vh] w-full rounded-lg bg-white"
-            ></iframe>
+            />
             <pre
               v-else-if="modalAsset && isText(modalAsset)"
               class="whitespace-pre-wrap text-sm leading-relaxed text-gray-800"
@@ -337,7 +337,7 @@ function resetFileInput(input: HTMLInputElement) {
 }
 
 async function handleDownload(asset: TodoAsset) {
-  if (!process.client) return;
+  if (!import.meta.client) return;
 
   downloadingAssetId.value = asset.id;
   try {

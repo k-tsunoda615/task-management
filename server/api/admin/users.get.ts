@@ -1,5 +1,5 @@
 import { serverSupabaseClient, serverSupabaseUser } from "#supabase/server";
-import { H3Event } from "h3";
+import type { H3Event } from "h3";
 
 type AdminUserMetricsRow = {
   user_id: string;

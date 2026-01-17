@@ -247,8 +247,8 @@
                 </tr>
                 <tr>
                   <td class="py-2 pr-4 font-mono text-gray-600">
-                    ```<br />
-                    コードブロック<br />
+                    ```<br >
+                    コードブロック<br >
                     ```
                   </td>
                   <td class="py-2">

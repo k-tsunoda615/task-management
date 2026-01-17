@@ -36,7 +36,7 @@ export function useTodoSync() {
   };
 
   const startAutoRefresh = (options?: { intervalMs?: number }) => {
-    if (!process.client || autoRefreshState.value.started) {
+    if (!import.meta.client || autoRefreshState.value.started) {
       return;
     }
 

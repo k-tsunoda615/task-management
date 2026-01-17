@@ -48,7 +48,7 @@
               <div
                 class="w-6 h-6 rounded-lg cursor-pointer border border-gray-200 transition-shadow hover:shadow-sm"
                 :style="{ backgroundColor: localColor }"
-              ></div>
+              />
 
               <template #panel>
                 <div class="p-3 w-44">
@@ -59,13 +59,13 @@
                       class="w-6 h-6 rounded-lg cursor-pointer hover:scale-110 transition-all duration-150 border border-gray-200"
                       :style="{ backgroundColor: color }"
                       @click="localColor = color"
-                    ></div>
+                    />
                   </div>
                   <input
                     v-model="localColor"
                     type="color"
                     class="w-full h-8 cursor-pointer rounded"
-                  />
+                  >
                 </div>
               </template>
             </UPopover>
@@ -119,7 +119,7 @@
               <div
                 class="w-6 h-6 rounded-lg cursor-pointer border border-gray-200 transition-shadow hover:shadow-sm"
                 :style="{ backgroundColor: editColor }"
-              ></div>
+              />
 
               <template #panel>
                 <div class="p-3 w-44">
@@ -130,13 +130,13 @@
                       class="w-6 h-6 rounded-lg cursor-pointer hover:scale-110 transition-all duration-150 border border-gray-200"
                       :style="{ backgroundColor: color }"
                       @click="editColor = color"
-                    ></div>
+                    />
                   </div>
                   <input
                     v-model="editColor"
                     type="color"
                     class="w-full h-8 cursor-pointer rounded"
-                  />
+                  >
                 </div>
               </template>
             </UPopover>
@@ -209,7 +209,7 @@
                     <div
                       class="w-4 h-4 rounded-md flex-shrink-0 border border-gray-200"
                       :style="{ backgroundColor: tag.color || '#3b82f6' }"
-                    ></div>
+                    />
                     <span class="text-sm text-gray-700">{{ tag.name }}</span>
                   </div>
                   <UButton

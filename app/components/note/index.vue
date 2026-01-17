@@ -79,7 +79,7 @@
           type="text"
           class="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:border-primary-500 focus:ring focus:ring-primary-200"
           @change="updateTask('title')"
-        />
+        >
       </div>
 
       <!-- ステータスと完了フラグ -->
@@ -157,13 +157,13 @@
           class="w-full h-[500px] px-4 py-3 border border-gray-300 rounded-md shadow-sm focus:border-primary-500 focus:ring focus:ring-primary-200 font-mono text-sm"
           placeholder="Markdownでメモを入力できます..."
           @change="updateTask('memo')"
-        ></textarea>
+        />
       </div>
       <div
         v-else
         class="mt-4 bg-white border border-green-200 p-6 rounded-lg overflow-auto max-h-[90vh]"
       >
-        <div class="markdown-prose" v-html="renderedMarkdown"></div>
+        <div class="markdown-prose" v-html="renderedMarkdown"/>
       </div>
     </div>
 

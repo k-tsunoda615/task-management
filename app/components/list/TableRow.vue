@@ -18,7 +18,7 @@
           @keyup.enter="saveTitleEdit"
           @keyup.esc="cancelTitleEdit"
           @blur="saveTitleEdit"
-        />
+        >
       </div>
       <div
         v-else
@@ -204,7 +204,7 @@
               <div
                 class="w-3 h-3 rounded-full"
                 :style="{ backgroundColor: getTagColor(tag.value) }"
-              ></div>
+              />
               {{ tag.label }}
             </button>
           </div>

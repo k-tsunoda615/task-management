@@ -13,12 +13,12 @@
             <h1
               class="text-4xl md:text-5xl font-bold text-gray-900 !leading-[1.15]"
             >
-              タスク管理を<br />
-              もっと賢く<br />
+              タスク管理を<br >
+              もっと賢く<br >
               効率的に
             </h1>
             <p class="mt-6 text-xl text-gray-600 leading-relaxed">
-              pritoxは、タスク管理アプリで終わらせない。<br />
+              pritoxは、タスク管理アプリで終わらせない。<br >
               優先順位で動き、成果を最大化する新しいワークスタイルをあなたに。
             </p>
             <div class="mt-10 flex flex-col sm:flex-row gap-4">
@@ -48,7 +48,7 @@
               src="https://placehold.jp/550x450.png"
               alt="カンバンボードのスクリーンショット"
               class="rounded-lg shadow-md border border-gray-200"
-            />
+            >
           </div>
         </div>
 
@@ -148,7 +148,7 @@
                 優先順位で価値を最大化
               </h3>
               <p class="text-gray-600 mb-6">
-                プラタスの優先度マネージャーでは、重要度と緊急度を視覚的にマッピング。<br />
+                プラタスの優先度マネージャーでは、重要度と緊急度を視覚的にマッピング。<br >
                 本当に価値を生み出すタスクに集中できます。
               </p>
               <ul class="space-y-3">
@@ -180,7 +180,7 @@
                 src="https://placehold.jp/500x300.png"
                 alt="優先度管理の画面"
                 class="rounded-lg shadow-md"
-              />
+              >
             </div>
           </div>
         </div>
@@ -250,11 +250,11 @@
         <div class="grid md:grid-cols-2 gap-16 items-center">
           <div>
             <h2 class="text-3xl font-bold text-gray-900 mb-6">
-              忙しさから脱却。<br />
+              忙しさから脱却。<br >
               成果に直結する行動を。
             </h2>
             <p class="text-lg text-gray-600 mb-8">
-              単なるタスク管理ではなく、成果を最大化するための<br />
+              単なるタスク管理ではなく、成果を最大化するための<br >
               新しいワークスタイルを提供します。
             </p>
             <div class="space-y-4">
@@ -292,7 +292,7 @@
               src="https://placehold.jp/600x450.png"
               alt="アプリケーションのデモ画面"
               class="rounded-lg shadow-md border border-gray-200"
-            />
+            >
           </div>
         </div>
       </div>
@@ -303,7 +303,7 @@
       <div class="container mx-auto max-w-4xl px-4 text-center">
         <h2 class="text-3xl font-bold text-gray-900">今すぐ始めましょう</h2>
         <p class="mt-4 text-lg text-gray-600 max-w-2xl mx-auto mb-10">
-          タスクをこなすだけでなく、本当に価値のある成果を生み出す。<br />
+          タスクをこなすだけでなく、本当に価値のある成果を生み出す。<br >
           それがプロフェッショナルの働き方です。
         </p>
         <div class="flex flex-col sm:flex-row gap-4 justify-center">

@@ -67,10 +67,10 @@
     class="anonymous-warning"
   >
     <span class="close-btn" @click="showAnonymousBanner = false">&times;</span>
-    ゲスト（匿名）ユーザーとして利用中です。データは一定期間で自動削除されます。<br />
+    ゲスト（匿名）ユーザーとして利用中です。データは一定期間で自動削除されます。<br >
     <strong
       >【重要】ゲストのままログアウトすると、同じアカウントで再ログインすることはできません。</strong
-    ><br />
+    ><br >
     作成したタスクやタグを残したい場合は、<NuxtLink
       to="/auth?signup=1"
       class="underline font-bold"

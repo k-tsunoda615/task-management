@@ -404,7 +404,7 @@
               <span class="text-[11px] text-gray-500">
                 {{ totalItemCount }}件
               </span>
-              <hr class="w-full border-gray-200" />
+              <hr class="w-full border-gray-200" >
               <span class="text-[11px] text-gray-500">
                 {{ formattedStorageUsage }}
               </span>

@@ -10,14 +10,14 @@
       <div
         ref="completionChartContainer"
         class="max-w-[220px] max-h-[220px]"
-      ></div>
+      />
       <div class="text-base font-medium text-gray-600 mt-4">完了率</div>
       <div class="text-3xl font-bold text-green-600">{{ completionRate }}%</div>
     </div>
 
     <!-- ステータス分布グラフ -->
     <div class="flex flex-col items-center justify-center">
-      <div ref="statusChartContainer" class="max-w-[300px] max-h-[300px]"></div>
+      <div ref="statusChartContainer" class="max-w-[300px] max-h-[300px]"/>
     </div>
   </div>
 </template>
