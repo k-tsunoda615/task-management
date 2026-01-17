@@ -3,9 +3,11 @@ import { useTagStore } from "../../stores/tags";
 import { TASK_STATUS } from "../utils/constants";
 
 /**
- * 初回ログイン時にサンプルタスク・タグを追加するcomposable
+ * 初回ユーザーにサンプルを提供して体験を滑らかにする。
+ * @description 既存タスクがない場合にサンプルタグ/タスクを投入する。
+ * @returns {Promise<void>} サンプル投入の完了。
  */
-export async function useOnboardingSetup() {
+export const useOnboardingSetup = async () => {
   const todoStore = useTodoStore();
   const tagStore = useTagStore();
   const user = typeof useSupabaseUser === "function" ? useSupabaseUser() : null;
@@ -57,4 +59,4 @@ export async function useOnboardingSetup() {
       user_id: user.value.id,
     });
   }
-}
+};

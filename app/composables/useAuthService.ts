@@ -1,7 +1,12 @@
 import type { AuthError, Session } from "@supabase/supabase-js";
 import { mapAuthErrorToMessage } from "../utils/auth";
 
-export function useAuthService() {
+/**
+ * 認証まわりの処理を統一し、UI の実装差を減らす。
+ * @description サインイン/サインアップ/ゲストログインなどの API を提供する。
+ * @returns {object} 認証操作関数と状態。
+ */
+export const useAuthService = () => {
   const client = useSupabaseClient();
   const user = useSupabaseUser();
   const router = useRouter();
@@ -9,12 +14,19 @@ export function useAuthService() {
   const loading = ref(false);
   const errorMessage = ref("");
 
-  // 通常のログイン処理
-  async function loginWithPassword(
+  /**
+   * ログイン処理の入口を一本化する。
+   * @description メール/パスワードで認証し、必要ならリダイレクトする。
+   * @param {string} email - ログインに使用するメールアドレス。
+   * @param {string} password - ログインに使用するパスワード。
+   * @param {string} redirectUrl - リダイレクト先（デフォルト: /board）。
+   * @returns {Promise<{ success: boolean; error?: string }>} 成否とエラーメッセージ。
+   */
+  const loginWithPassword = async (
     email: string,
     password: string,
     redirectUrl: string = "/board",
-  ) {
+  ) => {
     loading.value = true;
     errorMessage.value = "";
     try {
@@ -38,10 +50,16 @@ export function useAuthService() {
     } finally {
       loading.value = false;
     }
-  }
+  };
 
-  // 新規登録処理
-  async function signUp(email: string, password: string) {
+  /**
+   * 新規登録と匿名ユーザー昇格の処理を統一する。
+   * @description 状態に応じて signUp または updateUser を実行する。
+   * @param {string} email - 登録に使用するメールアドレス。
+   * @param {string} password - 登録に使用するパスワード。
+   * @returns {Promise<{ success: boolean; error?: string; message?: string; requireConfirmation?: boolean }>} 成否とメッセージ。
+   */
+  const signUp = async (email: string, password: string) => {
     loading.value = true;
     errorMessage.value = "";
     try {
@@ -86,10 +104,15 @@ export function useAuthService() {
     } finally {
       loading.value = false;
     }
-  }
+  };
 
-  // ゲストログイン処理
-  async function loginAsGuest(redirectUrl: string = "/board") {
+  /**
+   * ゲストログインの挙動を一貫させる。
+   * @description 匿名ログインを実行し、必要ならリダイレクトする。
+   * @param {string} redirectUrl - リダイレクト先（デフォルト: /board）。
+   * @returns {Promise<{ success: boolean; error?: string }>} 成否とエラーメッセージ。
+   */
+  const loginAsGuest = async (redirectUrl: string = "/board") => {
     loading.value = true;
     errorMessage.value = "";
     try {
@@ -109,10 +132,15 @@ export function useAuthService() {
     } finally {
       loading.value = false;
     }
-  }
+  };
 
-  // パスワードリセット
-  async function resetPassword(email: string) {
+  /**
+   * パスワードリセットの実装を一箇所にまとめる。
+   * @description resetPasswordForEmail を呼び、結果を返す。
+   * @param {string} email - リセット対象のメールアドレス。
+   * @returns {Promise<{ success: boolean; error?: string; message?: string }>} 成否とメッセージ。
+   */
+  const resetPassword = async (email: string) => {
     loading.value = true;
     try {
       const { error } = await client.auth.resetPasswordForEmail(email);
@@ -133,10 +161,15 @@ export function useAuthService() {
     } finally {
       loading.value = false;
     }
-  }
+  };
 
-  // サインアウト処理
-  async function signOut(redirectUrl: string = "/") {
+  /**
+   * サインアウトの挙動を統一する。
+   * @description signOut を実行し、必要ならリダイレクトする。
+   * @param {string} redirectUrl - リダイレクト先（デフォルト: /）。
+   * @returns {Promise<{ success: boolean; error?: string }>} 成否とエラーメッセージ。
+   */
+  const signOut = async (redirectUrl: string = "/") => {
     try {
       const { error } = await client.auth.signOut();
       if (error) throw error;
@@ -150,19 +183,24 @@ export function useAuthService() {
         error: mapAuthErrorToMessage(error as AuthError),
       };
     }
-  }
+  };
 
-  // 認証状態変更を監視
-  function watchAuthState(
+  /**
+   * 認証状態の変化を UI に反映させる。
+   * @description Supabase の onAuthStateChange を登録する。
+   * @param {(event: string, session: Session | null) => void} callback - 状態変化時のコールバック。
+   * @returns {() => void} 解除用の関数。
+   */
+  const watchAuthState = (
     callback: (event: string, session: Session | null) => void,
-  ) {
+  ) => {
     const { data } = client.auth.onAuthStateChange(callback);
 
     // クリーンアップ関数を返す
     return () => {
       data.subscription.unsubscribe();
     };
-  }
+  };
 
   return {
     user,
@@ -176,4 +214,4 @@ export function useAuthService() {
     watchAuthState,
     mapAuthErrorToMessage,
   };
-}
+};

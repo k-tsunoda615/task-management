@@ -7,7 +7,17 @@ type AutoRefreshState = {
   cleanup?: () => void;
 };
 
-export function useTodoSync() {
+/**
+ * タスクの再取得タイミングを統一する。
+ * @description フォーカス/可視化/定期実行での再取得を管理する。
+ * @returns {object} 同期制御用の関数と状態。
+ */
+export const useTodoSync = () => {
+  /**
+   * 設定値が未指定でも安定動作させる。
+   * @description runtimeConfig からリフレッシュ間隔を解決する。
+   * @returns {number} リフレッシュ間隔（ms）。
+   */
   const resolveDefaultInterval = () => {
     const runtimeConfig = useRuntimeConfig();
     return (
@@ -26,6 +36,11 @@ export function useTodoSync() {
     })
   );
 
+  /**
+   * 一貫した再取得処理を提供する。
+   * @description ログイン状態を確認し、必要なら fetch を実行する。
+   * @returns {Promise<void>} 再取得の完了。
+   */
   const refresh = async () => {
     if (!supabaseUser.value?.id) {
       return;
@@ -34,6 +49,12 @@ export function useTodoSync() {
     await todoStore.fetchTodos({ force: shouldForce });
   };
 
+  /**
+   * 自動同期の開始条件を統一する。
+   * @description イベントと interval を設定し、初回再取得を実行する。
+   * @param {{ intervalMs?: number }} [options] - リフレッシュ間隔の上書き。
+   * @returns {void} 自動同期の開始。
+   */
   const startAutoRefresh = (options?: { intervalMs?: number }) => {
     if (!import.meta.client || autoRefreshState.value.started) {
       return;
@@ -86,6 +107,11 @@ export function useTodoSync() {
     });
   };
 
+  /**
+   * 自動同期を確実に停止する。
+   * @description 登録済みのリスナーと interval を解除する。
+   * @returns {void} 自動同期の停止。
+   */
   const stopAutoRefresh = () => {
     if (autoRefreshState.value.cleanup) {
       autoRefreshState.value.cleanup();
@@ -101,4 +127,4 @@ export function useTodoSync() {
     lastSyncError: computed(() => todoStore.lastSyncError),
     isSyncing: computed(() => todoStore.isLoading),
   };
-}
+};

@@ -5,7 +5,13 @@ import { normalizeTodo, convertTodoForDB } from "../utils/todoUtils";
 const TODO_SELECT_BASE = "*, todo_tags:todo_tags(*, tag:tag_id(*))";
 const TODO_SELECT_WITH_ASSETS = `${TODO_SELECT_BASE}, todo_assets:todo_assets(*)`;
 
-function isMissingAssetsRelationship(error: unknown) {
+/**
+ * 旧スキーマ環境でも安全に動作させる。
+ * @description エラー内容から todo_assets のリレーション不足か判定する。
+ * @param {unknown} error - 判定対象のエラー。
+ * @returns {boolean} リレーション不足の場合は true。
+ */
+const isMissingAssetsRelationship = (error: unknown) => {
   if (!error || typeof error !== "object") {
     return false;
   }
@@ -15,15 +21,22 @@ function isMissingAssetsRelationship(error: unknown) {
     typeof maybeError.message === "string" &&
     maybeError.message.includes("todo_assets")
   );
-}
+};
 
-export function useTaskRepository() {
+/**
+ * Todo の CRUD と添付管理をまとめ、呼び出し口を統一する。
+ * @description Supabase の todos/todo_tags/todo_assets を扱う API を提供する。
+ * @returns {object} Todo 操作用の関数群。
+ */
+export const useTaskRepository = () => {
   // Supabaseクライアント
   const client = useSupabaseClient();
   const user = useSupabaseUser();
 
   /**
-   * 全Todoを取得する（キャッシュ付き）
+   * 一覧取得の流れを一貫化する。
+   * @description useAsyncData で全 Todo を取得し、正規化して返す。
+   * @returns {ReturnType<typeof useAsyncData>} Todo 配列を含む取得結果。
    */
   const fetchAllTodos = () => {
     return useAsyncData(
@@ -67,7 +80,10 @@ export function useTaskRepository() {
   };
 
   /**
-   * 単一のTodoを取得する（キャッシュ付き）
+   * 詳細画面用の取得を統一する。
+   * @description ID で Todo を取得し、正規化して返す。
+   * @param {string} id - 取得対象の Todo ID。
+   * @returns {ReturnType<typeof useAsyncData>} Todo を含む取得結果。
    */
   const fetchTodoById = (id: string) => {
     return useAsyncData(
@@ -107,7 +123,10 @@ export function useTaskRepository() {
   };
 
   /**
-   * 新しいTodoを作成する
+   * 作成処理を一箇所にまとめる。
+   * @description todos への insert と tag 連携を行い、最新を再取得する。
+   * @param {Partial<Todo>} todo - 作成する Todo 情報。
+   * @returns {Promise<Todo | undefined>} 作成した Todo。
    */
   const createTodo = async (todo: Partial<Todo>) => {
     try {
@@ -151,7 +170,10 @@ export function useTaskRepository() {
   };
 
   /**
-   * Todoを更新する
+   * 更新処理を統一し、タグ同期を安全に行う。
+   * @description todos を更新し、todo_tags を再構築する。
+   * @param {Partial<Todo>} todo - 更新する Todo 情報。
+   * @returns {Promise<unknown>} 更新結果の配列。
    */
   const updateTodo = async (todo: Partial<Todo>) => {
     try {
@@ -193,7 +215,10 @@ export function useTaskRepository() {
   };
 
   /**
-   * Todoを削除する
+   * 削除の順序を守る。
+   * @description 添付/中間テーブルを先に削除してから todos を削除する。
+   * @param {string} id - 削除対象の Todo ID。
+   * @returns {Promise<boolean>} 成功時 true。
    */
   const deleteTodo = async (id: string) => {
     try {
@@ -265,7 +290,10 @@ export function useTaskRepository() {
   };
 
   /**
-   * Todoの並び順を更新する
+   * 並び順更新を一貫して扱う。
+   * @description sort_order を更新し、キャッシュを無効化する。
+   * @param {{ id: string; sort_order: number }} todo - 更新対象の ID と並び順。
+   * @returns {Promise<unknown>} 更新結果の配列。
    */
   const updateTodoOrder = async (todo: { id: string; sort_order: number }) => {
     try {
@@ -301,7 +329,11 @@ export function useTaskRepository() {
   };
 
   /**
-   * Todoに添付ファイルをアップロードする
+   * 添付アップロードの手順を統一する。
+   * @description Storage へ upload し、todo_assets を登録する。
+   * @param {string} todoId - 添付対象の Todo ID。
+   * @param {File} file - アップロードするファイル。
+   * @returns {Promise<TodoAsset>} 作成された TodoAsset。
    */
   const uploadTodoAsset = async (todoId: string, file: File) => {
     if (!todoId) throw new Error("Todo IDが指定されていません");
@@ -358,7 +390,11 @@ export function useTaskRepository() {
   };
 
   /**
-   * 添付ファイルのサイン付きURLを生成する
+   * 添付ファイルの参照 URL を安全に作る。
+   * @description Storage の signed URL を発行する。
+   * @param {TodoAsset} asset - サイン対象の添付情報。
+   * @param {number} [expiresIn] - 署名 URL の有効秒数（デフォルト: 60）。
+   * @returns {Promise<string>} サイン付き URL 文字列。
    */
   const getTodoAssetUrl = async (asset: TodoAsset, expiresIn = 60) => {
     const storage = client.storage.from(TASK_ASSET_BUCKET);
@@ -376,7 +412,10 @@ export function useTaskRepository() {
   };
 
   /**
-   * 添付ファイルを削除する
+   * 添付ファイル削除を安全に行う。
+   * @description Storage と todo_assets の両方から削除する。
+   * @param {TodoAsset} asset - 削除対象の添付情報。
+   * @returns {Promise<boolean>} 成功時 true。
    */
   const deleteTodoAsset = async (asset: TodoAsset) => {
     if (!asset?.storage_path) {
@@ -421,4 +460,4 @@ export function useTaskRepository() {
     deleteTodoAsset,
     getTodoAssetUrl,
   };
-}
+};
