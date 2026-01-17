@@ -16,18 +16,18 @@
             variant="ghost"
             icon="i-heroicons-trash"
             size="sm"
-            @click="$emit('confirmDelete')"
             title="タスクを削除"
             class="hover:bg-red-50"
+            @click="$emit('confirmDelete')"
           />
         </div>
       </template>
-      <form @submit.prevent="$emit('update')" class="space-y-4">
+      <form class="space-y-4" @submit.prevent="$emit('update')">
         <UFormGroup label="タイトル">
           <UInput
             :model-value="editingTodo?.title"
-            @update:model-value="$emit('update:editingTodoTitle', $event)"
             required
+            @update:model-value="$emit('update:editingTodoTitle', $event)"
           >
             <template #trailing>
               <UTooltip text="メモからAI生成">
@@ -48,16 +48,16 @@
           <div class="space-y-2">
             <UTextarea
               :model-value="editingTodo?.memo"
-              @update:model-value="$emit('update:editingTodoMemo', $event)"
               :rows="15"
               class="font-mono text-sm"
               :ui="{ base: 'min-h-[300px] resize-y' }"
+              @update:model-value="$emit('update:editingTodoMemo', $event)"
             />
             <UButton
               size="sm"
               variant="soft"
-              @click.prevent="$emit('showPreview')"
               icon="i-heroicons-eye"
+              @click.prevent="$emit('showPreview')"
             >
               プレビュー
             </UButton>
@@ -67,19 +67,19 @@
           <UFormGroup label="ステータス" class="flex-1">
             <USelect
               :model-value="editingTodo?.status"
-              @update:model-value="$emit('update:editingTodoStatus', $event)"
               :options="[
                 { label: 'Priority', value: '未対応' },
                 { label: 'Next', value: '対応中' },
                 { label: 'Archived', value: '完了' },
               ]"
+              @update:model-value="$emit('update:editingTodoStatus', $event)"
             />
           </UFormGroup>
           <UFormGroup class="flex-1">
             <UCheckbox
               :model-value="editingTodo?.is_private"
-              @update:model-value="$emit('update:editingTodoIsPrivate', $event)"
               label="Private"
+              @update:model-value="$emit('update:editingTodoIsPrivate', $event)"
             />
           </UFormGroup>
         </div>
@@ -88,8 +88,8 @@
             <UInput
               :model-value="editTimeInput"
               placeholder="00:00:00"
-              @input="$emit('validateTime', $event)"
               :disabled="editingTodo?.is_timing"
+              @input="$emit('validateTime', $event)"
             />
             <UTooltip
               v-if="editingTodo?.is_timing"
@@ -138,8 +138,8 @@
           </UButton>
           <UButton
             color="primary"
-            @click="$emit('update')"
             :loading="isUpdating"
+            @click="$emit('update')"
           >
             更新
           </UButton>

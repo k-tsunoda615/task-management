@@ -44,14 +44,14 @@
           <UButton
             v-if="!isTimerRunning"
             color="green"
-            @click="startTimer"
             :disabled="isTaskCompleted"
             class="px-4"
+            @click="startTimer"
           >
             <UIcon name="i-heroicons-play" class="mr-1" />
             開始
           </UButton>
-          <UButton v-else color="amber" @click="stopTimer" class="px-4">
+          <UButton v-else color="amber" class="px-4" @click="stopTimer">
             <UIcon name="i-heroicons-pause" class="mr-1" />
             停止
           </UButton>
@@ -427,7 +427,7 @@ function handleAssetDeleted(assetId: string) {
 async function handleDelete() {
   const router = useRouter();
   if (!task.value) return;
-  
+
   try {
     await todoStore.deleteTodo(task.value.id);
     useToast().add({

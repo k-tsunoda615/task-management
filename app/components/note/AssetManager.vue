@@ -315,7 +315,7 @@ watch(
     cleanupPreviewCache();
     warmPreviews();
   },
-  { immediate: true }
+  { immediate: true },
 );
 
 function triggerFilePicker() {
@@ -531,7 +531,7 @@ async function processFiles(files: File[]) {
     } finally {
       setTimeout(() => {
         uploadQueue.value = uploadQueue.value.filter(
-          (item) => item.id !== queueItem.id
+          (item) => item.id !== queueItem.id,
         );
       }, 1200);
     }

@@ -143,9 +143,9 @@
     <!-- 完了 - 編集可能 -->
     <td class="px-4 py-3 text-sm">
       <UCheckbox
-        :modelValue="todo.is_finished"
-        @change="toggleFinished"
+        :model-value="todo.is_finished"
         class="mx-auto"
+        @change="toggleFinished"
       />
     </td>
 
@@ -162,16 +162,16 @@
               size="xs"
               color="primary"
               variant="solid"
-              @click="saveTagsEdit"
               icon="i-heroicons-check"
               :disabled="editedTags.length === 0"
+              @click="saveTagsEdit"
             />
             <UButton
               size="xs"
               color="gray"
               variant="ghost"
-              @click="isEditingTags = false"
               icon="i-heroicons-x-mark"
+              @click="isEditingTags = false"
             />
           </div>
         </div>
@@ -363,7 +363,7 @@ watch(
   () => props.isSelected,
   (newValue) => {
     selected.value = newValue;
-  }
+  },
 );
 
 // タイトル編集を開始

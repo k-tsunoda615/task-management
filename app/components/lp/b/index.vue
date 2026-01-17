@@ -37,11 +37,11 @@
                 <UIcon name="i-heroicons-arrow-right" class="ml-2" />
               </UButton>
               <UButton
-                @click="scrollToFeatures"
                 size="xl"
                 variant="soft"
                 color="gray"
                 class="rounded-full px-8 py-4"
+                @click="scrollToFeatures"
               >
                 <span class="text-lg">機能を探索する</span>
                 <UIcon name="i-heroicons-chevron-down" class="ml-2" />
@@ -73,9 +73,9 @@
                 <div class="space-y-4">
                   <AuthSignupCard
                     class="bg-transparent"
-                    cardClass="bg-transparent shadow-none border-0 p-0"
-                    :showTitle="false"
-                    :showSubtitle="false"
+                    card-class="bg-transparent shadow-none border-0 p-0"
+                    :show-title="false"
+                    :show-subtitle="false"
                   />
                   <div class="relative my-6">
                     <div
@@ -88,9 +88,9 @@
                     </div>
                   </div>
                   <AuthGuestLogin
-                    redirectTo="/board"
+                    redirect-to="/board"
                     class="transform hover:scale-105 transition-transform duration-200"
-                    buttonText="ゲストモードで試してみる"
+                    button-text="ゲストモードで試してみる"
                   />
                   <div class="text-center text-xs text-gray-500 mt-3">
                     アカウント登録なしで機能を体験できます

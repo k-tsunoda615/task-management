@@ -6,8 +6,8 @@
         color="red"
         size="sm"
         icon="i-heroicons-trash"
-        @click="$emit('deleteTodos')"
         class="mr-2"
+        @click="$emit('deleteTodos')"
       >
         {{ selectedCount }}件を削除
       </UButton>

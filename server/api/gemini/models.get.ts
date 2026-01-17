@@ -19,7 +19,7 @@ export default defineEventHandler(async () => {
     console.log("Available models:", JSON.stringify(response, null, 2));
 
     // @ts-ignore
-    const models = response.models || response; 
+    const models = response.models || response;
 
     return { models };
   } catch (error: any) {

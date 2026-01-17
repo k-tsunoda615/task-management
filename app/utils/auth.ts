@@ -19,7 +19,10 @@ export function mapAuthErrorToMessage(error: ErrorLike): string {
   if (msg.includes("Email not confirmed")) {
     return "メールアドレスの確認が完了していません。メールボックスをご確認ください。";
   }
-  if (msg.includes("User already registered") || msg.includes("User already exists")) {
+  if (
+    msg.includes("User already registered") ||
+    msg.includes("User already exists")
+  ) {
     return "このメールアドレスは既に登録されています";
   }
   if (msg.match(/Password should be at least (\d+) characters/)) {

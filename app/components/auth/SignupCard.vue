@@ -10,7 +10,7 @@
     </div>
 
     <UCard :class="cardClass">
-      <form @submit.prevent="handleSubmit" class="space-y-4">
+      <form class="space-y-4" @submit.prevent="handleSubmit">
         <UFormGroup label="メールアドレス">
           <UInput
             v-model="email"
@@ -38,8 +38,8 @@
         <div class="flex items-center gap-2">
           <input
             id="agreeTerms"
-            type="checkbox"
             v-model="agreeTerms"
+            type="checkbox"
             class="w-4 h-4"
           />
           <label for="agreeTerms" class="text-sm text-gray-700 select-none">

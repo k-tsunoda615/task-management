@@ -2,10 +2,10 @@
   <div class="relative w-full">
     <!-- フィルターとソートオプション -->
     <TableActions
-      v-model:searchQuery="searchQuery"
-      v-model:statusFilter="statusFilter"
-      :selectedCount="selectedTodos.length"
-      @deleteTodos="deleteSelectedTodos"
+      v-model:search-query="searchQuery"
+      v-model:status-filter="statusFilter"
+      :selected-count="selectedTodos.length"
+      @delete-todos="deleteSelectedTodos"
     />
 
     <!-- メインテーブル -->
@@ -13,11 +13,11 @@
       <div class="overflow-x-auto">
         <table class="w-full whitespace-nowrap">
           <TableHeader
-            :sortColumn="sortColumn"
-            :sortDirection="sortDirection"
+            :sort-column="sortColumn"
+            :sort-direction="sortDirection"
             :select-all="selectAll"
             @sort="sortBy"
-            @toggleSelectAll="toggleSelectAll"
+            @toggle-select-all="toggleSelectAll"
           />
           <draggable
             v-model="draggedTodos"
@@ -25,29 +25,29 @@
             handle=".handle"
             :animation="200"
             class="bg-white divide-y divide-gray-200"
-            @change="handleDragChange"
-            @start="handleDragStart"
-            @end="handleDragEnd"
             :group="{ name: 'todos', pull: true, put: true }"
             item-key="id"
             ghost-class="ghost-card"
             chosen-class="chosen-item"
             drag-class="drag-item"
             :delay="50"
-            :delayOnTouchOnly="true"
-            :fallbackTolerance="5"
+            :delay-on-touch-only="true"
+            :fallback-tolerance="5"
+            @change="handleDragChange"
             :force-fallback="true"
+            @start="handleDragStart"
+            @end="handleDragEnd"
           >
             <template #item="{ element }">
               <TableRow
                 :todo="element"
                 :is-selected="selectedTodos.includes(element.id)"
-                @toggleSelect="toggleSelect"
-                @updateTodo="updateTodo"
-                @closeAllEditors="closeAllEditors"
+                @toggle-select="toggleSelect"
+                @update-todo="updateTodo"
+                @close-all-editors="closeAllEditors"
               />
             </template>
-            <template #footer v-if="filteredAndSortedTodos.length === 0">
+            <template v-if="filteredAndSortedTodos.length === 0" #footer>
               <tr>
                 <td
                   colspan="7"
@@ -93,9 +93,9 @@
           >
           <UButton
             color="red"
-            @click="confirmDelete"
             :loading="isDeleting"
             :disabled="isDeleting"
+            @click="confirmDelete"
           >
             削除
           </UButton>
@@ -420,7 +420,7 @@ async function handleDragChange(evt: any) {
       // ドラッグ中のちらつき防止のために、ローカルでのソート順序を即時反映
       // 移動された要素のsort_orderを事前に更新（UI表示優先）
       const tempSortedList = [...internalDraggedTodos.value].sort(
-        (a, b) => (a.sort_order || 0) - (b.sort_order || 0)
+        (a, b) => (a.sort_order || 0) - (b.sort_order || 0),
       );
 
       // 簡易的な一時的sort_orderの計算（表示用）
@@ -434,13 +434,13 @@ async function handleDragChange(evt: any) {
         const prevItem = tempSortedList[newIndex - 1];
         const nextItem = tempSortedList[newIndex];
         tempSortOrder = Math.floor(
-          ((prevItem?.sort_order || 0) + (nextItem?.sort_order || 0)) / 2
+          ((prevItem?.sort_order || 0) + (nextItem?.sort_order || 0)) / 2,
         );
       }
 
       // UIで使用する内部状態を先に更新（表示ちらつき防止）
       const todoIndex = internalDraggedTodos.value.findIndex(
-        (t) => t.id === todo.id
+        (t) => t.id === todo.id,
       );
       if (todoIndex !== -1) {
         const target = internalDraggedTodos.value[todoIndex];
@@ -453,12 +453,12 @@ async function handleDragChange(evt: any) {
       const { mainTodoUpdate, otherTodosUpdates } = calculateNewOrders(
         todo,
         newIndex,
-        internalDraggedTodos.value // 内部状態を使用
+        internalDraggedTodos.value, // 内部状態を使用
       );
 
       // 移動したTodoのローカルの順序を更新（即時UI反映）
       const mainIndex = todoStore.todos.findIndex(
-        (t) => t.id === mainTodoUpdate.id
+        (t) => t.id === mainTodoUpdate.id,
       );
       if (mainIndex !== -1) {
         const target = todoStore.todos[mainIndex];
@@ -493,7 +493,7 @@ async function handleDragChange(evt: any) {
         // 内部配列も更新して表示を一貫させる
         otherTodosUpdates.forEach((update) => {
           const index = internalDraggedTodos.value.findIndex(
-            (t) => t.id === update.id
+            (t) => t.id === update.id,
           );
           if (index !== -1) {
             const item = internalDraggedTodos.value[index];
@@ -508,7 +508,7 @@ async function handleDragChange(evt: any) {
           todoStore.updateTodoOrder({
             id: updateData.id,
             sort_order: updateData.sort_order || 0,
-          })
+          }),
         );
 
         await Promise.all(updatePromises);

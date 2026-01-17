@@ -73,7 +73,7 @@ const initChart = async () => {
       CategoryScale,
       LinearScale,
       Tooltip,
-      Legend
+      Legend,
     );
 
     const { titles, times } = getTaskTimeData();
@@ -139,7 +139,7 @@ watch(
       chart.update();
     }
   },
-  { deep: true }
+  { deep: true },
 );
 
 // コンポーネントのマウント時にグラフを初期化

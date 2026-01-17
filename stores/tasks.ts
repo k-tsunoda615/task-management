@@ -33,11 +33,7 @@ export const useTodoStore = defineStore("todo", {
       try {
         this.isLoading = true;
         const todoData = useTaskRepository();
-        const {
-          data: todos,
-          error,
-          refresh,
-        } = await todoData.fetchAllTodos();
+        const { data: todos, error, refresh } = await todoData.fetchAllTodos();
 
         if (shouldForce) {
           await refresh();
@@ -193,12 +189,12 @@ export const useTodoStore = defineStore("todo", {
           this.todos[index]!.sort_order = todo.sort_order;
           console.log(
             "[updateTodoOrder] ローカルデータ更新成功:",
-            this.todos[index]
+            this.todos[index],
           );
         } else {
           console.warn(
             "[updateTodoOrder] ローカルでTodoが見つかりません:",
-            todo.id
+            todo.id,
           );
           await this.fetchTodos();
         }
@@ -214,7 +210,9 @@ export const useTodoStore = defineStore("todo", {
       const index = this.todos.findIndex((t) => t.id === todoId);
       if (index !== -1 && this.todos[index]) {
         const target = this.todos[index]!;
-        const updatedAssets = target.assets ? [...target.assets, asset] : [asset];
+        const updatedAssets = target.assets
+          ? [...target.assets, asset]
+          : [asset];
         this.todos[index] = {
           ...target,
           assets: updatedAssets,
@@ -227,7 +225,7 @@ export const useTodoStore = defineStore("todo", {
       if (index !== -1 && this.todos[index]) {
         const target = this.todos[index]!;
         const updatedAssets = (target.assets || []).filter(
-          (current) => current.id !== asset.id
+          (current) => current.id !== asset.id,
         );
         this.todos[index] = {
           ...target,

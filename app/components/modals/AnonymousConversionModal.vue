@@ -60,8 +60,8 @@
           <UButton
             v-if="emailVerified"
             color="primary"
-            @click="setPassword"
             :loading="loading"
+            @click="setPassword"
           >
             パスワードを設定
           </UButton>

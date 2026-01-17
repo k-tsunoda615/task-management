@@ -6,7 +6,7 @@
     </div>
 
     <UCard>
-      <form @submit.prevent="handleSubmit" class="space-y-4">
+      <form class="space-y-4" @submit.prevent="handleSubmit">
         <UFormGroup label="メールアドレス">
           <UInput
             v-model="email"
@@ -123,7 +123,7 @@
         <template #header>
           <div class="text-lg font-bold">パスワードリセット</div>
         </template>
-        <form @submit.prevent="handleResetPassword" class="space-y-4">
+        <form class="space-y-4" @submit.prevent="handleResetPassword">
           <UFormGroup label="メールアドレス">
             <UInput
               v-model="resetEmail"

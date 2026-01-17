@@ -109,8 +109,8 @@
       >
         <UCheckbox
           :checked="selectAll"
-          @change="$emit('toggleSelectAll', $event)"
           class="mx-auto"
+          @change="$emit('toggleSelectAll', $event)"
         />
         削除
       </th>

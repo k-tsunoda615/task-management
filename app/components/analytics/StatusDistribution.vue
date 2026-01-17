@@ -157,7 +157,7 @@ const initStatusChart = async () => {
       data: {
         labels: Object.keys(statusCounts).map(
           (status) =>
-            TASK_STATUS_LABELS[status as keyof typeof TASK_STATUS_LABELS]
+            TASK_STATUS_LABELS[status as keyof typeof TASK_STATUS_LABELS],
         ),
         datasets: [
           {
@@ -195,7 +195,7 @@ const initStatusChart = async () => {
                 const value = context.raw || 0;
                 const total = context.dataset.data.reduce(
                   (a: number, b: number) => a + b,
-                  0
+                  0,
                 );
                 const percentage =
                   total > 0 ? Math.round(((value as number) / total) * 100) : 0;
@@ -260,7 +260,7 @@ const initCompletionChart = async () => {
                 const value = context.raw || 0;
                 const total = context.dataset.data.reduce(
                   (a: number, b: number) => a + b,
-                  0
+                  0,
                 );
                 const percentage =
                   total > 0 ? Math.round(((value as number) / total) * 100) : 0;
@@ -294,7 +294,7 @@ watch(
       completionChart.update();
     }
   },
-  { deep: true }
+  { deep: true },
 );
 
 // コンポーネントのマウント時にグラフを初期化

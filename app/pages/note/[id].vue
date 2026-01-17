@@ -2,7 +2,7 @@
   <div>
     <CommonNavigation :title="'タスク詳細'" />
     <div class="container mx-auto px-4 py-8">
-      <Note :taskId="taskId" />
+      <Note :task-id="taskId" />
     </div>
   </div>
 </template>

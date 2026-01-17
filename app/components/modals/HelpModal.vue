@@ -15,7 +15,8 @@
                 class="mr-2 text-blue-500 flex-shrink-0 mt-1"
               />
               <span
-                >Priority / Next カラム右上の「＋」ボタン、またはサイドバーの「新しいタスク」からタスクを登録できます。</span
+                >Priority / Next
+                カラム右上の「＋」ボタン、またはサイドバーの「新しいタスク」からタスクを登録できます。</span
               >
             </li>
             <li class="flex items-start">
@@ -69,7 +70,8 @@
                 class="mr-2 text-green-500 flex-shrink-0 mt-1"
               />
               <span
-                >サイドバーから「全て / パブリック / プライベート」「完了タスク表示」など視界を切り替えられます。</span
+                >サイドバーから「全て / パブリック /
+                プライベート」「完了タスク表示」など視界を切り替えられます。</span
               >
             </li>
             <li class="flex items-start">
@@ -78,7 +80,8 @@
                 class="mr-2 text-blue-500 flex-shrink-0 mt-1"
               />
               <span
-                >PC ではレイアウト切り替えボタンから Priority と Next を並列 / 均等レイアウトに変更できます。</span
+                >PC ではレイアウト切り替えボタンから Priority と Next を並列 /
+                均等レイアウトに変更できます。</span
               >
             </li>
           </ul>
@@ -96,7 +99,8 @@
                 class="mr-2 text-blue-600 flex-shrink-0 mt-1"
               />
               <span
-                >カードの再生 / 一時停止ボタンで作業時間を計測できます。計測中のタスクは画面上部に表示されます。</span
+                >カードの再生 /
+                一時停止ボタンで作業時間を計測できます。計測中のタスクは画面上部に表示されます。</span
               >
             </li>
             <li class="flex items-start">
@@ -113,7 +117,9 @@
 
         <!-- 詳細ページとメモ -->
         <div>
-          <h4 class="text-base font-medium border-b pb-1 mb-2">詳細ページとメモ</h4>
+          <h4 class="text-base font-medium border-b pb-1 mb-2">
+            詳細ページとメモ
+          </h4>
           <ul class="space-y-2 text-gray-600">
             <li class="flex items-start">
               <UIcon
@@ -130,11 +136,14 @@
                 class="mr-2 text-indigo-500 flex-shrink-0 mt-1"
               />
               <span
-                >メモ欄は Markdown とプレビューをタブで切り替えながら編集できます。詳細ページでもタイマー操作が可能です。</span
+                >メモ欄は Markdown
+                とプレビューをタブで切り替えながら編集できます。詳細ページでもタイマー操作が可能です。</span
               >
             </li>
           </ul>
-          <p class="mt-3 mb-2 text-gray-600">メモ欄で使える主な Markdown 記法：</p>
+          <p class="mt-3 mb-2 text-gray-600">
+            メモ欄で使える主な Markdown 記法：
+          </p>
           <div class="bg-gray-50 p-3 rounded-md">
             <table class="w-full text-sm border-collapse">
               <thead>

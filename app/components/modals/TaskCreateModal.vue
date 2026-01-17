@@ -7,13 +7,13 @@
       <template #header>
         <h3 class="text-lg font-medium text-gray-900">新しいタスク</h3>
       </template>
-      <form @submit.prevent="$emit('create')" class="space-y-4">
+      <form class="space-y-4" @submit.prevent="$emit('create')">
         <UFormGroup label="タイトル">
           <UInput
             :model-value="newTodo?.title"
-            @update:model-value="$emit('update:newTodoTitle', $event)"
             required
             :ui="{ icon: { trailing: { pointer: '' } } }"
+            @update:model-value="$emit('update:newTodoTitle', $event)"
           >
             <template #trailing>
               <UTooltip text="メモからAI生成" :shortcuts="['⌘', 'G']">
@@ -39,22 +39,22 @@
         <UFormGroup label="ステータス">
           <USelect
             :model-value="newTodo?.status"
-            @update:model-value="$emit('update:newTodoStatus', $event)"
             :options="statusOptions"
+            @update:model-value="$emit('update:newTodoStatus', $event)"
           />
         </UFormGroup>
         <UFormGroup>
           <UCheckbox
             :model-value="newTodo?.is_private"
-            @update:model-value="$emit('update:newTodoIsPrivate', $event)"
             label="Private"
+            @update:model-value="$emit('update:newTodoIsPrivate', $event)"
           />
         </UFormGroup>
         <UFormGroup label="合計時間 (hh:mm:ss)">
           <UInput
             :model-value="timeInput"
-            @update:model-value="$emit('update:timeInput', $event)"
             placeholder="00:00:00"
+            @update:model-value="$emit('update:timeInput', $event)"
             @input="$emit('validate-time', $event)"
           />
         </UFormGroup>
@@ -94,8 +94,8 @@
           </UButton>
           <UButton
             color="primary"
-            @click="$emit('create')"
             :loading="isCreating"
+            @click="$emit('create')"
           >
             作成
           </UButton>
@@ -150,5 +150,4 @@ const handleGenerateTitle = async () => {
     emit("update:newTodoTitle", title);
   }
 };
-
 </script>

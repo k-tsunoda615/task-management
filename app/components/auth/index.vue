@@ -42,7 +42,7 @@
         </div>
 
         <UCard>
-          <form @submit.prevent="handleSubmit" class="space-y-4">
+          <form class="space-y-4" @submit.prevent="handleSubmit">
             <UFormGroup label="メールアドレス">
               <UInput
                 v-model="email"
@@ -70,8 +70,8 @@
             <div v-if="isSignUp" class="flex items-center gap-2">
               <input
                 id="agreeTerms"
-                type="checkbox"
                 v-model="agreeTerms"
+                type="checkbox"
                 class="w-4 h-4"
               />
               <label for="agreeTerms" class="text-sm text-gray-700 select-none">
@@ -140,7 +140,7 @@
             <template #header>
               <div class="text-lg font-bold">パスワードリセット</div>
             </template>
-            <form @submit.prevent="handleResetPassword" class="space-y-4">
+            <form class="space-y-4" @submit.prevent="handleResetPassword">
               <UFormGroup label="メールアドレス">
                 <UInput
                   v-model="resetEmail"

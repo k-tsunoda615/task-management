@@ -39,11 +39,11 @@
         <div class="block md:hidden">
           <div class="fixed top-0 left-0 z-30 p-4">
             <UButton
-              @click="isMobileMenuOpen = !isMobileMenuOpen"
               color="white"
               variant="solid"
               icon="i-heroicons-bars-3"
               class="shadow-md"
+              @click="isMobileMenuOpen = !isMobileMenuOpen"
             />
           </div>
 
@@ -127,7 +127,7 @@ const isMobile = ref(false);
 const { startAutoRefresh, stopAutoRefresh, isSyncing } = useTodoSync();
 const todoStore = useTodoStore();
 const showDataLoadingOverlay = computed(
-  () => !!user.value && (todoStore.isLoading || isSyncing.value)
+  () => !!user.value && (todoStore.isLoading || isSyncing.value),
 );
 
 watch(
@@ -139,7 +139,7 @@ watch(
       stopAutoRefresh();
     }
   },
-  { immediate: true }
+  { immediate: true },
 );
 
 onBeforeUnmount(() => {

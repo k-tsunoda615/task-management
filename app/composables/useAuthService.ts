@@ -13,7 +13,7 @@ export function useAuthService() {
   async function loginWithPassword(
     email: string,
     password: string,
-    redirectUrl: string = "/board"
+    redirectUrl: string = "/board",
   ) {
     loading.value = true;
     errorMessage.value = "";
@@ -145,13 +145,16 @@ export function useAuthService() {
       }
       return { success: true };
     } catch (error: unknown) {
-      return { success: false, error: mapAuthErrorToMessage(error as AuthError) };
+      return {
+        success: false,
+        error: mapAuthErrorToMessage(error as AuthError),
+      };
     }
   }
 
   // 認証状態変更を監視
   function watchAuthState(
-    callback: (event: string, session: Session | null) => void
+    callback: (event: string, session: Session | null) => void,
   ) {
     const { data } = client.auth.onAuthStateChange(callback);
 

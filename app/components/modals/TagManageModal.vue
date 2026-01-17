@@ -62,8 +62,8 @@
                     ></div>
                   </div>
                   <input
-                    type="color"
                     v-model="localColor"
+                    type="color"
                     class="w-full h-8 cursor-pointer rounded"
                   />
                 </div>
@@ -133,8 +133,8 @@
                     ></div>
                   </div>
                   <input
-                    type="color"
                     v-model="editColor"
+                    type="color"
                     class="w-full h-8 cursor-pointer rounded"
                   />
                 </div>

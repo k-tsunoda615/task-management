@@ -32,11 +32,11 @@
                 <UIcon name="i-heroicons-arrow-right" class="ml-2" />
               </UButton>
               <UButton
-                @click="scrollToFeatures"
                 size="xl"
                 variant="outline"
                 color="gray"
                 class="rounded-md px-8 py-4"
+                @click="scrollToFeatures"
               >
                 <span class="text-lg">機能を探索する</span>
                 <UIcon name="i-heroicons-chevron-down" class="ml-2" />

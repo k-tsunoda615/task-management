@@ -19,8 +19,8 @@
           color="green"
           variant="solid"
           size="sm"
-          @click="stopTiming(currentTimingTodo)"
           icon="i-heroicons-pause"
+          @click="stopTiming(currentTimingTodo)"
         >
           停止
         </UButton>
@@ -51,8 +51,8 @@
           <UButton
             variant="ghost"
             color="gray"
-            @click="toggleLayout"
             class="flex items-center"
+            @click="toggleLayout"
           >
             <UIcon :name="getLayoutIcon()" class="w-5 h-5 mr-1" />
             <span class="text-sm">レイアウト</span>
@@ -102,6 +102,7 @@
           </div>
           <div class="flex-1 min-h-[300px]">
             <draggable
+              :key="'priority-container'"
               v-model="todosByStatus[TASK_STATUS.PRIORITY]"
               :group="{ name: 'todos', pull: true, put: true }"
               item-key="id"
@@ -111,7 +112,6 @@
               ghost-class="ghost-card"
               drag-class="drag-item"
               chosen-class="chosen-item"
-              :key="'priority-container'"
               :class="{
                 'border-2 border-dashed border-gray-200 rounded-[6px] p-4':
                   todosByStatus[TASK_STATUS.PRIORITY].length === 0,
@@ -123,9 +123,9 @@
               <template #item="{ element }">
                 <TodoCard
                   :todo="element"
-                  :showTimerBar="showTimerBar"
-                  :showTagBar="showTagBar"
-                  :timerLoading="timerButtonLoading === element.id"
+                  :show-timer-bar="showTimerBar"
+                  :show-tag-bar="showTagBar"
+                  :timer-loading="timerButtonLoading === element.id"
                   @edit="openEditModal"
                   @start-timing="startTiming"
                   @stop-timing="stopTiming"
@@ -176,6 +176,7 @@
             </UTooltip>
           </div>
           <draggable
+            :key="'next-container'"
             v-model="todosByStatus[TASK_STATUS.NEXT]"
             :group="{ name: 'todos', pull: true, put: true }"
             item-key="id"
@@ -185,7 +186,6 @@
             ghost-class="ghost-card"
             drag-class="drag-item"
             chosen-class="chosen-item"
-            :key="'next-container'"
             @change="handleDragChange"
             @start="handleDragStart"
             @end="handleDragEnd"
@@ -193,9 +193,9 @@
             <template #item="{ element }">
               <TodoCard
                 :todo="element"
-                :showTimerBar="showTimerBar"
-                :showTagBar="showTagBar"
-                :timerLoading="timerButtonLoading === element.id"
+                :show-timer-bar="showTimerBar"
+                :show-tag-bar="showTagBar"
+                :timer-loading="timerButtonLoading === element.id"
                 @edit="openEditModal"
                 @start-timing="startTiming"
                 @stop-timing="stopTiming"
@@ -229,6 +229,7 @@
           {{ TASK_STATUS_LABELS[TASK_STATUS.PRIORITY] }}
         </h2>
         <draggable
+          :key="'priority-container'"
           v-model="todosByStatus[TASK_STATUS.PRIORITY]"
           :group="{ name: 'todos', pull: true, put: true }"
           item-key="id"
@@ -238,7 +239,6 @@
           ghost-class="ghost-card"
           drag-class="drag-item"
           chosen-class="chosen-item"
-          :key="'priority-container'"
           @change="handleDragChange"
           @start="handleDragStart"
           @end="handleDragEnd"
@@ -246,9 +246,9 @@
           <template #item="{ element }">
             <TodoCard
               :todo="element"
-              :showTimerBar="showTimerBar"
-              :showTagBar="showTagBar"
-              :timerLoading="timerButtonLoading === element.id"
+              :show-timer-bar="showTimerBar"
+              :show-tag-bar="showTagBar"
+              :timer-loading="timerButtonLoading === element.id"
               @edit="openEditModal"
               @start-timing="startTiming"
               @stop-timing="stopTiming"
@@ -278,6 +278,7 @@
           {{ TASK_STATUS_LABELS[TASK_STATUS.NEXT] }}
         </h2>
         <draggable
+          :key="'next-container'"
           v-model="todosByStatus[TASK_STATUS.NEXT]"
           :group="{ name: 'todos', pull: true, put: true }"
           item-key="id"
@@ -287,7 +288,6 @@
           ghost-class="ghost-card"
           drag-class="drag-item"
           chosen-class="chosen-item"
-          :key="'next-container'"
           @change="handleDragChange"
           @start="handleDragStart"
           @end="handleDragEnd"
@@ -295,9 +295,9 @@
           <template #item="{ element }">
             <TodoCard
               :todo="element"
-              :showTimerBar="showTimerBar"
-              :showTagBar="showTagBar"
-              :timerLoading="timerButtonLoading === element.id"
+              :show-timer-bar="showTimerBar"
+              :show-tag-bar="showTagBar"
+              :timer-loading="timerButtonLoading === element.id"
               @edit="openEditModal"
               @start-timing="startTiming"
               @stop-timing="stopTiming"
@@ -328,6 +328,7 @@
         {{ TASK_STATUS_LABELS[TASK_STATUS.ARCHIVED] }}
       </h2>
       <draggable
+        :key="'archived-container'"
         v-model="todosByStatus[TASK_STATUS.ARCHIVED]"
         :group="{ name: 'todos', pull: true, put: true }"
         item-key="id"
@@ -337,7 +338,6 @@
         ghost-class="ghost-card"
         drag-class="drag-item"
         chosen-class="chosen-item"
-        :key="'archived-container'"
         @change="handleDragChange"
         @start="handleDragStart"
         @end="handleDragEnd"
@@ -345,9 +345,9 @@
         <template #item="{ element }">
           <TodoCard
             :todo="element"
-            :showTimerBar="showTimerBar"
-            :showTagBar="showTagBar"
-            :timerLoading="timerButtonLoading === element.id"
+            :show-timer-bar="showTimerBar"
+            :show-tag-bar="showTagBar"
+            :timer-loading="timerButtonLoading === element.id"
             @edit="openEditModal"
             @start-timing="startTiming"
             @stop-timing="stopTiming"
@@ -365,22 +365,22 @@
     <!-- 新規タスクモーダル -->
     <TaskCreateModal
       :show="showNewTaskModal"
-      :newTodo="newTodo"
-      :timeInput="timeInput"
-      :tagStore="tagStore"
-      :isCreating="isCreating"
-      :newTagName="newTagName"
+      :new-todo="newTodo"
+      :time-input="timeInput"
+      :tag-store="tagStore"
+      :is-creating="isCreating"
+      :new-tag-name="newTagName"
       @close="showNewTaskModal = false"
       @create="createTodo"
       @add-tag="addTag"
       @toggle-tag="toggleTagOnNewTodo"
       @validate-time="validateTimeInput"
-      @update:newTodoTitle="(val: string) => (newTodo.title = val)"
-      @update:newTodoMemo="(val: string) => (newTodo.memo = val)"
-      @update:newTodoStatus="(val: any) => (newTodo.status = val)"
-      @update:newTodoIsPrivate="(val: boolean) => (newTodo.is_private = val)"
-      @update:timeInput="(val: string) => (timeInput = val)"
-      @update:newTagName="(val: string) => (newTagName = val)"
+      @update:new-todo-title="(val: string) => (newTodo.title = val)"
+      @update:new-todo-memo="(val: string) => (newTodo.memo = val)"
+      @update:new-todo-status="(val: any) => (newTodo.status = val)"
+      @update:new-todo-is-private="(val: boolean) => (newTodo.is_private = val)"
+      @update:time-input="(val: string) => (timeInput = val)"
+      @update:new-tag-name="(val: string) => (newTagName = val)"
     />
 
     <!-- 編集タスクモーダル -->
@@ -401,13 +401,13 @@
               variant="ghost"
               icon="i-heroicons-trash"
               size="sm"
-              @click="confirmDeleteTodo"
               title="タスクを削除"
               class="hover:bg-red-50"
+              @click="confirmDeleteTodo"
             />
           </div>
         </template>
-        <form @submit.prevent="updateTodo" class="space-y-4">
+        <form class="space-y-4" @submit.prevent="updateTodo">
           <UFormGroup label="タイトル">
             <UInput v-model="editingTodo.title" required />
           </UFormGroup>
@@ -424,8 +424,8 @@
               <UButton
                 size="sm"
                 variant="soft"
-                @click="showPreviewModal = true"
                 icon="i-heroicons-eye"
+                @click="showPreviewModal = true"
               >
                 プレビュー
               </UButton>
@@ -450,8 +450,8 @@
               <UInput
                 v-model="editTimeInput"
                 placeholder="00:00:00"
-                @input="validateTimeInput"
                 :disabled="editingTodo.is_timing"
+                @input="validateTimeInput"
               />
               <UTooltip
                 v-if="editingTodo.is_timing"
@@ -489,7 +489,7 @@
                     () => {
                       if (editingTodo.tags.some((t: Tag) => t.id === tag.id)) {
                         editingTodo.tags = editingTodo.tags.filter(
-                          (t: Tag) => t.id !== tag.id
+                          (t: Tag) => t.id !== tag.id,
                         );
                       } else {
                         editingTodo.tags.push(tag);
@@ -508,7 +508,7 @@
             <UButton variant="ghost" @click="showEditModal = false">
               キャンセル
             </UButton>
-            <UButton color="primary" @click="updateTodo" :loading="isUpdating">
+            <UButton color="primary" :loading="isUpdating" @click="updateTodo">
               更新
             </UButton>
           </div>
@@ -547,7 +547,7 @@
 
     <DeleteConfirmModal
       :show="showDeleteConfirmModal"
-      :editingTodo="editingTodo"
+      :editing-todo="editingTodo"
       @close="showDeleteConfirmModal = false"
       @delete="deleteCurrentTodo"
     />
@@ -860,7 +860,7 @@ const tagOptions = computed(() => [
 const { searchedTodos } = useTodoSearch(
   computed(() => todoStore.todosByVisibility),
   searchQuery,
-  computed(() => selectedTagId.value || null)
+  computed(() => selectedTagId.value || null),
 );
 
 // searchedTodosを元に、完了タスクをフィルタリングしたcomputed
@@ -896,13 +896,13 @@ const updateTodosByStatus = () => {
   });
   // 各リストをsort_orderでソート
   todosByStatus[TASK_STATUS.PRIORITY].sort(
-    (a: Todo, b: Todo) => (a.sort_order || 0) - (b.sort_order || 0)
+    (a: Todo, b: Todo) => (a.sort_order || 0) - (b.sort_order || 0),
   );
   todosByStatus[TASK_STATUS.NEXT].sort(
-    (a: Todo, b: Todo) => (a.sort_order || 0) - (b.sort_order || 0)
+    (a: Todo, b: Todo) => (a.sort_order || 0) - (b.sort_order || 0),
   );
   todosByStatus[TASK_STATUS.ARCHIVED].sort(
-    (a: Todo, b: Todo) => (a.sort_order || 0) - (b.sort_order || 0)
+    (a: Todo, b: Todo) => (a.sort_order || 0) - (b.sort_order || 0),
   );
   // 計測中のタスクを確認
   const timingTodo = filteredTodos.value.find((todo: Todo) => todo.is_timing);
@@ -933,7 +933,7 @@ watch(
       }
     }
   },
-  { deep: true }
+  { deep: true },
 );
 
 const isMobile = ref(false);
@@ -997,7 +997,7 @@ onMounted(() => {
             startTime: startTime.value,
             currentTotalTime: currentTotalTime.value,
             title: currentTimingTodo.value.title,
-          })
+          }),
         );
       }
     } else {
@@ -1019,7 +1019,7 @@ onMounted(() => {
   window.addEventListener("tagVisibilityToggle", handleTagVisibilityToggle);
   window.addEventListener(
     "completedTasksVisibilityToggle",
-    handleCompletedTasksVisibilityToggle
+    handleCompletedTasksVisibilityToggle,
   );
   document.addEventListener("visibilitychange", handleVisibilityChange);
 
@@ -1027,15 +1027,15 @@ onMounted(() => {
   onUnmounted(() => {
     window.removeEventListener(
       "timerVisibilityToggle",
-      handleTimerVisibilityToggle
+      handleTimerVisibilityToggle,
     );
     window.removeEventListener(
       "tagVisibilityToggle",
-      handleTagVisibilityToggle
+      handleTagVisibilityToggle,
     );
     window.removeEventListener(
       "completedTasksVisibilityToggle",
-      handleCompletedTasksVisibilityToggle
+      handleCompletedTasksVisibilityToggle,
     );
     document.removeEventListener("visibilitychange", handleVisibilityChange);
 
@@ -1130,7 +1130,7 @@ const createTodo = async () => {
   if (todosByStatus[currentStatus] && todosByStatus[currentStatus].length > 0) {
     minSortOrder =
       Math.min(
-        ...todosByStatus[currentStatus].map((t: Todo) => t.sort_order || 0)
+        ...todosByStatus[currentStatus].map((t: Todo) => t.sort_order || 0),
       ) - 100;
   }
 
@@ -1157,7 +1157,7 @@ const createTodo = async () => {
         result.id,
         newTaskData.status,
         newTaskData.tags.length > 0,
-        newTaskData.is_private
+        newTaskData.is_private,
       );
     }
 
@@ -1305,7 +1305,7 @@ const handleDragChange = async (evt: any) => {
       "新しいステータス:",
       newStatus,
       "ターゲットリスト:",
-      targetList
+      targetList,
     );
 
     if (!todo || !targetList) {
@@ -1339,12 +1339,12 @@ const handleDragChange = async (evt: any) => {
       const { mainTodoUpdate, otherTodosUpdates } = calculateNewOrders(
         todo,
         newIndex,
-        targetList
+        targetList,
       );
 
       // 移動したTodoのローカルの順序とステータスを更新
       const mainIndex = todoStore.todos.findIndex(
-        (t) => t.id === mainTodoUpdate.id
+        (t) => t.id === mainTodoUpdate.id,
       );
       if (mainIndex !== -1) {
         if (todoStore.todos[mainIndex]) {
@@ -1380,7 +1380,7 @@ const handleDragChange = async (evt: any) => {
           todoStore.updateTodoOrder({
             id: updateData.id,
             sort_order: updateData.sort_order || 0,
-          })
+          }),
         );
 
         await Promise.all(updatePromises);
@@ -1552,7 +1552,7 @@ const stopTiming = async (todo: Todo) => {
 const updateTimingTodoInLists = (
   todoId: string,
   newTotalTime: number,
-  isTimingValue = true
+  isTimingValue = true,
 ) => {
   // 各リスト内のタスクを検索して更新
   const updateInList = (list: Todo[]) => {
@@ -1787,7 +1787,7 @@ watch(selectedTagId, (newTagId, oldTagId) => {
         trackTagFiltered(
           newTagId,
           selectedTag.name,
-          searchedTodos.value.length
+          searchedTodos.value.length,
         );
       }, 300);
     }

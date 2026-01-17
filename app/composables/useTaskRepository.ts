@@ -39,7 +39,7 @@ export function useTaskRepository() {
 
           if (error && isMissingAssetsRelationship(error)) {
             console.warn(
-              "[useTaskRepository] 添付ファイル用リレーションが未設定のため、添付を含まないクエリにフォールバックします。"
+              "[useTaskRepository] 添付ファイル用リレーションが未設定のため、添付を含まないクエリにフォールバックします。",
             );
             ({ data: todos, error } = await client
               .from("todos")
@@ -62,7 +62,7 @@ export function useTaskRepository() {
       },
       {
         server: false, // クライアントサイドのみで実行（認証が必要なため）
-      }
+      },
     );
   };
 
@@ -82,7 +82,7 @@ export function useTaskRepository() {
 
           if (error && isMissingAssetsRelationship(error)) {
             console.warn(
-              `[useTaskRepository] 添付ファイル用リレーションが未設定のため、タスク(${id})の単一取得でフォールバックします。`
+              `[useTaskRepository] 添付ファイル用リレーションが未設定のため、タスク(${id})の単一取得でフォールバックします。`,
             );
 
             ({ data, error } = await client
@@ -102,7 +102,7 @@ export function useTaskRepository() {
       },
       {
         server: false,
-      }
+      },
     );
   };
 
@@ -206,7 +206,7 @@ export function useTaskRepository() {
       if (assetsFetchError) {
         console.warn(
           `[useTaskRepository] Todo ID:${id} の添付取得でエラー:`,
-          assetsFetchError
+          assetsFetchError,
         );
       }
 
@@ -221,7 +221,7 @@ export function useTaskRepository() {
           if (removeError) {
             console.warn(
               `[useTaskRepository] Todo ID:${id} の添付削除でエラー:`,
-              removeError
+              removeError,
             );
           }
         }
@@ -233,7 +233,7 @@ export function useTaskRepository() {
         if (assetDeleteError) {
           console.warn(
             `[useTaskRepository] Todo ID:${id} の添付レコード削除でエラー:`,
-            assetDeleteError
+            assetDeleteError,
           );
         }
       }
@@ -345,7 +345,7 @@ export function useTaskRepository() {
     if (insertError) {
       console.error(
         "[useTaskRepository] 添付メタデータ挿入に失敗:",
-        insertError
+        insertError,
       );
       await storage.remove([storagePath]);
       throw insertError;
@@ -364,7 +364,7 @@ export function useTaskRepository() {
     const storage = client.storage.from(TASK_ASSET_BUCKET);
     const { data, error } = await storage.createSignedUrl(
       asset.storage_path,
-      expiresIn
+      expiresIn,
     );
 
     if (error) {
@@ -399,7 +399,7 @@ export function useTaskRepository() {
     if (deleteError) {
       console.error(
         "[useTaskRepository] 添付メタデータ削除に失敗:",
-        deleteError
+        deleteError,
       );
       throw deleteError;
     }

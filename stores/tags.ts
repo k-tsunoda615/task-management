@@ -53,7 +53,7 @@ export const useTagStore = defineStore("tag", {
       // 最大のsort_orderを取得
       const maxSortOrder = this.tags.reduce(
         (max, t) => Math.max(max, t.sort_order || 0),
-        0
+        0,
       );
 
       try {
@@ -74,7 +74,7 @@ export const useTagStore = defineStore("tag", {
     },
     async updateTag(
       tagId: string,
-      updates: { name?: string; color?: string; sort_order?: number }
+      updates: { name?: string; color?: string; sort_order?: number },
     ) {
       try {
         const tagRepository = useTagRepository();

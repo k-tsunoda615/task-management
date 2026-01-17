@@ -34,29 +34,26 @@
               最終更新: {{ lastSyncedLabel }}
             </span>
           </div>
-          <span
-            v-if="lastSyncError"
-            class="text-xs text-red-500"
-          >
+          <span v-if="lastSyncError" class="text-xs text-red-500">
             {{ lastSyncError }}
           </span>
         </div>
         <UTooltip text="ヘルプ" :ui="{ popper: { strategy: 'fixed' } }">
           <UButton
-            @click="showHelpModal = true"
             color="gray"
             variant="ghost"
             icon="i-heroicons-question-mark-circle"
+            @click="showHelpModal = true"
           >
             <span class="md:hidden hidden">ヘルプ</span>
           </UButton>
         </UTooltip>
         <UTooltip text="ログアウト" :ui="{ popper: { strategy: 'fixed' } }">
           <UButton
-            @click="logout"
             color="gray"
             variant="ghost"
             icon="i-heroicons-arrow-right-on-rectangle"
+            @click="logout"
           >
             <span class="md:hidden hidden">ログアウト</span>
           </UButton>

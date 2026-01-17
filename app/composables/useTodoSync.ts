@@ -24,7 +24,7 @@ export function useTodoSync() {
     () => ({
       started: false,
       cleanup: undefined,
-    })
+    }),
   );
 
   const refresh = async () => {
