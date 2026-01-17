@@ -706,13 +706,13 @@ const newTodo = ref<NewTodo>({
   tags: [] as Tag[],
 });
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 /**
  * 新規 Todo のステータスを更新する。
  * @description セレクト変更時の値を反映する。
  * @param {any} val - ステータス値。
  * @returns {void} なし。
  */
+/* eslint-disable-next-line @typescript-eslint/no-explicit-any */
 const updateNewTodoStatus = (val: any) => {
   newTodo.value.status = val;
 };
@@ -1002,35 +1002,35 @@ const checkMobile = () => {
 
 defineExpose({ isMobile });
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 /**
  * タイマー表示の切り替えを反映する。
  * @description カスタムイベントの detail から状態を更新する。
  * @param {any} event - タイマー表示切替イベント。
  * @returns {void} なし。
  */
+/* eslint-disable-next-line @typescript-eslint/no-explicit-any */
 const handleTimerVisibilityToggle = (event: any) => {
   showTimerBar.value = event.detail.showTimer;
 };
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 /**
  * タグ表示の切り替えを反映する。
  * @description カスタムイベントの detail から状態を更新する。
  * @param {any} event - タグ表示切替イベント。
  * @returns {void} なし。
  */
+/* eslint-disable-next-line @typescript-eslint/no-explicit-any */
 const handleTagVisibilityToggle = (event: any) => {
   showTagBar.value = event.detail.showTagBar;
 };
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 /**
  * 完了タスク表示の切り替えを反映する。
  * @description カスタムイベントの detail から状態を更新する。
  * @param {any} event - 完了タスク表示切替イベント。
  * @returns {void} なし。
  */
+/* eslint-disable-next-line @typescript-eslint/no-explicit-any */
 const handleCompletedTasksVisibilityToggle = (event: any) => {
   showCompletedTasks.value = event.detail.showCompletedTasks;
 };
@@ -1072,7 +1072,8 @@ const handleVisibilityChange = () => {
   }
 };
 
-const timerNavigationBus = useEventBus<TimerNavigationEvent>("timer-navigation");
+const timerNavigationBus =
+  useEventBus<TimerNavigationEvent>("timer-navigation");
 let unsubscribeTimerNavigation: (() => void) | null = null;
 let unsubscribeTrashDrop: (() => void) | null = null;
 

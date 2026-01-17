@@ -194,13 +194,14 @@ const editTodo = (event: Event) => {
 };
 
 // ドラッグ開始時にTodoのIDをデータ転送オブジェクトに設定
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
+
 /**
  * ドラッグ開始時にデータを設定する。
  * @description DataTransfer に Todo ID を設定する。
  * @param {any} event - ドラッグイベント。
  * @returns {void} なし。
  */
+/* eslint-disable-next-line @typescript-eslint/no-explicit-any */
 const handleDragStart = (event: any) => {
   event.dataTransfer.setData("todoId", props.todo.id);
   event.dataTransfer.effectAllowed = "move";

@@ -196,7 +196,6 @@
 
             <!-- 管理ページ if(isAdmin)はあとで実装 -->
             <UTooltip
-              v-if="isAdmin"
               :text="!isOpen ? '管理ダッシュボード' : ''"
               :ui="{ popper: { strategy: 'fixed' } }"
               class="w-full"
@@ -489,7 +488,7 @@ const totalAssetSize = computed(() => {
     const assets = todo.assets || [];
     const assetSize = assets.reduce(
       (assetSum, asset) => assetSum + (asset.size || 0),
-      0,
+      0
     );
     return sum + assetSize;
   }, 0);
@@ -596,7 +595,7 @@ const toggleSidebar = () => {
   window.dispatchEvent(
     new CustomEvent("sidebarToggle", {
       detail: { isOpen: isOpen.value },
-    }),
+    })
   );
 };
 
@@ -615,7 +614,7 @@ const toggleTimerVisibility = () => {
   window.dispatchEvent(
     new CustomEvent("timerVisibilityToggle", {
       detail: { showTimer: showTimer.value },
-    }),
+    })
   );
 };
 
@@ -631,7 +630,7 @@ const toggleTagVisibility = () => {
   window.dispatchEvent(
     new CustomEvent("tagVisibilityToggle", {
       detail: { showTagBar: showTagBar.value },
-    }),
+    })
   );
 };
 
@@ -645,12 +644,12 @@ const toggleCompletedTasksVisibility = () => {
   showCompletedTasks.value = !showCompletedTasks.value;
   localStorage.setItem(
     "showCompletedTasks",
-    showCompletedTasks.value.toString(),
+    showCompletedTasks.value.toString()
   );
   window.dispatchEvent(
     new CustomEvent("completedTasksVisibilityToggle", {
       detail: { showCompletedTasks: showCompletedTasks.value },
-    }),
+    })
   );
 };
 
@@ -726,15 +725,15 @@ const toggleTaskFilter = () => {
 };
 
 // ゴミ箱へのドロップを処理
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
+
 /**
  * ゴミ箱へのドロップを処理する。
  * @description DragEvent から todoId を取得し削除イベントを送る。
- * @param {any} event - ドロップイベント。
+ * @param {DragEvent} event - ドロップイベント。
  * @returns {void} なし。
  */
-const handleTrashDrop = (event: any) => {
-  const todoId = event.dataTransfer.getData("todoId");
+const handleTrashDrop = (event: DragEvent) => {
+  const todoId = event.dataTransfer?.getData("todoId");
   if (todoId) {
     isDragOver.value = false;
     trashEventBus.emit(todoId);
