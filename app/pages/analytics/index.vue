@@ -201,6 +201,12 @@ const tagStore = useTagStore();
 const selectedPeriod = ref("7days");
 const showCompletedTasks = ref(false); // 完了タスク表示/非表示
 
+/**
+ * 完了タスクの表示状態を反映する。
+ * @description カスタムイベントの詳細から表示フラグを更新する。
+ * @param {Event} event - 完了タスク表示切替イベント。
+ * @returns {void} なし。
+ */
 const handleCompletedTasksVisibilityToggle = (event: Event) => {
   const detail = (event as CustomEvent<{ showCompletedTasks: boolean }>).detail;
   if (typeof detail?.showCompletedTasks === "boolean") {
@@ -326,12 +332,24 @@ onMounted(async () => {
 });
 
 // ユーティリティ関数
+/**
+ * ステータスラベルを取得する。
+ * @description 定義済みのラベルから表示文字列を返す。
+ * @param {string} status - ステータス値。
+ * @returns {string} 表示用ラベル。
+ */
 const getStatusLabel = (status: string) => {
   return (
     TASK_STATUS_LABELS[status as keyof typeof TASK_STATUS_LABELS] || "不明"
   );
 };
 
+/**
+ * ステータスのアイコン名を取得する。
+ * @description 定義済みのアイコン名を返す。
+ * @param {string} status - ステータス値。
+ * @returns {string} アイコン名。
+ */
 const getStatusIconName = (status: string) => {
   return (
     STATUS_COLORS[status as keyof typeof STATUS_COLORS]?.iconName ||
@@ -339,10 +357,22 @@ const getStatusIconName = (status: string) => {
   );
 };
 
+/**
+ * ステータスのアイコンクラスを取得する。
+ * @description 定義済みのアイコンクラスを返す。
+ * @param {string} status - ステータス値。
+ * @returns {string} アイコンクラス。
+ */
 const getStatusIconClass = (status: string) => {
   return STATUS_COLORS[status as keyof typeof STATUS_COLORS]?.icon || "";
 };
 
+/**
+ * ステータスの表示クラスを取得する。
+ * @description 背景/ボーダーのクラスを組み立てる。
+ * @param {string} status - ステータス値。
+ * @returns {string} 表示クラス。
+ */
 const getStatusClasses = (status: string) => {
   const color =
     STATUS_COLORS[status as keyof typeof STATUS_COLORS] ||

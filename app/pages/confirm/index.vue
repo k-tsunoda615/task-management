@@ -186,6 +186,11 @@ onMounted(async () => {
   }
 });
 
+/**
+ * 匿名ユーザーのアップグレードを完了する。
+ * @description パスワードを設定し、成功後にダッシュボードへ遷移する。
+ * @returns {Promise<void>} 更新処理の完了。
+ */
 const completeAnonymousUpgrade = async () => {
   passwordError.value = "";
 
