@@ -77,7 +77,7 @@
             </thead>
             <tbody class="divide-y divide-gray-100 bg-white">
               <tr v-if="pending">
-                <td colspan="5" class="px-4 py-6">
+                <td colspan="4" class="px-4 py-6">
                   <div
                     class="flex items-center justify-center gap-3 text-gray-500"
                   >
@@ -87,7 +87,7 @@
                 </td>
               </tr>
               <tr v-else-if="users.length === 0">
-                <td colspan="5" class="px-4 py-6 text-center text-gray-500">
+                <td colspan="4" class="px-4 py-6 text-center text-gray-500">
                   表示できるユーザーがありません。
                 </td>
               </tr>
