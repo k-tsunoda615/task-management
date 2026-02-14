@@ -44,9 +44,8 @@ export default defineNuxtConfig({
       callback: "/confirm",
       exclude: ["/*"],
     },
-    // テスト環境やCI環境でのデフォルト値を設定
-    url: process.env.NUXT_SUPABASE_URL || "https://dummy.supabase.co",
-    key: process.env.NUXT_SUPABASE_ANON_KEY || "dummy-anon-key",
+    url: process.env.NUXT_SUPABASE_URL || "",
+    key: process.env.NUXT_SUPABASE_ANON_KEY || "",
   },
 
   devtools: {
