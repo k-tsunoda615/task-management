@@ -542,10 +542,7 @@ const statusColor = computed(() => {
 
 // 時間をフォーマット
 const formattedTime = computed(() => {
-  const totalSeconds = Array.isArray(props.todo.total_time)
-    ? props.todo.total_time[0] || 0
-    : props.todo.total_time || 0;
-  return formatTime(totalSeconds);
+  return formatTime(props.todo.total_time || 0);
 });
 
 /**

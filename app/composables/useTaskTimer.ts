@@ -34,15 +34,12 @@ export const useTaskTimer = () => {
   };
 
   /**
-   * total_time の型ゆれを吸収する。
-   * @description number | number[] から数値を取り出す。
-   * @param {number | number[] | undefined} time - 正規化対象の値。
-   * @returns {number} 正規化した秒数。
+   * total_time を安全に数値として取り出す。
+   * @description undefined を 0 に変換する。
+   * @param {number | undefined} time - 取得対象の値。
+   * @returns {number} 秒数。
    */
-  const extractTotalTime = (time: number | number[] | undefined): number => {
-    if (Array.isArray(time) && time.length > 0) {
-      return time[0] ?? 0;
-    }
+  const extractTotalTime = (time: number | undefined): number => {
     return typeof time === "number" ? time : 0;
   };
 
