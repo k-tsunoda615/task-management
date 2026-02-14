@@ -175,7 +175,8 @@ const refresh = async () => {
     usersData.value = data.value ?? [];
     isAdmin.value = true;
   } catch (err) {
-    if (err instanceof Error && err.message === "Forbidden") {
+    const statusCode = (err as { statusCode?: number }).statusCode;
+    if (statusCode === 403) {
       isAdmin.value = false;
       adminCheckError.value = null;
       usersData.value = [];
