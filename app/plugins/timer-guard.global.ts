@@ -3,7 +3,7 @@ import type { NavigationGuardNext, RouteLocationNormalized } from "vue-router";
 
 export type TimerNavigationEvent = {
   /** 発行するアクション */
-  action: "stop-timer";
+  action: "stop-timer" | "confirm-navigation";
   /** 対象の Todo ID */
   todoId: string;
   /** 遷移先のパス */
@@ -40,21 +40,13 @@ const plugin = () => {
       const timingTodo = todoStore.todos.find((todo) => todo.is_timing);
 
       if (timingTodo) {
-        // タイマー実行中の場合、確認ダイアログを表示
-        if (
-          confirm(
-            "タイマーが実行中です。タイマーを停止してから移動しますか？",
-          )
-        ) {
-          // 「OK」を選択した場合、タイマー停止イベントを発行して一時的に遷移を阻止
-          timerEvent.emit({
-            action: "stop-timer",
-            todoId: timingTodo.id,
-            destination: to.fullPath,
-          });
-          return next(false);
-        }
-        // 「キャンセル」を選択した場合も遷移を阻止
+        // タイマー実行中の場合、遷移をブロックし確認イベントを発行
+        // コンポーネント側で Nuxt UI のモーダルを表示して対応する
+        timerEvent.emit({
+          action: "confirm-navigation",
+          todoId: timingTodo.id,
+          destination: to.fullPath,
+        });
         return next(false);
       }
     }
