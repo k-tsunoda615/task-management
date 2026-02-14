@@ -443,7 +443,6 @@ const startStatusEdit = () => {
  */
 const saveStatus = () => {
   if (editedStatus.value !== props.todo.status) {
-    console.log("ステータス更新:", editedStatus.value); // デバッグ用
     emit("updateTodo", {
       id: props.todo.id,
       status: editedStatus.value,

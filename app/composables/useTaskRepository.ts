@@ -297,8 +297,6 @@ export const useTaskRepository = () => {
    */
   const updateTodoOrder = async (todo: { id: string; sort_order: number }) => {
     try {
-      console.log("[useTaskRepository] 順序更新リクエスト:", todo);
-
       // データが正しい形式かチェック
       if (!todo.id) {
         console.error("[useTaskRepository] IDが指定されていません");
@@ -315,8 +313,6 @@ export const useTaskRepository = () => {
         console.error("[useTaskRepository] 順序更新エラー:", error);
         throw error;
       }
-
-      console.log("[useTaskRepository] 順序更新成功:", data);
 
       // キャッシュを無効化
       await refreshCookie("todos");
