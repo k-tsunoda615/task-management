@@ -196,13 +196,30 @@ export const calculateNewOrders = (
       const prevOrder = prevItem?.sort_order || 0;
       const nextOrder = nextItem?.sort_order || prevOrder + 200;
 
-      // 前後の差が1以下になった場合は全体を再計算
+      // 前後の差が1以下になった場合は全体を再番号付け
       if (nextOrder - prevOrder <= 1) {
-        console.log("前後の差が小さすぎるため全体を再計算");
-        return calculateNewOrders(todo, newIndex, targetList);
-      }
+        const reorderedList = [...sortedList];
+        const movedIdx = reorderedList.findIndex((item) => item.id === todo.id);
+        if (movedIdx !== -1) {
+          reorderedList.splice(movedIdx, 1);
+        }
+        reorderedList.splice(newIndex, 0, todo);
 
-      newSortOrder = Math.floor((prevOrder + nextOrder) / 2);
+        otherTodosUpdates = reorderedList.map((item, index) => ({
+          id: item.id,
+          sort_order: (index + 1) * 100,
+        }));
+
+        const mainUpdate = otherTodosUpdates.find(
+          (item) => item.id === todo.id,
+        );
+        newSortOrder = mainUpdate ? mainUpdate.sort_order : (newIndex + 1) * 100;
+        otherTodosUpdates = otherTodosUpdates.filter(
+          (item) => item.id !== todo.id,
+        );
+      } else {
+        newSortOrder = Math.floor((prevOrder + nextOrder) / 2);
+      }
     }
   }
 
