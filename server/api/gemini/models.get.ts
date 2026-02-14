@@ -20,9 +20,6 @@ const handler = async (): Promise<{ models: unknown }> => {
 
   try {
     const response = await client.models.list();
-    // The response structure depends on the SDK version, print it to debug
-    console.log("Available models:", JSON.stringify(response, null, 2));
-
     // @ts-expect-error response typing from genai SDK is not stable
     const models = response.models || response;
 

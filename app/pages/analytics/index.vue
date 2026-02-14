@@ -315,10 +315,6 @@ onMounted(async () => {
     () => todoStore.taskFilter,
     () => {
       // ストアのフィルターが変更されたら、データを再フィルタリング
-      console.log(
-        "Todoストアのフィルターが変更されました:",
-        todoStore.taskFilter,
-      );
     },
   );
 

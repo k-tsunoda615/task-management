@@ -126,12 +126,6 @@ export const calculateNewOrders = (
   newIndex: number,
   targetList: Todo[]
 ): TodoOrderUpdateResult => {
-  console.log("calculateNewOrders実行:", {
-    todoId: todo.id,
-    newIndex,
-    targetListLength: targetList.length,
-  });
-
   // リストを一度ソートして順序を確保
   const sortedList = [...targetList].sort(
     (a, b) => (a.sort_order || 0) - (b.sort_order || 0)
@@ -146,10 +140,6 @@ export const calculateNewOrders = (
 
   // 順序の重複があるか、アイテムが多い場合は全体を再計算
   if (hasDuplicateOrders || targetList.length > 10) {
-    console.log(
-      "重複したsort_orderが見つかったか、アイテム数が多いため全体を再計算"
-    );
-
     // 移動後の新しい順序でリストを再構築
     const reorderedList = [...sortedList];
 
@@ -198,15 +188,12 @@ export const calculateNewOrders = (
 
       // 前後の差が1以下になった場合は全体を再計算
       if (nextOrder - prevOrder <= 1) {
-        console.log("前後の差が小さすぎるため全体を再計算");
         return calculateNewOrders(todo, newIndex, targetList);
       }
 
       newSortOrder = Math.floor((prevOrder + nextOrder) / 2);
     }
   }
-
-  console.log(`新しいsort_order: ${newSortOrder}（${newIndex}番目に配置）`);
 
   // 移動したTodoの更新データ
   const mainTodoUpdate = {

@@ -385,15 +385,8 @@ const startTimer = () => {
 
   // タイマー開始前に、タスクの最新の時間を取得して設定
   // これにより、タイマー停止後に再開した場合も連続した計測が可能
-  console.log("タイマー開始前:", {
-    current: currentTime.value,
-    taskTotal: task.value.total_time,
-    extractedTotal: extractTotalTime(task.value.total_time),
-  });
-
   if (task.value.total_time !== currentTime.value) {
     task.value.total_time = currentTime.value;
-    console.log("タスクの時間を更新:", currentTime.value);
   }
 
   isTimerRunning.value = true;
@@ -415,11 +408,6 @@ const stopTimer = async () => {
 
   // 総時間をサーバーに保存
   try {
-    console.log("タイマー停止時:", {
-      current: currentTime.value,
-      taskTotal: task.value.total_time,
-    });
-
     // total_timeは配列として保存する必要がある
     const updateData: Partial<Todo> = {
       id: task.value.id,
@@ -432,7 +420,6 @@ const stopTimer = async () => {
       task.value.total_time = currentTime.value; // ローカルでは数値のまま
     }
 
-    console.log(`タイマー停止: ${currentTime.value}秒を保存しました`);
   } catch (error) {
     console.error("時間の保存に失敗しました:", error);
   }
@@ -510,10 +497,6 @@ watch(
 // 現在の時間が変わったらタスクの時間も更新（ただし、タイマー実行中は除く）
 watch(currentTime, (newVal) => {
   if (task.value && !isTimerRunning.value) {
-    console.log("watch currentTime:", {
-      newVal,
-      isRunning: isTimerRunning.value,
-    });
     task.value.total_time = newVal;
   }
 });
