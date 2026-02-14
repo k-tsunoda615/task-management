@@ -3,17 +3,12 @@ import duration from "dayjs/plugin/duration";
 dayjs.extend(duration);
 
 /**
- * total_time を数値に変換する。
- * @description number | number[] を正規化して返す。
- * @param {number | number[] | undefined} time - Todo の total_time。
- * @returns {number} 正規化した秒数。
+ * total_time を安全に数値として取り出す。
+ * @description undefined を 0 に変換する。
+ * @param {number | undefined} time - Todo の total_time。
+ * @returns {number} 秒数。
  */
-export const extractTotalTime = (
-  time: number | number[] | undefined,
-): number => {
-  if (Array.isArray(time) && time.length > 0) {
-    return time[0] ?? 0;
-  }
+export const extractTotalTime = (time: number | undefined): number => {
   return typeof time === "number" ? time : 0;
 };
 

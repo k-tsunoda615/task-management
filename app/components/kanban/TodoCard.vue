@@ -158,7 +158,7 @@ const props = defineProps({
       task_id?: string;
       is_private?: boolean;
       is_finished?: boolean;
-      total_time?: number | number[];
+      total_time?: number;
       is_timing?: boolean;
       tags?: { id: string; name: string; color?: string }[];
       assets?: { id: string }[];
