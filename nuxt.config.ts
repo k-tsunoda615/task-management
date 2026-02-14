@@ -44,8 +44,9 @@ export default defineNuxtConfig({
       callback: "/confirm",
       exclude: ["/*"],
     },
-    url: process.env.NUXT_SUPABASE_URL || "",
-    key: process.env.NUXT_SUPABASE_ANON_KEY || "",
+    // テスト環境やCI環境でのデフォルト値（@nuxtjs/supabase が URL を解析するため有効な URL が必要）
+    url: process.env.NUXT_SUPABASE_URL || "https://placeholder.supabase.co",
+    key: process.env.NUXT_SUPABASE_ANON_KEY || "placeholder-anon-key",
   },
 
   devtools: {
