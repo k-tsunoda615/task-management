@@ -56,6 +56,21 @@ const handler = async (event: H3Event): Promise<{ text: string }> => {
   const body = (await readBody(event)) as GeminiChatRequest;
   const { history, message, prompt, model: userModel } = body;
 
+  // 入力文字列の長さ制限
+  const MAX_MESSAGE_LENGTH = 10000;
+  if (message && message.length > MAX_MESSAGE_LENGTH) {
+    throw createError({
+      statusCode: 400,
+      statusMessage: `メッセージは${MAX_MESSAGE_LENGTH}文字以内にしてください`,
+    });
+  }
+  if (prompt && prompt.length > MAX_MESSAGE_LENGTH) {
+    throw createError({
+      statusCode: 400,
+      statusMessage: `プロンプトは${MAX_MESSAGE_LENGTH}文字以内にしてください`,
+    });
+  }
+
   const client = new GoogleGenAI({ apiKey });
 
   // Default to gemini-2.5-flash if not specified
