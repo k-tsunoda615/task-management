@@ -1,7 +1,9 @@
+/** 認証が必要なパスのプレフィックス一覧 */
+const PROTECTED_PATH_PREFIXES = ["/board", "/list", "/analytics", "/note", "/admin"];
+
 export default defineNuxtRouteMiddleware((to) => {
   const user = useSupabaseUser();
   const loading = useState("auth-loading", () => true);
-  console.log("middleware:", to.path, to.query);
 
   // ?code=を検知しgoogle認証完了後にリダイレクト
   if (to.path === "/" && to.query.code) {
@@ -9,10 +11,11 @@ export default defineNuxtRouteMiddleware((to) => {
   }
 
   // 未ログインユーザーが認証が必要なページへのアクセスしたらログイン画面へ
-  if (to.path === "/board" || to.path === "/list") {
-    if (!user.value) {
-      return navigateTo("/auth");
-    }
+  const isProtected = PROTECTED_PATH_PREFIXES.some((prefix) =>
+    to.path.startsWith(prefix),
+  );
+  if (isProtected && !user.value) {
+    return navigateTo("/auth");
   }
 
   // 認証済みユーザーの認証ページへのアクセスしたらボードビューへ
