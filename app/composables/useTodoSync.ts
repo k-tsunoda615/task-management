@@ -62,10 +62,19 @@ export const useTodoSync = () => {
 
     const intervalMs = options?.intervalMs ?? resolveDefaultInterval();
 
-    const focusHandler = () => {
-      refresh().catch((error) => {
-        console.error("[useTodoSync] フォーカス時の再取得に失敗:", error);
+    const handleRefreshError = (context: string, error: unknown) => {
+      console.error(`[useTodoSync] ${context}の再取得に失敗:`, error);
+      useToast().add({
+        title: "データの同期に失敗しました",
+        description: "ネットワーク接続を確認してください",
+        color: "amber",
+        icon: "i-heroicons-exclamation-triangle",
+        timeout: 5000,
       });
+    };
+
+    const focusHandler = () => {
+      refresh().catch((error) => handleRefreshError("フォーカス時", error));
     };
 
     const visibilityHandler = () => {
@@ -73,9 +82,7 @@ export const useTodoSync = () => {
         return;
       }
 
-      refresh().catch((error) => {
-        console.error("[useTodoSync] 表示復帰時の再取得に失敗:", error);
-      });
+      refresh().catch((error) => handleRefreshError("表示復帰時", error));
     };
 
     window.addEventListener("focus", focusHandler);
@@ -86,9 +93,7 @@ export const useTodoSync = () => {
         return;
       }
 
-      refresh().catch((error) => {
-        console.error("[useTodoSync] 定期再取得に失敗:", error);
-      });
+      refresh().catch((error) => handleRefreshError("定期", error));
     }, intervalMs);
 
     const cleanup = () => {
@@ -102,9 +107,7 @@ export const useTodoSync = () => {
     autoRefreshState.value.started = true;
     autoRefreshState.value.cleanup = cleanup;
 
-    refresh().catch((error) => {
-      console.error("[useTodoSync] 初期再取得に失敗:", error);
-    });
+    refresh().catch((error) => handleRefreshError("初期", error));
   };
 
   /**
