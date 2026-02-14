@@ -273,7 +273,6 @@ const confirmDelete = async () => {
     selectAll.value = false;
     showDeleteModal.value = false;
 
-    console.log(`${selectedCount}件のタスクを削除しました`);
   } catch (error) {
     console.error("削除中にエラーが発生しました:", error);
   } finally {
@@ -291,7 +290,6 @@ const draggedTodos = computed<Todo[]>({
     return filteredAndSortedTodos.value;
   },
   set: (value: Todo[]): void => {
-    console.log("draggedTodos.set:", value.length);
     // ドラッグ開始時に内部状態を更新
     internalDraggedTodos.value = [...value];
     // ドラッグ中フラグを設定
@@ -410,7 +408,6 @@ watch(filteredAndSortedTodos, (todos) => {
  * @returns {void} なし。
  */
 const handleDragStart = () => {
-  console.log("ドラッグ開始");
   // 内部ドラッグ状態をアクティブに
   isInternalDragActive.value = true;
   // グローバルフラグも設定
@@ -423,7 +420,6 @@ const handleDragStart = () => {
  * @returns {void} なし。
  */
 const handleDragEnd = () => {
-  console.log("ドラッグ終了 - 成功時は状態はhandleDragChangeで処理済み");
   // ドラッグ変更がなかった場合のみここでフラグをリセット
   if (isInternalDragActive.value) {
     isInternalDragActive.value = false;
@@ -439,13 +435,9 @@ const handleDragEnd = () => {
  */
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const handleDragChange = async (evt: any) => {
-  console.log("ドラッグ変更イベント:", JSON.stringify(evt, null, 2));
-
   // ドラッグ&ドロップの種類を特定（moved: 同じリスト内の移動）
   if (evt.moved) {
     const { element: todo, newIndex, oldIndex } = evt.moved;
-
-    console.log(`Todoの移動: ID=${todo.id}, ${oldIndex} -> ${newIndex}`);
 
     if (oldIndex === newIndex) {
       // 変更なしの場合は内部状態をリセットして終了
@@ -518,11 +510,8 @@ const handleDragChange = async (evt: any) => {
         sort_order: mainTodoUpdate.sort_order,
       });
 
-      console.log("メインTodo更新完了:", mainTodoUpdate);
-
       // 他のTodoの順序も一括更新
       if (otherTodosUpdates.length > 0) {
-        console.log(`${otherTodosUpdates.length}個のTodoの順序を更新`);
 
         // ローカルStoreを先に更新（即時UI反映）
         otherTodosUpdates.forEach((update) => {
@@ -559,8 +548,6 @@ const handleDragChange = async (evt: any) => {
         await Promise.all(updatePromises);
       }
 
-      console.log("サーバー更新完了");
-
       // 更新の成功メッセージ
       useToast().add({
         title: "更新完了",
@@ -589,7 +576,6 @@ const handleDragChange = async (evt: any) => {
     }
   } else if (evt.added) {
     // 他のリストからの追加も処理（必要に応じて実装）
-    console.log("他のリストからの追加:", evt.added);
     // 処理完了後すぐに内部状態をリセットしない（ドラッグ操作中のため）
   } else {
     // その他の変更の場合は内部状態をリセット
@@ -608,13 +594,6 @@ const handleDragChange = async (evt: any) => {
  */
 const updateTodo = async (updatedData: Partial<Todo>) => {
   try {
-    console.log("TodoRow からの更新データ:", updatedData);
-
-    // タグが含まれている場合、正しい形式で保存されるようにする
-    if (updatedData.tags) {
-      console.log("タグの更新処理:", updatedData.tags);
-    }
-
     const result = await todoStore.updateTodo(updatedData);
 
     // 更新が成功したらトースト表示

@@ -1044,8 +1044,6 @@ const handleVisibilityChange = () => {
   if (document.visibilityState === "hidden") {
     // ページが非表示になった時の処理
     // タイマーは続行するが、UIの更新は停止
-    console.log("ページが非表示になりました");
-
     // 現在のタイマー状態をローカルストレージに保存
     if (currentTimingTodo.value) {
       localStorage.setItem(
@@ -1060,8 +1058,6 @@ const handleVisibilityChange = () => {
     }
   } else {
     // ページが再表示された時の処理
-    console.log("ページが再表示されました");
-
     // タイマーの状態を復元
     if (currentTimingTodo.value && timerInterval.value === null) {
       startTimerForTodo(currentTimingTodo.value, (total) => {
@@ -1330,8 +1326,6 @@ const updateTodo = async () => {
  */
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const handleDragChange = async (evt: any) => {
-  console.log("ドラッグイベント:", evt); // デバッグ用
-
   // ドラッグを正しく処理するためのフラグをセット
   isDragging.value = true;
 
@@ -1397,8 +1391,6 @@ const handleDragChange = async (evt: any) => {
         }
       }
 
-      console.log(`ステータス変更: ${todo.status} -> ${newStatus}`);
-
       // 常にステータスを更新
       todo.status = newStatus;
       targetList = todosByStatus[newStatus];
@@ -1408,12 +1400,7 @@ const handleDragChange = async (evt: any) => {
       targetList = todosByStatus[newStatus];
     }
 
-    console.log(
-      "新しいステータス:",
-      newStatus,
-      "ターゲットリスト:",
-      targetList
-    );
+
 
     if (!todo || !targetList) {
       console.error("必要な情報が見つかりません", {
@@ -1468,11 +1455,8 @@ const handleDragChange = async (evt: any) => {
         sort_order: mainTodoUpdate.sort_order,
       });
 
-      console.log("メインTodo更新完了");
-
       // 他のTodoの順序を一括更新（updateTodoOrderを使用）
       if (otherTodosUpdates.length > 0) {
-        console.log(`${otherTodosUpdates.length}個のTodoの順序を更新`);
 
         // ローカルStoraを先に更新
         otherTodosUpdates.forEach((update) => {
@@ -1548,7 +1532,6 @@ const handleDragChange = async (evt: any) => {
 const startTiming = async (todo: Todo) => {
   // 既に計測中のタスクがある場合は停止
   if (currentTimingTodo.value && currentTimingTodo.value.id !== todo.id) {
-    console.log("別のタスクが計測中なので停止します");
     await stopTiming(currentTimingTodo.value);
   }
 

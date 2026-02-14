@@ -165,8 +165,6 @@ onMounted(async () => {
               console.warn(
                 "メールの自動確認に失敗しました - ユーザーはメール確認が必要です"
               );
-            } else {
-              console.log("メールが自動的に確認されました");
             }
           }
         } catch (autoConfirmError) {
