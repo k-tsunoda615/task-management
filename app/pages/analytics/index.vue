@@ -304,26 +304,14 @@ onMounted(async () => {
     "completedTasksVisibilityToggle",
     handleCompletedTasksVisibilityToggle,
   );
+});
 
-  // プライベート/パブリックフィルター変更を監視
-  watch(
-    () => todoStore.taskFilter,
-    () => {
-      // ストアのフィルターが変更されたら、データを再フィルタリング
-      console.log(
-        "Todoストアのフィルターが変更されました:",
-        todoStore.taskFilter,
-      );
-    },
+// クリーンアップ
+onUnmounted(() => {
+  window.removeEventListener(
+    "completedTasksVisibilityToggle",
+    handleCompletedTasksVisibilityToggle,
   );
-
-  // クリーンアップ
-  onUnmounted(() => {
-    window.removeEventListener(
-      "completedTasksVisibilityToggle",
-      handleCompletedTasksVisibilityToggle,
-    );
-  });
 });
 
 // ユーティリティ関数
