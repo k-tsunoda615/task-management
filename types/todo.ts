@@ -29,7 +29,7 @@ export type Todo = {
   is_finished?: boolean;
   user_id?: string;
   updated_at?: string;
-  total_time?: number | number[];
+  total_time?: number;
   is_timing?: boolean;
   tags?: Tag[];
   assets?: TodoAsset[];

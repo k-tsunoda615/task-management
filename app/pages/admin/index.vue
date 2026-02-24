@@ -77,7 +77,7 @@
             </thead>
             <tbody class="divide-y divide-gray-100 bg-white">
               <tr v-if="pending">
-                <td colspan="5" class="px-4 py-6">
+                <td colspan="4" class="px-4 py-6">
                   <div
                     class="flex items-center justify-center gap-3 text-gray-500"
                   >
@@ -87,7 +87,7 @@
                 </td>
               </tr>
               <tr v-else-if="users.length === 0">
-                <td colspan="5" class="px-4 py-6 text-center text-gray-500">
+                <td colspan="4" class="px-4 py-6 text-center text-gray-500">
                   表示できるユーザーがありません。
                 </td>
               </tr>
@@ -175,7 +175,8 @@ const refresh = async () => {
     usersData.value = data.value ?? [];
     isAdmin.value = true;
   } catch (err) {
-    if (err instanceof Error && err.message === "Forbidden") {
+    const statusCode = (err as { statusCode?: number }).statusCode;
+    if (statusCode === 403) {
       isAdmin.value = false;
       adminCheckError.value = null;
       usersData.value = [];

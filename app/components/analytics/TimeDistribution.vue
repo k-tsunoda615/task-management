@@ -23,21 +23,8 @@ let chart: any = null;
 const getTaskTimeData = () => {
   // 時間データを持つタスクのみ抽出
   const tasksWithTime = props.tasks
-    .filter((task) => {
-      const time = Array.isArray(task.total_time)
-        ? task.total_time[0] || 0
-        : task.total_time || 0;
-      return time > 0;
-    })
-    .sort((a, b) => {
-      const timeA = Array.isArray(a.total_time)
-        ? a.total_time[0] || 0
-        : a.total_time || 0;
-      const timeB = Array.isArray(b.total_time)
-        ? b.total_time[0] || 0
-        : b.total_time || 0;
-      return timeB - timeA; // 降順ソート
-    })
+    .filter((task) => (task.total_time || 0) > 0)
+    .sort((a, b) => (b.total_time || 0) - (a.total_time || 0))
     .slice(0, 10); // 上位10件に絞る
 
   return {
@@ -47,11 +34,7 @@ const getTaskTimeData = () => {
         ? task.title.substring(0, 20) + "..."
         : task.title;
     }),
-    times: tasksWithTime.map((task) => {
-      return Array.isArray(task.total_time)
-        ? task.total_time[0] || 0
-        : task.total_time || 0;
-    }),
+    times: tasksWithTime.map((task) => task.total_time || 0),
   };
 };
 

@@ -554,6 +554,32 @@
       @delete="deleteCurrentTodo"
     />
 
+    <!-- タイマー稼働中のページ遷移確認モーダル -->
+    <UModal v-model="isTimerNavigationModalOpen">
+      <UCard>
+        <template #header>
+          <h3 class="text-lg font-bold">タイマー実行中</h3>
+        </template>
+        <p class="text-sm text-gray-600">
+          タイマーが実行中です。タイマーを停止してから移動しますか？
+        </p>
+        <template #footer>
+          <div class="flex justify-end gap-2">
+            <UButton
+              color="gray"
+              variant="ghost"
+              @click="isTimerNavigationModalOpen = false"
+            >
+              キャンセル
+            </UButton>
+            <UButton color="primary" @click="handleTimerNavigationConfirm">
+              停止して移動
+            </UButton>
+          </div>
+        </template>
+      </UCard>
+    </UModal>
+
     <div
       :class="[
         'fixed bottom-6 right-4 z-50 md:hidden',
@@ -616,6 +642,8 @@ const showNewTaskModal = ref(false);
 const showEditModal = ref(false);
 const showPreviewModal = ref(false);
 const showDeleteConfirmModal = ref(false);
+const isTimerNavigationModalOpen = ref(false);
+const timerNavigationDestination = ref("");
 const isCreating = ref(false);
 const isUpdating = ref(false);
 const trashEventBus = useEventBus("trash-drop");
@@ -706,13 +734,13 @@ const newTodo = ref<NewTodo>({
   tags: [] as Tag[],
 });
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 /**
  * 新規 Todo のステータスを更新する。
  * @description セレクト変更時の値を反映する。
  * @param {any} val - ステータス値。
  * @returns {void} なし。
  */
+/* eslint-disable-next-line @typescript-eslint/no-explicit-any */
 const updateNewTodoStatus = (val: any) => {
   newTodo.value.status = val;
 };
@@ -1002,35 +1030,35 @@ const checkMobile = () => {
 
 defineExpose({ isMobile });
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 /**
  * タイマー表示の切り替えを反映する。
  * @description カスタムイベントの detail から状態を更新する。
  * @param {any} event - タイマー表示切替イベント。
  * @returns {void} なし。
  */
+/* eslint-disable-next-line @typescript-eslint/no-explicit-any */
 const handleTimerVisibilityToggle = (event: any) => {
   showTimerBar.value = event.detail.showTimer;
 };
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 /**
  * タグ表示の切り替えを反映する。
  * @description カスタムイベントの detail から状態を更新する。
  * @param {any} event - タグ表示切替イベント。
  * @returns {void} なし。
  */
+/* eslint-disable-next-line @typescript-eslint/no-explicit-any */
 const handleTagVisibilityToggle = (event: any) => {
   showTagBar.value = event.detail.showTagBar;
 };
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 /**
  * 完了タスク表示の切り替えを反映する。
  * @description カスタムイベントの detail から状態を更新する。
  * @param {any} event - 完了タスク表示切替イベント。
  * @returns {void} なし。
  */
+/* eslint-disable-next-line @typescript-eslint/no-explicit-any */
 const handleCompletedTasksVisibilityToggle = (event: any) => {
   showCompletedTasks.value = event.detail.showCompletedTasks;
 };
@@ -1072,7 +1100,8 @@ const handleVisibilityChange = () => {
   }
 };
 
-const timerNavigationBus = useEventBus<TimerNavigationEvent>("timer-navigation");
+const timerNavigationBus =
+  useEventBus<TimerNavigationEvent>("timer-navigation");
 let unsubscribeTimerNavigation: (() => void) | null = null;
 let unsubscribeTrashDrop: (() => void) | null = null;
 
@@ -1083,16 +1112,20 @@ onMounted(() => {
 
   // タイマーナビゲーションイベントをリッスン
   unsubscribeTimerNavigation = timerNavigationBus.on((event) => {
-    if (
-      event.action === "stop-timer" &&
-      currentTimingTodo.value &&
-      event.todoId === currentTimingTodo.value.id
-    ) {
+    if (!currentTimingTodo.value || event.todoId !== currentTimingTodo.value.id) {
+      return;
+    }
+
+    if (event.action === "stop-timer") {
       // タイマーを停止
       stopTiming(currentTimingTodo.value).then(() => {
         // タイマー停止後に指定の場所に遷移
         navigateTo(event.destination);
       });
+    } else if (event.action === "confirm-navigation") {
+      // タイマー稼働中のページ遷移確認モーダルを表示
+      timerNavigationDestination.value = event.destination;
+      isTimerNavigationModalOpen.value = true;
     }
   });
 
@@ -1639,6 +1672,19 @@ const stopTiming = async (todo: Todo) => {
       description: "タイマーの停止に失敗しました",
       color: "red",
     });
+  }
+};
+
+/**
+ * タイマー稼働中のページ遷移確認モーダルで「停止して移動」を選択した際の処理。
+ * @description タイマーを停止し、遷移先へナビゲートする。
+ * @returns {Promise<void>} 停止と遷移の完了。
+ */
+const handleTimerNavigationConfirm = async () => {
+  isTimerNavigationModalOpen.value = false;
+  if (currentTimingTodo.value) {
+    await stopTiming(currentTimingTodo.value);
+    navigateTo(timerNavigationDestination.value);
   }
 };
 

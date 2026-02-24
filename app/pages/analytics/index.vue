@@ -273,12 +273,7 @@ const completedTasks = computed(
   () => filteredTasks.value.filter((task) => task.is_finished).length,
 );
 const totalTimeSpent = computed(() =>
-  filteredTasks.value.reduce((sum, task) => {
-    const time = Array.isArray(task.total_time)
-      ? task.total_time[0] || 0
-      : task.total_time || 0;
-    return sum + time;
-  }, 0),
+  filteredTasks.value.reduce((sum, task) => sum + (task.total_time || 0), 0),
 );
 
 // 最近のタスク
@@ -309,26 +304,14 @@ onMounted(async () => {
     "completedTasksVisibilityToggle",
     handleCompletedTasksVisibilityToggle,
   );
+});
 
-  // プライベート/パブリックフィルター変更を監視
-  watch(
-    () => todoStore.taskFilter,
-    () => {
-      // ストアのフィルターが変更されたら、データを再フィルタリング
-      console.log(
-        "Todoストアのフィルターが変更されました:",
-        todoStore.taskFilter,
-      );
-    },
+// クリーンアップ
+onUnmounted(() => {
+  window.removeEventListener(
+    "completedTasksVisibilityToggle",
+    handleCompletedTasksVisibilityToggle,
   );
-
-  // クリーンアップ
-  onUnmounted(() => {
-    window.removeEventListener(
-      "completedTasksVisibilityToggle",
-      handleCompletedTasksVisibilityToggle,
-    );
-  });
 });
 
 // ユーティリティ関数
