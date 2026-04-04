@@ -363,7 +363,10 @@ const loadPreview = async (asset: TodoAsset, expiresIn = 120) => {
     previewUrls[asset.id] = signedUrl;
     if (isText(asset)) {
       const response = await fetch(signedUrl);
-      const text = await response.text();
+      const buffer = await response.arrayBuffer();
+      const encoding = detectEncoding(new Uint8Array(buffer), asset);
+      const decoder = new TextDecoder(encoding);
+      const text = decoder.decode(buffer);
       textPreviews[asset.id] = text.slice(0, 1200);
     }
   } catch (error) {
@@ -517,6 +520,35 @@ const formatDate = (dateString?: string) => {
   const date = new Date(dateString);
   if (Number.isNaN(date.getTime())) return "";
   return date.toLocaleString("ja-JP");
+};
+
+/**
+ * バイト列と添付情報からテキストのエンコーディングを推定する。
+ * @description BOM、HTML の meta charset、バイトパターンから判定する。
+ * @param {Uint8Array} bytes - ファイル先頭のバイト列。
+ * @param {TodoAsset} asset - 添付情報。
+ * @returns {string} TextDecoder に渡すエンコーディング名。
+ */
+const detectEncoding = (bytes: Uint8Array, asset: TodoAsset): string => {
+  // BOM 判定
+  if (bytes[0] === 0xef && bytes[1] === 0xbb && bytes[2] === 0xbf)
+    return "utf-8";
+  if (bytes[0] === 0xff && bytes[1] === 0xfe) return "utf-16le";
+  if (bytes[0] === 0xfe && bytes[1] === 0xff) return "utf-16be";
+
+  // HTML の場合は meta charset を検索
+  const mime = asset.mime_type || "";
+  if (mime === "text/html" || mime === "application/xhtml+xml") {
+    const head = new TextDecoder("ascii").decode(bytes.slice(0, 2048));
+    const charsetMatch = head.match(
+      /charset\s*=\s*["']?\s*([\w\-]+)/i,
+    );
+    if (charsetMatch) {
+      return charsetMatch[1].toLowerCase();
+    }
+  }
+
+  return "utf-8";
 };
 
 /**
