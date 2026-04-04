@@ -539,6 +539,15 @@ const iconForAsset = (asset: TodoAsset) => {
   if (mime.startsWith("audio/")) {
     return "i-heroicons-musical-note";
   }
+  if (mime === "text/html") {
+    return "i-heroicons-code-bracket";
+  }
+  if (
+    mime === "application/zip" ||
+    mime === "application/x-zip-compressed"
+  ) {
+    return "i-heroicons-archive-box";
+  }
   return "i-heroicons-document-duplicate";
 };
 

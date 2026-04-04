@@ -73,7 +73,10 @@ export const TASK_ASSET_ACCEPTED_TYPES = [
   "text/plain",
   "text/markdown",
   "text/csv",
+  "text/html",
   "application/json",
+  "application/zip",
+  "application/x-zip-compressed",
 ] as const;
 
 export type TaskStatus = (typeof TASK_STATUS)[keyof typeof TASK_STATUS];
