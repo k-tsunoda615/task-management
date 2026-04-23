@@ -3917,10 +3917,19 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@vue/devtools-api@npm:^6.6.3, @vue/devtools-api@npm:^6.6.4":
+"@vue/devtools-api@npm:^6.6.4":
   version: 6.6.4
   resolution: "@vue/devtools-api@npm:6.6.4"
   checksum: 10c0/0a993ae23618166e1bee5a7c14cebd8312752b93c143cbdd48fb2d0f7ade070d0e6baf757cd920d4681fef8f9acf29515162160f38cc7410f9a684d2df21b6de
+  languageName: node
+  linkType: hard
+
+"@vue/devtools-api@npm:^7.7.7":
+  version: 7.7.8
+  resolution: "@vue/devtools-api@npm:7.7.8"
+  dependencies:
+    "@vue/devtools-kit": "npm:^7.7.8"
+  checksum: 10c0/4277a0215a3fd15c4cfc43881c13e25723b950bf71cc97952d9b489165d9e72b92daff072f676342dc5866082bb7c168582e27e81b5609b520fbc2f932153f8a
   languageName: node
   linkType: hard
 
@@ -3940,6 +3949,21 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@vue/devtools-kit@npm:^7.7.8":
+  version: 7.7.8
+  resolution: "@vue/devtools-kit@npm:7.7.8"
+  dependencies:
+    "@vue/devtools-shared": "npm:^7.7.8"
+    birpc: "npm:^2.3.0"
+    hookable: "npm:^5.5.3"
+    mitt: "npm:^3.0.1"
+    perfect-debounce: "npm:^1.0.0"
+    speakingurl: "npm:^14.0.1"
+    superjson: "npm:^2.2.2"
+  checksum: 10c0/3624573eb0798cdaa7157b5fba3dc6c46b551406cd92a380f1c086523207554a1159dd73e3e1563affa6810b9dc062ef3e116c3cccfb7ac2690ed3683f240d38
+  languageName: node
+  linkType: hard
+
 "@vue/devtools-kit@npm:^8.0.3":
   version: 8.0.3
   resolution: "@vue/devtools-kit@npm:8.0.3"
@@ -3952,6 +3976,15 @@ __metadata:
     speakingurl: "npm:^14.0.1"
     superjson: "npm:^2.2.2"
   checksum: 10c0/9429693f8fb5379b80075bf379b45c3435d3f90f9609e5e463a7467bbe140c61e54348d72818293dac439e729efda6f847a57419a81887f0c6045ebc47187554
+  languageName: node
+  linkType: hard
+
+"@vue/devtools-shared@npm:^7.7.8":
+  version: 7.7.8
+  resolution: "@vue/devtools-shared@npm:7.7.8"
+  dependencies:
+    rfdc: "npm:^1.4.1"
+  checksum: 10c0/40d6ddb606fed47c9035b675bbe92c7ccfde448fa8b58911e7b44275e5e3685804939e50e571ad68242fef92927ff926c6d2789e978bd210a5417378aee14308
   languageName: node
   linkType: hard
 
@@ -4643,7 +4676,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"birpc@npm:^2.4.0, birpc@npm:^2.6.1, birpc@npm:^2.7.0":
+"birpc@npm:^2.3.0, birpc@npm:^2.4.0, birpc@npm:^2.6.1, birpc@npm:^2.7.0":
   version: 2.8.0
   resolution: "birpc@npm:2.8.0"
   checksum: 10c0/03441ed726afa79c218c4681574fca231b3571a2f2c702587a656aa47474794483bcbbc2fc48760340f35f71484b19194923786829c00e72da7ade1c11391760
@@ -10773,6 +10806,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"perfect-debounce@npm:^1.0.0":
+  version: 1.0.0
+  resolution: "perfect-debounce@npm:1.0.0"
+  checksum: 10c0/e2baac416cae046ef1b270812cf9ccfb0f91c04ea36ac7f5b00bc84cb7f41bdbba087c0ab21b4e02a7ef3a1f1f6db399f137cecec46868bd7d8d88c2a9ee431f
+  languageName: node
+  linkType: hard
+
 "perfect-debounce@npm:^2.0.0":
   version: 2.0.0
   resolution: "perfect-debounce@npm:2.0.0"
@@ -10817,19 +10857,18 @@ __metadata:
   languageName: node
   linkType: hard
 
-"pinia@npm:^2.1.7":
-  version: 2.3.1
-  resolution: "pinia@npm:2.3.1"
+"pinia@npm:^3.0.4":
+  version: 3.0.4
+  resolution: "pinia@npm:3.0.4"
   dependencies:
-    "@vue/devtools-api": "npm:^6.6.3"
-    vue-demi: "npm:^0.14.10"
+    "@vue/devtools-api": "npm:^7.7.7"
   peerDependencies:
-    typescript: ">=4.4.4"
-    vue: ^2.7.0 || ^3.5.11
+    typescript: ">=4.5.0"
+    vue: ^3.5.11
   peerDependenciesMeta:
     typescript:
       optional: true
-  checksum: 10c0/e005883c26fe782e26803859db8703ead2e7053271d22828175c82d56e925ddab65ca2543a3f3a36686a11e6835f60c031f1eb2ef9159f9da05121495499c5f6
+  checksum: 10c0/4123efbf28c6d11f3dd052dbcf08da7ef85747fd3499807b9ca1d32dcda7807b2e68f9a7e31a06148b05093a9ebcd0c3b26e6a31b62775c6421429bd03265949
   languageName: node
   linkType: hard
 
@@ -12933,7 +12972,7 @@ __metadata:
     lint-staged: "npm:^15.2.7"
     marked: "npm:^16.1.1"
     nuxt: "npm:^4.2.1"
-    pinia: "npm:^2.1.7"
+    pinia: "npm:^3.0.4"
     playwright-core: "npm:^1.54.1"
     prettier: "npm:^3.2.5"
     tailwindcss: "npm:^3.4.0"
@@ -13906,7 +13945,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"vue-demi@npm:>=0.14.10, vue-demi@npm:^0.14.10":
+"vue-demi@npm:>=0.14.10":
   version: 0.14.10
   resolution: "vue-demi@npm:0.14.10"
   peerDependencies:
