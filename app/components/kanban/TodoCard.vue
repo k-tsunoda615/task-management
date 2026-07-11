@@ -1,6 +1,6 @@
 <template>
   <div
-    class="group bg-white dark:bg-gray-800 rounded-card p-4 shadow-card hover:shadow-card-hover hover:-translate-y-px transition-all duration-200 relative"
+    class="group card-in bg-white dark:bg-gray-800 rounded-card p-4 shadow-card hover:shadow-card-hover hover:-translate-y-px transition-all duration-200 relative"
     :class="[
       { 'opacity-50 grayscale': todo.is_finished },
       todo.is_timing ? 'ring-1 ring-calm-400 bg-calm-50 dark:bg-calm-950' : '',
@@ -103,7 +103,7 @@
         <UIcon
           name="i-heroicons-clock"
           class="w-4 h-4 mr-1.5"
-          :class="{ 'text-calm-500': todo.is_timing }"
+          :class="{ 'text-calm-500 pulse-soft': todo.is_timing }"
         />
         {{ todo.is_timing ? "計測中..." : formatTime(todo.total_time || 0) }}
       </div>

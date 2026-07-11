@@ -164,3 +164,55 @@ body {
   max-width: 100%;
   border-radius: 8px;
 }
+
+/* ============================================================
+   マイクロインタラクション (issue #112 P5)
+   ============================================================ */
+/* チェックボックスを入れた瞬間の小さなポップ */
+@keyframes check-pop {
+  50% {
+    transform: scale(1.18);
+  }
+}
+
+input[type="checkbox"]:checked {
+  animation: check-pop 0.22s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+/* タイマー計測中の穏やかな脈動 */
+@keyframes pulse-soft {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.45;
+  }
+}
+
+.pulse-soft {
+  animation: pulse-soft 1.6s ease-in-out infinite;
+}
+
+/* カードのふわっとした出現 */
+@keyframes card-in {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+}
+
+.card-in {
+  animation: card-in 0.22s ease-out both;
+}
+
+/* モーション苦手な設定を尊重する */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
