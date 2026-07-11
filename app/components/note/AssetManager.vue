@@ -541,7 +541,7 @@ const detectEncoding = (bytes: Uint8Array, asset: TodoAsset): string => {
   if (mime === "text/html" || mime === "application/xhtml+xml") {
     const head = new TextDecoder("ascii").decode(bytes.slice(0, 2048));
     const charsetMatch = head.match(
-      /charset\s*=\s*["']?\s*([\w\-]+)/i,
+      /charset\s*=\s*["']?\s*([\w-]+)/i,
     );
     if (charsetMatch) {
       return charsetMatch[1].toLowerCase();
