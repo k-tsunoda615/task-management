@@ -29,7 +29,6 @@ const isSignUpTab = ref(route.query.signup === "1");
  */
 const handleLoginSuccess = () => {
   // ここに追加のログイン成功時の処理を記述
-  console.log("ログイン成功");
 };
 
 /**
@@ -39,7 +38,6 @@ const handleLoginSuccess = () => {
  */
 const handleSignupSuccess = () => {
   // ここに追加の新規登録成功時の処理を記述
-  console.log("新規登録成功");
 };
 
 /**
@@ -49,6 +47,5 @@ const handleSignupSuccess = () => {
  */
 const handleGuestLogin = () => {
   // ここに追加のゲストログイン成功時の処理を記述
-  console.log("ゲストログイン成功");
 };
 </script>
