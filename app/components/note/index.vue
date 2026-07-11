@@ -37,9 +37,9 @@
     </div>
 
     <!-- タイマー部分 - 上部に固定 -->
-    <div class="mb-6 bg-gray-50 p-4 rounded-lg shadow-sm">
+    <div class="mb-6 bg-gray-100 dark:bg-gray-900 p-4 rounded-card">
       <div class="flex items-center justify-between">
-        <h3 class="text-lg font-medium text-gray-700">経過時間</h3>
+        <h3 class="text-lg font-medium text-gray-700 dark:text-gray-300">経過時間</h3>
         <div class="flex gap-3">
           <UButton
             v-if="!isTimerRunning"
@@ -77,7 +77,7 @@
     <div class="mb-6">
       <!-- タイトル編集 -->
       <div class="mb-4">
-        <label class="block text-sm font-medium text-gray-700 mb-1"
+        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
           >タイトル</label
         >
         <input
@@ -91,7 +91,7 @@
       <!-- ステータスと完了フラグ -->
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
         <div>
-          <label class="block text-sm font-medium text-gray-700 mb-1"
+          <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
             >ステータス</label
           >
           <select
@@ -109,7 +109,7 @@
           </select>
         </div>
         <div>
-          <label class="block text-sm font-medium text-gray-700 mb-1"
+          <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
             >完了</label
           >
           <div class="flex items-center h-[42px]">
@@ -135,7 +135,7 @@
 
     <!-- メモ (Markdown) -->
     <div class="mb-6">
-      <label class="block text-sm font-medium text-gray-700 mb-3">メモ</label>
+      <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">メモ</label>
       <div class="flex gap-2">
         <UButton
           :color="memoViewMode === 'edit' ? 'primary' : 'gray'"

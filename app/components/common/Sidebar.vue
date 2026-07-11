@@ -99,6 +99,49 @@
           </UTooltip>
         </div>
 
+        <!-- テーマ切替 -->
+        <div
+          class="px-3 py-1.5"
+          :class="{ 'text-center': !isOpen && !isMobile }"
+        >
+          <UTooltip
+            :text="!isOpen ? 'テーマ切替' : ''"
+            :ui="{ popper: { strategy: 'fixed' } }"
+            class="w-full"
+          >
+            <UButton
+              :block="isOpen || isMobile"
+              color="gray"
+              variant="ghost"
+              class="justify-start hover:bg-gray-200/60"
+              @click="toggleColorMode"
+            >
+              <ClientOnly>
+                <UIcon
+                  :name="
+                    colorMode.value === 'dark'
+                      ? 'i-heroicons-moon'
+                      : 'i-heroicons-sun'
+                  "
+                  class="w-5 h-5 text-gray-500"
+                />
+                <span v-if="isOpen || isMobile" class="ml-2">
+                  {{ colorMode.value === "dark" ? "ダーク" : "ライト" }}モード
+                </span>
+                <template #fallback>
+                  <UIcon
+                    name="i-heroicons-sun"
+                    class="w-5 h-5 text-gray-500"
+                  />
+                  <span v-if="isOpen || isMobile" class="ml-2">
+                    ライトモード
+                  </span>
+                </template>
+              </ClientOnly>
+            </UButton>
+          </UTooltip>
+        </div>
+
         <!-- 区切り線 -->
         <div class="my-2 border-t border-gray-200" />
 
@@ -402,7 +445,7 @@
               <span
                 v-if="isOpen || isMobile"
                 class="transition-colors duration-200 w-full"
-                :class="isDragOver ? 'text-red-700' : 'text-gray-600'"
+                :class="isDragOver ? 'text-red-700' : 'text-gray-600 dark:text-gray-400'"
               >
                 ドラッグで削除
               </span>
@@ -488,6 +531,16 @@ const { tagStore, newTagName, newTagColor, addTag, deleteTag, updateTag } =
 
 const trashEventBus = useEventBus("trash-drop");
 const isDragOver = ref(false);
+const colorMode = useColorMode();
+
+/**
+ * ライト/ダークモードを切り替える。
+ * @description 現在の実効テーマの反対を preference に設定する。
+ * @returns {void} なし。
+ */
+const toggleColorMode = () => {
+  colorMode.preference = colorMode.value === "dark" ? "light" : "dark";
+};
 const isOpen = ref(true); // サイドバーの開閉状態
 const showTimer = ref(true); // タイマー表示状態
 const showTagModal = ref(false);

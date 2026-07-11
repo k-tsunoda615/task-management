@@ -55,4 +55,5 @@ dist
 /test-results/
 /playwright-report/
 /blob-report/
-/playwright/.cache/.playwright-mcp/
+/playwright/.cache/
+.playwright-mcp/

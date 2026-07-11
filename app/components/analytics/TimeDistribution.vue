@@ -80,7 +80,7 @@ const initChart = async () => {
           {
             label: "作業時間",
             data: times,
-            backgroundColor: "#60a5fa", // blue-400
+            backgroundColor: "#6d97f4", // calm-400
             borderWidth: 1,
           },
         ],

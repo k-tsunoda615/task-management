@@ -1,5 +1,5 @@
 <template>
-  <thead class="bg-gray-50">
+  <thead class="bg-gray-50 dark:bg-gray-900/60">
     <tr>
       <!-- <th class="w-8 px-2 py-3 text-center align-middle">
         <UIcon

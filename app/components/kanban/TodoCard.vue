@@ -21,7 +21,7 @@
           />
           <NuxtLink
             :to="`/note/${todo.id}`"
-            class="font-medium text-gray-900 truncate hover:text-primary-600 hover:underline transition-colors"
+            class="font-medium text-gray-900 dark:text-gray-100 truncate hover:text-primary-600 dark:hover:text-primary-400 hover:underline transition-colors"
           >
             {{ todo.title }}
           </NuxtLink>
