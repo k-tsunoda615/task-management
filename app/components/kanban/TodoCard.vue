@@ -1,11 +1,9 @@
 <template>
   <div
-    class="group bg-white rounded-[6px] p-4 hover:shadow-md transition-all duration-200 relative"
+    class="group bg-white dark:bg-gray-800 rounded-card p-4 shadow-card hover:shadow-card-hover hover:-translate-y-px transition-all duration-200 relative"
     :class="[
       { 'opacity-50 grayscale': todo.is_finished },
-      todo.is_timing
-        ? 'bg-blue-100 border border-blue-500'
-        : 'border border-gray-200',
+      todo.is_timing ? 'ring-1 ring-calm-400 bg-calm-50 dark:bg-calm-950' : '',
     ]"
     draggable="true"
     :data-status="todo.status"
@@ -52,16 +50,16 @@
             v-for="tag in todo.tags"
             :key="tag.id"
             :style="{
-              backgroundColor: `${tag.color}15`,
-              color: tag.color || '#3b82f6',
+              backgroundColor: 'transparent',
+              color: tag.color || '#3474f0',
+              boxShadow: `inset 0 0 0 1px ${tag.color || '#3474f0'}55`,
               border: 'none',
-              fontWeight: '500',
-              fontSize: '0.75rem',
-              borderRadius: '0.375rem',
-              padding: '0.25rem 0.5rem',
+              fontWeight: '600',
+              fontSize: '0.6875rem',
+              borderRadius: '999px',
+              padding: '0.2rem 0.55rem',
               lineHeight: '1',
             }"
-            class="transition-all duration-200 hover:bg-opacity-25"
           >
             {{ tag.name }}
           </UBadge>
@@ -101,8 +99,12 @@
 
     <!-- タイマー表示 -->
     <div v-if="showTimerBar" class="flex items-center justify-between">
-      <div class="flex items-center text-sm text-gray-500">
-        <UIcon name="i-heroicons-clock" class="w-4 h-4 mr-1.5" />
+      <div class="flex items-center text-sm text-gray-500 tnum">
+        <UIcon
+          name="i-heroicons-clock"
+          class="w-4 h-4 mr-1.5"
+          :class="{ 'text-calm-500': todo.is_timing }"
+        />
         {{ todo.is_timing ? "計測中..." : formatTime(todo.total_time || 0) }}
       </div>
 
@@ -135,7 +137,7 @@
     <!-- eslint-disable vue/no-v-html -->
     <div
       v-if="todo.memo"
-      class="border border-gray-200/50 rounded-[6px] p-2 mt-2 text-sm markdown-prose max-h-[20em] w-full overflow-y-auto pr-2 break-all"
+      class="rounded-lg p-2 mt-2 text-sm markdown-prose max-h-[20em] w-full overflow-y-auto pr-2 break-all"
       v-html="parsedMemo"
     />
     <!-- eslint-enable vue/no-v-html -->
