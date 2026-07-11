@@ -2,6 +2,43 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ============================================================
+   デザイントークン: カーム・ミニマル (issue #112)
+   固定値のパレットは tailwind.config.ts 側。
+   ここではテーマ(ライト/ダーク)で切り替わる意味論的な値だけを持つ。
+   ============================================================ */
+:root {
+  --app-bg: #f8f8f6;
+  --app-side: #f1f1ed;
+  --app-surface: #ffffff;
+  --app-ink: #1e1f24;
+  --app-muted: #8e8d85;
+  --app-line: #e9e8e2;
+  --app-accent: #3474f0;
+}
+
+.dark {
+  --app-bg: #171613;
+  --app-side: #1c1b17;
+  --app-surface: #201f1b;
+  --app-ink: #eae9e4;
+  --app-muted: #97968d;
+  --app-line: #32312b;
+  --app-accent: #6d97f4;
+}
+
+body {
+  background-color: var(--app-bg);
+  color: var(--app-ink);
+  letter-spacing: 0.01em;
+}
+
+/* タイマー等、数字が並ぶ場所で桁をそろえる */
+.tnum {
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum";
+}
+
 .markdown-prose {
   max-width: 100%;
   margin: 0 auto;

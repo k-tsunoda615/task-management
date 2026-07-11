@@ -2,76 +2,55 @@ import type { Config } from "tailwindcss";
 import animate from "tailwindcss-animate";
 import typography from "@tailwindcss/typography";
 
+/**
+ * デザイントークン: カーム・ミニマル (issue #112)
+ * - calm: アクセントの青。Nuxt UI の primary に接続される (app/app.config.ts)
+ * - gray: 紙のような暖色寄りグレー。既存の gray-* 直書きクラスごと世界観を差し替える
+ * 実行時に切り替わる値 (ダークモード等) は app/assets/css/main.css の CSS 変数側で管理する
+ */
 export default {
   darkMode: ["class"],
   content: [
-    "./pages/**/*.{ts,tsx}",
-    "./components/**/*.{ts,tsx}",
-    "./app/**/*.{ts,tsx}",
-    "./src/**/*.{ts,tsx}",
+    "./app/**/*.{vue,ts,tsx}",
+    "./stores/**/*.ts",
   ],
   theme: {
     extend: {
-      borderRadius: {
-        lg: "var(--radius)",
-        md: "calc(var(--radius) - 2px)",
-        sm: "calc(var(--radius) - 4px)",
-      },
       colors: {
-        background: "hsl(var(--background))",
-        foreground: "hsl(var(--foreground))",
-        card: {
-          DEFAULT: "hsl(var(--card))",
-          foreground: "hsl(var(--card-foreground))",
+        calm: {
+          50: "#EFF4FE",
+          100: "#DEE9FD",
+          200: "#C3D6FB",
+          300: "#9CBAF8",
+          400: "#6D97F4",
+          500: "#3474F0",
+          600: "#2A5FD1",
+          700: "#234EAC",
+          800: "#1F4189",
+          900: "#1D3970",
+          950: "#14264C",
         },
-        popover: {
-          DEFAULT: "hsl(var(--popover))",
-          foreground: "hsl(var(--popover-foreground))",
-        },
-        primary: {
-          DEFAULT: "hsl(var(--primary))",
-          foreground: "hsl(var(--primary-foreground))",
-        },
-        secondary: {
-          DEFAULT: "hsl(var(--secondary))",
-          foreground: "hsl(var(--secondary-foreground))",
-        },
-        muted: {
-          DEFAULT: "hsl(var(--muted))",
-          foreground: "hsl(var(--muted-foreground))",
-        },
-        accent: {
-          DEFAULT: "hsl(var(--accent))",
-          foreground: "hsl(var(--accent-foreground))",
-        },
-        destructive: {
-          DEFAULT: "hsl(var(--destructive))",
-          foreground: "hsl(var(--destructive-foreground))",
-        },
-        border: "hsl(var(--border))",
-        input: "hsl(var(--input))",
-        ring: "hsl(var(--ring))",
-        chart: {
-          1: "hsl(var(--chart-1))",
-          2: "hsl(var(--chart-2))",
-          3: "hsl(var(--chart-3))",
-          4: "hsl(var(--chart-4))",
-          5: "hsl(var(--chart-5))",
+        gray: {
+          50: "#F8F8F6",
+          100: "#F1F1ED",
+          200: "#E9E8E2",
+          300: "#D8D7D0",
+          400: "#AEADA5",
+          500: "#8E8D85",
+          600: "#6E6D66",
+          700: "#56554F",
+          800: "#3B3A36",
+          900: "#262521",
+          950: "#191814",
         },
       },
-      keyframes: {
-        "accordion-down": {
-          from: { height: "0" },
-          to: { height: "var(--radix-accordion-content-height)" },
-        },
-        "accordion-up": {
-          from: { height: "var(--radix-accordion-content-height)" },
-          to: { height: "0" },
-        },
+      boxShadow: {
+        card: "0 1px 2px rgb(24 26 34 / 0.05), 0 0 0 1px rgb(24 26 34 / 0.04)",
+        "card-hover":
+          "0 6px 18px rgb(24 26 34 / 0.09), 0 0 0 1px rgb(24 26 34 / 0.05)",
       },
-      animation: {
-        "accordion-down": "accordion-down 0.2s ease-out",
-        "accordion-up": "accordion-up 0.2s ease-out",
+      borderRadius: {
+        card: "10px",
       },
     },
   },
