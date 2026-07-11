@@ -4,7 +4,7 @@ export default defineAppConfig({
   // Nuxt UI コンポーネント (UButton, UCheckbox, UModal 等) の配色を一括で揃える
   ui: {
     primary: "calm",
-    gray: "gray",
+    gray: "paper",
     button: {
       rounded: "rounded-lg",
     },

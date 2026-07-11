@@ -61,9 +61,9 @@
           >
             <UButton
               :block="isOpen || isMobile"
-              color="black"
+              color="gray"
               variant="solid"
-              class="justify-center"
+              class="justify-center !bg-gray-900 !text-white hover:!bg-gray-800 dark:!bg-gray-100 dark:!text-gray-900 dark:hover:!bg-gray-200"
               @click="$emit('open-new-task-modal')"
             >
               <UIcon name="i-heroicons-plus" class="w-5 h-5" />

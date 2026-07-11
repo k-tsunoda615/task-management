@@ -30,7 +30,9 @@ export default {
           900: "#1D3970",
           950: "#14264C",
         },
-        gray: {
+        // Nuxt UI が gray をエイリアスするため、直接 colors.gray を上書きせず
+        // 独自名 paper で定義して app.config.ts の ui.gray から参照する
+        paper: {
           50: "#F8F8F6",
           100: "#F1F1ED",
           200: "#E9E8E2",
