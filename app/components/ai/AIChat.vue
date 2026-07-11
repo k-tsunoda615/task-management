@@ -1,5 +1,5 @@
 <template>
-  <div class="fixed bottom-6 right-6 z-50 flex flex-col items-end">
+  <div class="fixed bottom-24 right-6 z-50 flex flex-col items-end md:bottom-6">
     <!-- Chat Window -->
     <transition
       enter-active-class="transition duration-300 ease-out"
