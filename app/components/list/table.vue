@@ -9,7 +9,7 @@
     />
 
     <!-- メインテーブル -->
-    <div class="rounded-[6px] border overflow-hidden">
+    <div class="rounded-card shadow-card bg-white dark:bg-gray-800 overflow-hidden">
       <div class="overflow-x-auto">
         <table class="w-full whitespace-nowrap">
           <TableHeader
@@ -24,7 +24,7 @@
             tag="tbody"
             handle=".handle"
             :animation="200"
-            class="bg-white divide-y divide-gray-200"
+            class="bg-white dark:bg-gray-800 divide-y divide-gray-100 dark:divide-gray-800"
             :group="{ name: 'todos', pull: true, put: true }"
             item-key="id"
             ghost-class="ghost-card"

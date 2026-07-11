@@ -12,7 +12,7 @@
             <li class="flex items-start">
               <UIcon
                 name="i-heroicons-plus-circle"
-                class="mr-2 text-blue-500 flex-shrink-0 mt-1"
+                class="mr-2 text-calm-500 flex-shrink-0 mt-1"
               />
               <span
                 >Priority / Next
@@ -22,7 +22,7 @@
             <li class="flex items-start">
               <UIcon
                 name="i-heroicons-pencil-square"
-                class="mr-2 text-blue-500 flex-shrink-0 mt-1"
+                class="mr-2 text-calm-500 flex-shrink-0 mt-1"
               />
               <span
                 >カード右上の編集ボタンでタスク内容を即時更新できます。変更は自動保存されます。</span
@@ -77,7 +77,7 @@
             <li class="flex items-start">
               <UIcon
                 name="i-heroicons-view-columns"
-                class="mr-2 text-blue-500 flex-shrink-0 mt-1"
+                class="mr-2 text-calm-500 flex-shrink-0 mt-1"
               />
               <span
                 >PC ではレイアウト切り替えボタンから Priority と Next を並列 /
@@ -96,7 +96,7 @@
             <li class="flex items-start">
               <UIcon
                 name="i-heroicons-clock"
-                class="mr-2 text-blue-600 flex-shrink-0 mt-1"
+                class="mr-2 text-calm-600 flex-shrink-0 mt-1"
               />
               <span
                 >カードの再生 /
@@ -242,7 +242,7 @@
                     [リンク](https://example.com)
                   </td>
                   <td class="py-2 border-b border-gray-200">
-                    <a href="#" class="text-blue-600 underline">リンク</a>
+                    <a href="#" class="text-calm-600 underline">リンク</a>
                   </td>
                 </tr>
                 <tr>
