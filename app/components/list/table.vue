@@ -258,7 +258,6 @@ const deleteSelectedTodos = () => {
 const confirmDelete = async () => {
   if (selectedTodos.value.length === 0) return;
 
-  const selectedCount = selectedTodos.value.length;
   try {
     isDeleting.value = true;
     const idsToDelete = [...selectedTodos.value]; // 配列のコピーを作成
@@ -272,7 +271,6 @@ const confirmDelete = async () => {
     selectedTodos.value = [];
     selectAll.value = false;
     showDeleteModal.value = false;
-
   } catch (error) {
     console.error("削除中にエラーが発生しました:", error);
   } finally {
