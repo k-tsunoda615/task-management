@@ -486,8 +486,10 @@ const handleDelete = async () => {
 };
 
 // タスクIDが変わったら再取得
+// NOTE: todoStore.todos を watch 対象に含めると、自動同期 (useTodoSync) による
+// 配列差し替えのたびに fetchTask が走り、編集中の editedTask が上書きされてしまう
 watch(
-  () => [props.taskId, todoStore.todos.length],
+  () => props.taskId,
   () => {
     fetchTask();
   },
