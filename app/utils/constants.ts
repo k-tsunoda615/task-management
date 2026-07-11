@@ -38,19 +38,19 @@ export const DB_STATUS_MAPPING = {
 export const STATUS_COLORS = {
   [TASK_STATUS.PRIORITY]: {
     bg: "bg-white/80",
-    border: "border border-green-300",
+    border: "border border-rose-200",
     icon: "text-rose-400",
     iconName: "i-heroicons-inbox",
   },
   [TASK_STATUS.NEXT]: {
     bg: "bg-white/80",
-    border: "border border-blue-300",
+    border: "border border-calm-200",
     icon: "text-calm-500",
     iconName: "i-heroicons-clock",
   },
   [TASK_STATUS.ARCHIVED]: {
     bg: "bg-white/80",
-    border: "border border-gray-300",
+    border: "border border-gray-200",
     icon: "text-gray-400",
     iconName: "i-heroicons-check-circle",
   },

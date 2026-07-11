@@ -98,7 +98,7 @@
             >
               <UIcon
                 name="i-heroicons-information-circle"
-                class="text-blue-500"
+                class="text-calm-500"
               />
             </UTooltip>
           </div>

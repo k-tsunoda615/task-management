@@ -116,7 +116,7 @@
         <UIcon name="i-heroicons-lock-closed" class="w-4 h-4 mr-1" />
         プライベート
       </span>
-      <span v-else class="text-blue-600 flex items-center">
+      <span v-else class="text-calm-600 flex items-center">
         <UIcon name="i-heroicons-eye" class="w-4 h-4 mr-1" />
         パブリック
       </span>
@@ -219,8 +219,11 @@
         <span
           v-for="tag in todo.tags"
           :key="tag.id"
-          class="px-2 py-0.5 text-xs rounded-full text-white"
-          :style="{ backgroundColor: tag.color }"
+          class="px-2 py-0.5 text-[11px] font-semibold rounded-full"
+          :style="{
+            color: tag.color || '#3474f0',
+            boxShadow: `inset 0 0 0 1px ${tag.color || '#3474f0'}55`,
+          }"
         >
           {{ tag.name }}
         </span>

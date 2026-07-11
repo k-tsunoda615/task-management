@@ -43,7 +43,7 @@
         <div class="flex gap-3">
           <UButton
             v-if="!isTimerRunning"
-            color="green"
+            color="primary"
             :disabled="isTaskCompleted"
             class="px-4"
             @click="startTimer"
@@ -51,7 +51,13 @@
             <UIcon name="i-heroicons-play" class="mr-1" />
             開始
           </UButton>
-          <UButton v-else color="amber" class="px-4" @click="stopTimer">
+          <UButton
+            v-else
+            color="gray"
+            variant="solid"
+            class="px-4 !bg-gray-900 !text-white hover:!bg-gray-800 dark:!bg-gray-100 dark:!text-gray-900 dark:hover:!bg-gray-200"
+            @click="stopTimer"
+          >
             <UIcon name="i-heroicons-pause" class="mr-1" />
             停止
           </UButton>
@@ -77,7 +83,7 @@
         <input
           v-model="editedTask.title"
           type="text"
-          class="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:border-primary-500 focus:ring focus:ring-primary-200"
+          class="w-full px-4 py-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg focus:outline-none focus:border-calm-400 focus:ring-2 focus:ring-calm-100 dark:focus:ring-calm-900"
           @change="updateTask('title')"
         >
       </div>
@@ -90,7 +96,7 @@
           >
           <select
             v-model="editedTask.status"
-            class="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:border-primary-500 focus:ring focus:ring-primary-200"
+            class="w-full px-4 py-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg focus:outline-none focus:border-calm-400 focus:ring-2 focus:ring-calm-100 dark:focus:ring-calm-900"
             @change="updateTask('status')"
           >
             <option
@@ -154,14 +160,14 @@
       <div v-if="memoViewMode === 'edit'" class="mt-4">
         <textarea
           v-model="editedTask.memo"
-          class="w-full h-[500px] px-4 py-3 border border-gray-300 rounded-md shadow-sm focus:border-primary-500 focus:ring focus:ring-primary-200 font-mono text-sm"
+          class="w-full h-[500px] px-4 py-3 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg focus:outline-none focus:border-calm-400 focus:ring-2 focus:ring-calm-100 dark:focus:ring-calm-900 font-mono text-sm"
           placeholder="Markdownでメモを入力できます..."
           @change="updateTask('memo')"
         />
       </div>
       <div
         v-else
-        class="mt-4 bg-white border border-green-200 p-6 rounded-lg overflow-auto max-h-[90vh]"
+        class="mt-4 bg-white dark:bg-gray-800 shadow-card p-6 rounded-card overflow-auto max-h-[90vh]"
       >
         <!-- eslint-disable vue/no-v-html -->
         <div class="markdown-prose" v-html="renderedMarkdown" />
