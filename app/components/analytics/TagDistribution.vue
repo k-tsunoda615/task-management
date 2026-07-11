@@ -30,7 +30,7 @@ const getTagCounts = () => {
         if (!counts[tag.id]) {
           counts[tag.id] = {
             count: 0,
-            color: tag.color || "#3b82f6", // デフォルト色
+            color: tag.color || "#3474f0", // デフォルト色
           };
         }
         counts[tag.id]!.count++;

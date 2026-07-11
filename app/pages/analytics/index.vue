@@ -5,7 +5,7 @@
       <!-- 期間フィルター -->
       <select
         v-model="selectedPeriod"
-        class="w-40 rounded-[6px] border border-gray-300 appearance-none px-3 py-2 focus:border-primary-500 focus:outline-none"
+        class="w-40 rounded-lg bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 appearance-none px-3 py-2 focus:border-calm-400 focus:outline-none focus:ring-2 focus:ring-calm-100 dark:focus:ring-calm-900"
       >
         <option value="today">今日</option>
         <option value="7days">過去7日間</option>
@@ -13,14 +13,14 @@
         <option value="all">すべて</option>
       </select>
     </div>
-    <UCard class="mb-6 rounded-[6px]">
+    <UCard class="mb-6">
       <template #header>
-        <div class="flex justify-between items-center rounded-[6px]">
+        <div class="flex justify-between items-center">
           <h2 class="text-xl font-bold">集計サマリー</h2>
         </div>
       </template>
       <div class="analytics-summary grid grid-cols-1 md:grid-cols-3 gap-4">
-        <UCard class="rounded-[6px]">
+        <UCard>
           <div class="text-center">
             <div class="text-2xl font-bold text-primary-600">
               {{ totalTasks }}
@@ -28,11 +28,11 @@
             <div class="text-sm text-gray-500">実施タスク数</div>
           </div>
         </UCard>
-        <UCard class="rounded-[6px]">
+        <UCard>
           <div class="text-center">
             <div
               v-if="showCompletedTasks"
-              class="text-2xl font-bold text-green-600"
+              class="text-2xl font-bold text-calm-600"
             >
               {{ completedTasks }}
             </div>
@@ -40,9 +40,9 @@
             <div class="text-sm text-gray-500">完了タスク数</div>
           </div>
         </UCard>
-        <UCard class="rounded-[6px]">
+        <UCard>
           <div class="text-center">
-            <div class="text-2xl font-bold text-yellow-600">
+            <div class="text-2xl font-bold text-gray-800 dark:text-gray-200 tnum">
               {{ formatTime(totalTimeSpent) }}
             </div>
             <div class="text-sm text-gray-500">合計作業時間</div>
@@ -52,7 +52,7 @@
     </UCard>
 
     <!-- タスクステータス分布 -->
-    <UCard class="mb-6 rounded-[6px]">
+    <UCard class="mb-6">
       <template #header>
         <h3 class="text-lg font-bold">ステータス別タスク分布</h3>
       </template>
@@ -61,7 +61,7 @@
 
     <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
       <!-- タスク時間分析 -->
-      <UCard class="rounded-[6px]">
+      <UCard>
         <template #header>
           <h3 class="text-lg font-bold">タスク時間分析</h3>
         </template>
@@ -71,7 +71,7 @@
       </UCard>
 
       <!-- タグ別タスク分布 -->
-      <UCard class="rounded-[6px]">
+      <UCard>
         <template #header>
           <h3 class="text-lg font-bold">タグ別タスク分布</h3>
         </template>
@@ -82,13 +82,13 @@
     </div>
 
     <!-- 最近のアクティビティ -->
-    <UCard class="rounded-[6px]">
+    <UCard>
       <template #header>
         <h3 class="text-lg font-bold">最近のアクティビティ</h3>
       </template>
       <div class="overflow-x-auto">
         <table class="min-w-full divide-y divide-gray-200">
-          <thead class="bg-gray-50">
+          <thead class="bg-gray-50 dark:bg-gray-900/60">
             <tr>
               <th
                 class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
@@ -112,11 +112,11 @@
               </th>
             </tr>
           </thead>
-          <tbody class="bg-white divide-y divide-gray-200">
+          <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-100 dark:divide-gray-800">
             <tr v-for="task in recentTasks" :key="task.id">
               <td class="px-6 py-4 whitespace-nowrap">
                 <div
-                  class="text-sm font-medium text-gray-900 flex items-center"
+                  class="text-sm font-medium text-gray-900 dark:text-gray-100 flex items-center"
                 >
                   <NuxtLink
                     :to="`/note/${task.id}`"

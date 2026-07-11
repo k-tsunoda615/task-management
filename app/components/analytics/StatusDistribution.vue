@@ -72,7 +72,7 @@ onMounted(() => {
  */
 const getStatusColor = (status: string) => {
   const statusStyle = STATUS_COLORS[status as keyof typeof STATUS_COLORS];
-  if (!statusStyle) return "#94a3b8"; // デフォルト色
+  if (!statusStyle) return "#aeada5"; // デフォルト色
 
   // iconプロパティからCSS変数の色を抽出（text-green-500 → green-500の色）
   const colorClass = statusStyle.icon.split("-");
@@ -81,13 +81,13 @@ const getStatusColor = (status: string) => {
 
   switch (colorName) {
     case "green":
-      return colorShade === "500" ? "#22c55e" : "#86efac";
+      return colorShade === "500" ? "#fb7185" : "#fecdd3";
     case "blue":
-      return colorShade === "500" ? "#3b82f6" : "#93c5fd";
+      return colorShade === "500" ? "#3474f0" : "#c3d6fb";
     case "gray":
-      return colorShade === "500" ? "#64748b" : "#94a3b8";
+      return colorShade === "500" ? "#aeada5" : "#d8d7d0";
     default:
-      return "#94a3b8"; // デフォルト色
+      return "#aeada5"; // デフォルト色
   }
 };
 
@@ -264,7 +264,7 @@ const initCompletionChart = async () => {
         datasets: [
           {
             data: [finished, unfinished],
-            backgroundColor: ["#22c55e", "#f1f5f9"], // 完了:緑、未完了:薄いグレー
+            backgroundColor: ["#3474f0", "#e9e8e2"], // 完了:calm、未完了:薄いグレー
             borderWidth: 0,
             hoverBorderWidth: 2,
             hoverBorderColor: "#ffffff",

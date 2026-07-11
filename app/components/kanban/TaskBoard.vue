@@ -4,7 +4,7 @@
     <Transition name="slide">
       <div
         v-if="currentTimingTodo && showTimerBar"
-        class="mb-6 p-4 bg-blue-50/50 rounded-[6px] border border-blue-100 flex flex-col md:flex-row gap-4 items-center justify-between"
+        class="mb-6 p-4 bg-calm-50 dark:bg-calm-950/40 rounded-card ring-1 ring-calm-200 dark:ring-calm-900 flex flex-col md:flex-row gap-4 items-center justify-between"
       >
         <div class="flex flex-col md:flex-row items-center gap-3">
           <!-- アナログ時計風タイマー -->
@@ -16,10 +16,11 @@
           </div>
         </div>
         <UButton
-          color="green"
+          color="gray"
           variant="solid"
           size="sm"
           icon="i-heroicons-pause"
+          class="!bg-gray-900 !text-white hover:!bg-gray-800 dark:!bg-gray-100 dark:!text-gray-900 dark:hover:!bg-gray-200"
           @click="stopTiming(currentTimingTodo)"
         >
           停止
@@ -72,12 +73,12 @@
       <!-- Priority -->
       <div :class="getPriorityClass()">
         <div
-          class="rounded-[6px] p-4 h-full flex flex-col shadow-md border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900"
+          class="rounded-xl p-1 h-full flex flex-col"
         >
           <div
-            class="mb-4 flex items-center justify-between gap-2 text-gray-900 dark:text-gray-100"
+            class="mb-3 px-1 flex items-center justify-between gap-2 text-gray-500 dark:text-gray-400"
           >
-            <div class="flex items-center gap-2 font-medium">
+            <div class="flex items-center gap-2 text-[13px] font-semibold tracking-wide">
               <UIcon
                 :name="STATUS_COLORS[TASK_STATUS.PRIORITY].iconName"
                 class="w-5 h-5"
@@ -113,7 +114,7 @@
               drag-class="drag-item"
               chosen-class="chosen-item"
               :class="{
-                'border-2 border-dashed border-gray-200 rounded-[6px] p-4':
+                'border border-dashed border-gray-300 dark:border-gray-700 rounded-lg p-4':
                   todosByStatus[TASK_STATUS.PRIORITY].length === 0,
               }"
               @change="handleDragChange"
@@ -134,7 +135,7 @@
               <template #footer>
                 <div
                   v-if="todosByStatus[TASK_STATUS.PRIORITY].length === 0"
-                  class="text-gray-500 text-sm text-center"
+                  class="text-gray-400 text-sm text-center py-4"
                 >
                   タスクがありません
                 </div>
@@ -147,12 +148,12 @@
       <!-- Next Up -->
       <div :class="getNextUpClass()">
         <div
-          class="rounded-[6px] p-4 h-full shadow-md border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900"
+          class="rounded-xl p-1 h-full"
         >
           <div
-            class="mb-4 flex items-center justify-between gap-2 text-gray-900 dark:text-gray-100"
+            class="mb-3 px-1 flex items-center justify-between gap-2 text-gray-500 dark:text-gray-400"
           >
-            <div class="flex items-center gap-2 font-medium">
+            <div class="flex items-center gap-2 text-[13px] font-semibold tracking-wide">
               <UIcon
                 :name="STATUS_COLORS[TASK_STATUS.NEXT].iconName"
                 class="w-5 h-5"
@@ -204,7 +205,7 @@
           </draggable>
           <div
             v-if="todosByStatus[TASK_STATUS.NEXT].length === 0"
-            class="text-gray-500 text-sm text-center mt-2"
+            class="text-gray-400 text-sm text-center py-4"
           >
             タスクがありません
           </div>
@@ -216,10 +217,10 @@
     <div class="block md:hidden space-y-4">
       <!-- Priority -->
       <div
-        class="rounded-[6px] p-4 shadow-md border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900"
+        class="rounded-xl p-1"
       >
         <h2
-          class="mb-4 font-medium text-gray-900 dark:text-gray-100 flex items-center gap-2"
+          class="mb-3 px-1 text-[13px] font-semibold tracking-wide text-gray-500 dark:text-gray-400 flex items-center gap-2"
         >
           <UIcon
             :name="STATUS_COLORS[TASK_STATUS.PRIORITY].iconName"
@@ -257,7 +258,7 @@
         </draggable>
         <div
           v-if="todosByStatus[TASK_STATUS.PRIORITY].length === 0"
-          class="text-gray-500 text-sm text-center mt-2"
+          class="text-gray-400 text-sm text-center py-4"
         >
           タスクがありません
         </div>
@@ -265,10 +266,10 @@
 
       <!-- Next Up -->
       <div
-        class="rounded-[6px] p-4 shadow-md border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900"
+        class="rounded-xl p-1"
       >
         <h2
-          class="mb-4 font-medium text-gray-900 dark:text-gray-100 flex items-center gap-2"
+          class="mb-3 px-1 text-[13px] font-semibold tracking-wide text-gray-500 dark:text-gray-400 flex items-center gap-2"
         >
           <UIcon
             :name="STATUS_COLORS[TASK_STATUS.NEXT].iconName"
@@ -306,7 +307,7 @@
         </draggable>
         <div
           v-if="todosByStatus[TASK_STATUS.NEXT].length === 0"
-          class="text-gray-500 text-sm text-center mt-2"
+          class="text-gray-400 text-sm text-center py-4"
         >
           タスクがありません
         </div>
@@ -315,10 +316,10 @@
 
     <!-- PC/モバイル共通: 下段：Archived -->
     <div
-      class="rounded-[6px] p-4 mt-4 shadow-md border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900"
+      class="rounded-xl p-1 mt-6"
     >
       <h2
-        class="mb-4 font-medium text-gray-900 dark:text-gray-100 flex items-center gap-2"
+        class="mb-3 px-1 text-[13px] font-semibold tracking-wide text-gray-500 dark:text-gray-400 flex items-center gap-2"
       >
         <UIcon
           :name="STATUS_COLORS[TASK_STATUS.ARCHIVED].iconName"
@@ -356,7 +357,7 @@
       </draggable>
       <div
         v-if="todosByStatus[TASK_STATUS.ARCHIVED].length === 0"
-        class="text-gray-500 text-sm text-center mt-2"
+        class="text-gray-400 text-sm text-center py-4"
       >
         タスクがありません
       </div>
@@ -1962,15 +1963,15 @@ const getLayoutIcon = () => {
 
 /* ドラッグ＆ドロップ関連のスタイル */
 .ghost-card {
-  background-color: #f3f4f6;
-  border: 1px dashed #d1d5db;
+  background-color: var(--app-side);
+  border: 1px dashed var(--app-line);
   opacity: 0.6;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+  box-shadow: none;
 }
 
 .drag-item {
-  opacity: 0.8;
-  transform: rotate(2deg);
+  opacity: 0.85;
+  transform: rotate(1deg);
 }
 
 .chosen-item {
