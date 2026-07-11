@@ -2,7 +2,7 @@
   <div>
     <!-- サイドバー本体 -->
     <div
-      class="fixed top-0 left-0 h-screen bg-white border-r border-gray-200 transition-all duration-300 ease-in-out flex flex-col z-40"
+      class="fixed top-0 left-0 h-screen bg-gray-100 dark:bg-gray-900 border-r border-gray-200/60 dark:border-gray-800 transition-all duration-300 ease-in-out flex flex-col z-40"
       :class="[
         { 'w-64': isOpen || isMobile, 'w-16': !isOpen && !isMobile },
         { '-translate-x-full': !isMobile },
@@ -10,18 +10,22 @@
       ]"
     >
       <!-- ヘッダー部分 -->
-      <div
-        class="flex items-center justify-between p-4 border-b border-gray-200"
-      >
-        <p v-if="isOpen || isMobile" class="font-medium text-gray-900">
-          メニュー
+      <div class="flex items-center justify-between p-4">
+        <p
+          v-if="isOpen || isMobile"
+          class="flex items-center gap-2 font-bold tracking-wide text-gray-900 dark:text-gray-100"
+        >
+          <span
+            class="inline-block h-4 w-4 rounded-md bg-gray-900 dark:bg-gray-100"
+          />
+          タスクボード
         </p>
         <UButton
           v-if="isMobile"
           color="gray"
           variant="ghost"
           size="sm"
-          class="hover:bg-gray-100"
+          class="hover:bg-gray-200/60"
           @click="$emit('close-mobile-menu')"
         >
           <UIcon name="i-heroicons-x-mark" class="h-5 w-5" />
@@ -31,7 +35,7 @@
           color="gray"
           variant="ghost"
           size="sm"
-          class="hover:bg-gray-100"
+          class="hover:bg-gray-200/60"
           @click="toggleSidebar"
         >
           <UIcon
@@ -57,16 +61,13 @@
           >
             <UButton
               :block="isOpen || isMobile"
-              color="gray"
-              variant="ghost"
-              class="justify-start hover:bg-gray-100"
+              color="black"
+              variant="solid"
+              class="justify-center"
               @click="$emit('open-new-task-modal')"
             >
-              <UIcon
-                name="i-heroicons-plus-circle"
-                class="w-5 h-5 text-primary-500"
-              />
-              <span v-if="isOpen || isMobile" class="ml-2">新しいタスク</span>
+              <UIcon name="i-heroicons-plus" class="w-5 h-5" />
+              <span v-if="isOpen || isMobile" class="ml-1">新しいタスク</span>
             </UButton>
           </UTooltip>
         </div>
@@ -83,7 +84,7 @@
               :block="isOpen || isMobile"
               color="gray"
               variant="ghost"
-              class="justify-start hover:bg-gray-100 relative"
+              class="justify-start hover:bg-gray-200/60 relative"
               @click="showTagModal = true"
             >
               <span class="relative inline-block w-5 h-5">
@@ -118,9 +119,14 @@
             >
               <UButton
                 :block="isOpen || isMobile"
-                :color="isCurrentRoute('/board') ? 'primary' : 'gray'"
-                :variant="isCurrentRoute('/board') ? 'soft' : 'ghost'"
-                class="justify-start hover:bg-gray-100"
+                color="gray"
+                variant="ghost"
+                class="justify-start hover:bg-gray-200/60"
+                :class="
+                  isCurrentRoute('/board')
+                    ? 'bg-gray-200/70 dark:bg-gray-800 font-semibold'
+                    : ''
+                "
                 @click="navigateToBoard"
               >
                 <UIcon
@@ -128,7 +134,7 @@
                   class="w-5 h-5"
                   :class="
                     isCurrentRoute('/board')
-                      ? 'text-primary-500'
+                      ? 'text-gray-900 dark:text-gray-100'
                       : 'text-gray-500'
                   "
                 />
@@ -146,9 +152,14 @@
             >
               <UButton
                 :block="isOpen || isMobile"
-                :color="isCurrentRoute('/list') ? 'primary' : 'gray'"
-                :variant="isCurrentRoute('/list') ? 'soft' : 'ghost'"
-                class="justify-start hover:bg-gray-100"
+                color="gray"
+                variant="ghost"
+                class="justify-start hover:bg-gray-200/60"
+                :class="
+                  isCurrentRoute('/list')
+                    ? 'bg-gray-200/70 dark:bg-gray-800 font-semibold'
+                    : ''
+                "
                 @click="navigateTo('/list')"
               >
                 <UIcon
@@ -156,7 +167,7 @@
                   class="w-5 h-5"
                   :class="
                     isCurrentRoute('/list')
-                      ? 'text-primary-500'
+                      ? 'text-gray-900 dark:text-gray-100'
                       : 'text-gray-500'
                   "
                 />
@@ -174,9 +185,14 @@
             >
               <UButton
                 :block="isOpen || isMobile"
-                :color="isCurrentRoute('/analytics') ? 'primary' : 'gray'"
-                :variant="isCurrentRoute('/analytics') ? 'soft' : 'ghost'"
-                class="justify-start hover:bg-gray-100"
+                color="gray"
+                variant="ghost"
+                class="justify-start hover:bg-gray-200/60"
+                :class="
+                  isCurrentRoute('/analytics')
+                    ? 'bg-gray-200/70 dark:bg-gray-800 font-semibold'
+                    : ''
+                "
                 @click="navigateTo('/analytics')"
               >
                 <UIcon
@@ -184,7 +200,7 @@
                   class="w-5 h-5"
                   :class="
                     isCurrentRoute('/analytics')
-                      ? 'text-primary-500'
+                      ? 'text-gray-900 dark:text-gray-100'
                       : 'text-gray-500'
                   "
                 />
@@ -202,9 +218,14 @@
             >
               <UButton
                 :block="isOpen || isMobile"
-                :color="isCurrentRoute('/admin') ? 'primary' : 'gray'"
-                :variant="isCurrentRoute('/admin') ? 'soft' : 'ghost'"
-                class="justify-start hover:bg-gray-100"
+                color="gray"
+                variant="ghost"
+                class="justify-start hover:bg-gray-200/60"
+                :class="
+                  isCurrentRoute('/admin')
+                    ? 'bg-gray-200/70 dark:bg-gray-800 font-semibold'
+                    : ''
+                "
                 @click="navigateTo('/admin')"
               >
                 <UIcon
@@ -212,7 +233,7 @@
                   class="w-5 h-5"
                   :class="
                     isCurrentRoute('/admin')
-                      ? 'text-primary-500'
+                      ? 'text-gray-900 dark:text-gray-100'
                       : 'text-gray-500'
                   "
                 />
@@ -243,7 +264,7 @@
               :color="getFilterButtonColor()"
               :variant="'ghost'"
               :icon="getFilterIcon()"
-              class="justify-start hover:bg-gray-100"
+              class="justify-start hover:bg-gray-200/60"
               @click="toggleTaskFilter"
             >
               <span v-if="isOpen || isMobile" class="ml-2">{{
@@ -266,15 +287,15 @@
           >
             <UButton
               :block="isOpen || isMobile"
-              :color="showTagBar ? 'green' : 'gray'"
+              :color="showTagBar ? 'primary' : 'gray'"
               :variant="'ghost'"
-              class="justify-start hover:bg-gray-100"
+              class="justify-start hover:bg-gray-200/60"
               @click="toggleTagVisibility"
             >
               <UIcon
                 name="i-heroicons-tag"
                 class="w-5 h-5"
-                :class="showTagBar ? 'text-green-500' : 'text-gray-400'"
+                :class="showTagBar ? 'text-calm-500' : 'text-gray-400'"
               />
               <span v-if="isOpen || isMobile" class="ml-2">
                 {{ showTagBar ? "タグ表示中" : "タグ非表示" }}
@@ -298,14 +319,14 @@
           >
             <UButton
               :block="isOpen || isMobile"
-              :color="showTimer ? 'green' : 'gray'"
+              :color="showTimer ? 'primary' : 'gray'"
               :variant="'ghost'"
-              class="justify-start hover:bg-gray-100"
+              class="justify-start hover:bg-gray-200/60"
               @click="toggleTimerVisibility"
             >
               <UIcon
                 name="i-heroicons-clock"
-                :class="showTimer ? 'text-green-500' : 'text-gray-400'"
+                :class="showTimer ? 'text-calm-500' : 'text-gray-400'"
                 class="w-5 h-5"
               />
               <span v-if="isOpen || isMobile" class="ml-2">
@@ -333,15 +354,15 @@
           >
             <UButton
               :block="isOpen || isMobile"
-              :color="showCompletedTasks ? 'green' : 'gray'"
+              :color="showCompletedTasks ? 'primary' : 'gray'"
               :variant="'ghost'"
-              class="justify-start hover:bg-gray-100"
+              class="justify-start hover:bg-gray-200/60"
               @click="toggleCompletedTasksVisibility"
             >
               <UIcon
                 name="i-heroicons-check-circle"
                 class="w-5 h-5"
-                :class="showCompletedTasks ? 'text-green-500' : 'text-gray-400'"
+                :class="showCompletedTasks ? 'text-calm-500' : 'text-gray-400'"
               />
               <span v-if="isOpen || isMobile" class="ml-2">
                 {{
@@ -390,7 +411,9 @@
         </div>
 
         <!-- タスク数表示 -->
-        <div class="px-4 py-3 text-center border-t border-gray-200 bg-gray-50">
+        <div
+          class="px-4 py-3 text-center border-t border-gray-200 dark:border-gray-800"
+        >
           <UTooltip
             :text="!isOpen ? `アイテム数: ${totalItemCount}/100` : ''"
             :ui="{ popper: { strategy: 'fixed' } }"
@@ -699,9 +722,9 @@ const getFilterIcon = () => {
 const getFilterButtonColor = () => {
   switch (todoStore.taskFilter) {
     case "all":
-      return "green";
+      return "primary";
     case "private":
-      return "green";
+      return "primary";
     case "public":
       return "gray";
     default:
